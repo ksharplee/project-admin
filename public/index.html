@@ -1,17 +1,39 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>project-admin</title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but project-admin doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta
+    http-equiv="X-UA-Compatible"
+    content="IE=edge"
+  >
+  <meta
+    name="renderer"
+    content="webkit"
+  />
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1.0"
+  >
+  <link
+    rel="icon"
+    href="<%= BASE_URL %>favicon.ico"
+  >
+  <title>九域科技</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>请开启您的浏览器Javascript支持，否则我们无法为您提供网页服务!</strong>
+  </noscript>
+
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+  <script>
+    if(!!window.ActiveXObject || "ActiveXObject" in window) {
+      document.write('<div class="alert-info" role="alert" style="position: absolute;z-index: 9999;top: 0;right: 0;left: 0;text-align: center;background-color:#fff;padding:40px"><h3 style="margin-bottom:20px">系统检测到您使用的浏览器版本过低，为达到更好的体验效果请升级您的浏览器，我们为您推荐：</h3><p><a href="https://www.google.cn/chrome/" target="_blank" class="alert-link mx-3">Chrome浏览器</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.firefox.com.cn/download/" target="_blank" class="alert-link mx-3">Firefox浏览器</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://se.360.cn/" target="_blank" class="alert-link mx-3">360浏览器</a></p></div>')
+    }
+  </script>
+</body>
+
 </html>

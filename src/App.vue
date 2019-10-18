@@ -1,33 +1,57 @@
 <template>
-  <v-app>
-    <v-app-bar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        text
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
+  <div id="app">
+    <v-app id="inspire">
+      <router-view />
+      <v-snackbar
+        v-if="snackbarShow"
+        :value="snackbarShow"
+        :color="snackbarColor"
+        :timeout="3000"
+        top
       >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-content>
-      <router-view/>
-    </v-content>
-  </v-app>
+        {{ snackbarText }}
+        <v-icon dark>
+          {{ snackbarIcon }}
+        </v-icon>
+      </v-snackbar>
+      <div
+        v-show="$store.state.loading"
+        style="position: absolute;top:0;right:0;left:0;z-index:100"
+      >
+        <v-progress-linear
+          indeterminate
+          height="5"
+          striped
+          color="yellow accent-2"
+        />
+      </div>
+    </v-app>
+  </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 
 export default {
   name: 'App',
-  data: () => ({
-    //
-  }),
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapState([
+      'snackbarColor',
+      'snackbarShow',
+      'snackbarText',
+      'snackbarIcon',
+      'loading',
+    ]),
+  },
+  watch: {
+    snackbarShow() {
+      if (this.snackbarShow) {
+        setTimeout(() => this.$store.commit('TOGGLE_SNACKBAR', {}), 3000);
+      }
+    },
+  },
 };
 </script>
