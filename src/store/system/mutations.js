@@ -16,6 +16,8 @@ export default {
     state.areaInfo = payload;
   },
   [SET_ORDER_SEQUENCE](state, payload) {
-    state.orderSequence = payload;
+    if (payload.length) {
+      state.orderSequence = payload;
+    }
   },
 };

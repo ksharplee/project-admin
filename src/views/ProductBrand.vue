@@ -28,12 +28,15 @@
             </div>
             <div class="input-group-control">
               <v-text-field
+                v-model="search.dnames"
+                placeholder="请输入品牌名称搜索"
                 outlined
                 class="white"
                 single-line
                 clearable
                 hide-details
                 dense
+                @click:clear="clearSearchConditions('dnames')"
               />
             </div>
           </div>
@@ -50,7 +53,9 @@
             </div>
             <div class="input-group-control">
               <v-select
+                v-model="search.isUse"
                 :items="useOptions"
+                placeholder="请选择是否启用"
                 class="white"
                 single-line
                 outlined
@@ -58,6 +63,7 @@
                 no-data-text="暂无数据"
                 dense
                 hide-details
+                @click:clear="clearSearchConditions('isUse')"
               />
             </div>
           </div>
@@ -66,13 +72,14 @@
           <v-btn
             color="primary mr-2"
             depressed
+            @click="searchBrand"
           >
             搜索
           </v-btn>
           <v-btn
             color="secondary"
             depressed
-            @click="$refs.form.reset()"
+            @click="resetSearchConditions"
           >
             重置
           </v-btn>
@@ -101,7 +108,7 @@
               <td>{{ item.sort }}</td>
               <td class="pa-3">
                 <v-img
-                  :src="item.image"
+                  :src="item.image ? item.image : require('@/assets/imgWaiting.png')"
                   aspect-ratio="1"
                   class="grey lighten-2 mx-auto"
                   max-width="65"
@@ -216,6 +223,7 @@ export default {
       toDeleteBrand: '',
       edit: true,
       target: {},
+      search: {},
       headers: [
         {
           text: '排序',
@@ -257,11 +265,11 @@ export default {
       useOptions: [
         {
           text: '启用',
-          value: '0',
+          value: '1',
         },
         {
           text: '停用',
-          value: '1',
+          value: '0',
         },
       ],
     };
@@ -319,6 +327,17 @@ export default {
           this.deleting = false;
           this.dialogDelete = false;
         });
+    },
+    searchBrand() {
+      this.getBrandList(this.search);
+    },
+    clearSearchConditions(target) {
+      this.search[target] = '';
+      this.getBrandList(this.search);
+    },
+    resetSearchConditions() {
+      this.$refs.form.reset();
+      this.getBrandList();
     },
   },
 };

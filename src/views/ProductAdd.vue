@@ -111,7 +111,7 @@
                   <v-select
                     v-model="product.containSpec"
                     :items="containSpecOptions"
-                    :disabled="!spec.length"
+                    :disabled="!specOptions.length"
                     placeholder="请选择是否包含规格"
                     dense
                     single-line
@@ -766,10 +766,7 @@
           class="mb-4"
           outlined
         >
-          <v-simple-table
-            class="text-center"
-            fixed-header
-          >
+          <v-simple-table class="text-center">
             <thead>
               <tr>
                 <th
@@ -1018,7 +1015,7 @@
       </v-btn> -->
       <v-btn
         :loading="adding"
-        :disabled="!valid || adding"
+        :disabled="!valid || adding ||(!dataItems.length && product.containSpec === '1')"
         color="primary"
         large
         class="px-12 body-1"
@@ -1164,7 +1161,10 @@ export default {
           index: item.index,
           specItem: item.selected,
         }),
-        this.specOptions
+        R.filter(
+          item => item.selected && item.selected.length,
+          this.specOptions
+        )
       );
     },
     params() {

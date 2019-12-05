@@ -22,7 +22,7 @@
               cols="3"
               class="text-right"
             >
-              品牌名称：
+              <span class="red--text">*</span>品牌名称：
             </v-col>
             <v-col cols="5">
               <v-text-field
@@ -50,7 +50,7 @@
             </v-col>
             <v-col cols="5">
               <img-upload
-                :image="brand.image"
+                :image="brand.image ? brand.image : require('@/assets/imgWaiting.png')"
                 icon-size="48px"
                 @update:src="brand.image = $event"
                 @update:delete="brand.image = ''"

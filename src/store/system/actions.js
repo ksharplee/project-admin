@@ -147,4 +147,52 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 获取广告图
+  async getAdsAsync(context, payload) {
+    try {
+      const res = await axios.post('/ads/banners_ads_lists.html', payload);
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data.data);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 上传广告图
+  async setAdsAsync(context, payload) {
+    try {
+      const res = await axios.post('/ads/do_banners_ads.html', payload);
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 获取其他广告图
+  async getOtherAdsAsync(context, payload) {
+    try {
+      const res = await axios.post('/ads/other_ads_lists.html', payload);
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data.data);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 上传其他广告图
+  async setOtherAdsAsync(context, payload) {
+    try {
+      const res = await axios.post('/ads/do_other_ads.html', payload);
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

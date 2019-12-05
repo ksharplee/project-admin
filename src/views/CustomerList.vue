@@ -162,7 +162,9 @@
               <td>{{ item.account }}</td>
               <td>{{ item.dnames }}</td>
               <td>{{ item.mobile }}</td>
-              <td>{{ item.gradeName }}</td>
+              <td :class="item.gradeName ? '' : 'grey--text'">
+                {{ item.gradeName ? item.gradeName : '无' }}
+              </td>
               <td>{{ item.createTime | dateTruncate(16) }}</td>
               <td>
                 <v-tooltip bottom>

@@ -74,7 +74,7 @@ export default {
     });
     Vue.filter('OrderStatus', (v) => {
       if (v === '1') {
-        return '待确认';
+        return '待审核';
       }
       if (v === '2') {
         return '采购商已取消';
@@ -86,7 +86,7 @@ export default {
         return '待财务审核';
       }
       if (v === '5') {
-        return '待发货确认';
+        return '待发货';
       }
       if (v === '6') {
         return '已作废';
@@ -150,7 +150,7 @@ export default {
         return str;
       }
     });
-    // 订单发货单/收款单状态
+    // 订单发货单
     Vue.filter('orderShippingStatusText', (v) => {
       if (v) {
         if (v === '0') {
@@ -158,6 +158,9 @@ export default {
         }
         if (v === '1') {
           return '已审核';
+        }
+        if (v === '3') {
+          return '已确认收货';
         }
         return '已作废';
       }
@@ -173,7 +176,7 @@ export default {
         return 'grey--text';
       }
     });
-    // 订单发货单/收款单状态
+    // 收款单状态
     Vue.filter('orderSubStatusText', (v) => {
       if (v) {
         if (v === '1') {
@@ -199,9 +202,9 @@ export default {
     // 收款单状态
     Vue.filter('paymentOrderStatusText', (v) => {
       if (v) {
-        // if (v === '0') {
-        //   return '未收款';
-        // }
+        if (v === '-1') {
+          return '已取消';
+        }
         if (v === '1') {
           return '已驳回';
         }

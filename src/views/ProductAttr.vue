@@ -156,7 +156,7 @@
                   >
                     <div class="input-group-control">
                       <v-text-field
-                        v-model="attrItem.itemName"
+                        v-model="attrItem.attrItemName"
                         placeholder="请输入属性值"
                         dense
                         outlined
@@ -298,7 +298,7 @@
                   >
                     <div class="input-group-control">
                       <v-text-field
-                        v-model="attrItem.itemName"
+                        v-model="attrItem.attrItemName"
                         placeholder="请输入属性值"
                         dense
                         outlined
@@ -397,7 +397,9 @@ export default {
   name: 'ProductAttr',
   filters: {
     concatItemNames(arr) {
-      return arr[0].itemName ? R.join('，', R.pluck('itemName', arr)) : '无';
+      return arr[0].attrItemName
+        ? R.join('，', R.pluck('attrItemName', arr))
+        : '无';
     },
     genreText(genre) {
       if (genre === '1') {
@@ -434,7 +436,7 @@ export default {
         genre: '1',
         attrItem: [
           {
-            itemName: '',
+            attrItemName: '',
           },
         ],
       },
@@ -444,7 +446,7 @@ export default {
         genre: '1',
         attrItem: [
           {
-            itemName: '',
+            attrItemName: '',
           },
         ],
       },
@@ -504,7 +506,7 @@ export default {
   computed: {
     toAddItemNames() {
       return R.uniq(
-        R.without([''], R.pluck('itemName', this.attrToAdd.attrItem))
+        R.without([''], R.pluck('attrItemName', this.attrToAdd.attrItem))
       );
     },
     toAddParams() {
@@ -513,12 +515,12 @@ export default {
         dnames: this.attrToAdd.dnames,
         sort: this.attrToAdd.sort,
         genre: this.attrToAdd.genre,
-        attrItem: R.map(R.objOf('itemName'), this.toAddItemNames),
+        attrItem: R.map(R.objOf('attrItemName'), this.toAddItemNames),
       };
     },
     toEditItemNames() {
       return R.uniq(
-        R.without([''], R.pluck('itemName', this.attrToEdit.attrItem))
+        R.without([''], R.pluck('attrItemName', this.attrToEdit.attrItem))
       );
     },
     toEditParams() {
@@ -528,7 +530,7 @@ export default {
         dnames: this.attrToEdit.dnames,
         genre: this.attrToEdit.genre,
         sort: this.attrToEdit.sort,
-        attrItem: R.map(R.objOf('itemName'), this.toEditItemNames),
+        attrItem: R.map(R.objOf('attrItemName'), this.toEditItemNames),
       };
     },
   },
@@ -574,14 +576,14 @@ export default {
         'attrItem',
         R.append(
           {
-            itemName: '',
+            attrItemName: '',
           },
           this.attrToEdit.attrItem
         )
       );
     },
     editAttrConfirm() {
-      this.addingAttr = true;
+      this.editingAttr = true;
       this.editCateAttrAsync(this.toEditParams)
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
@@ -593,7 +595,7 @@ export default {
               this.dataItems,
               this.attrToEdit.index,
               R.compose(
-                R.assoc('attrItem', [{ itemName: '' }]),
+                R.assoc('attrItem', [{ attrItemName: '' }]),
                 R.dissoc('index')
               )(this.attrToEdit)
             );
@@ -627,7 +629,7 @@ export default {
         genre: '1',
         attrItem: [
           {
-            itemName: '',
+            attrItemName: '',
           },
         ],
       };
@@ -662,7 +664,7 @@ export default {
         'attrItem',
         R.append(
           {
-            itemName: '',
+            attrItemName: '',
           },
           this.attrToAdd.attrItem
         )

@@ -140,7 +140,7 @@ export default {
         model: false,
         children: [
           { text: '订货单', url: { name: 'order_list' } },
-          { text: '退货单', url: { name: '' } },
+          // { text: '退货单', url: { name: '' } },
           { text: '代客下单', url: { name: 'order_add' } },
         ],
       },
@@ -159,6 +159,7 @@ export default {
           { text: '基本信息设置', url: { name: 'basic_info' } },
           { text: '订单处理流程', url: { name: 'order_sequence' } },
           { text: '小程序二维码', url: { name: 'qrcode' } },
+          { text: '广告图设置', url: { name: 'ads' } },
         ],
       },
       {

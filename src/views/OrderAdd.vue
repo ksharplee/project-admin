@@ -598,14 +598,14 @@
             <v-col cols="4">
               <div class="input-group">
                 <div class="input-group-prepend">
-                  <span class="input-group-text required">处理流程</span>
+                  <span class="input-group-text">处理流程</span>
                 </div>
                 <div class="input-group-control">
+                  <!-- :rules="orderSequenceRules" -->
                   <v-select
                     v-model="selectedOrderSequence"
                     :items="orderSequence.data"
                     :loading="loadingOrderSequence"
-                    :rules="orderSequenceRules"
                     placeholder="请选择订单流程"
                     item-text="flowName"
                     item-value="id"
@@ -628,6 +628,18 @@
               cols="8"
             >
               {{ selectedOrderSequence.flowContentDesc | flowContentFilter }}
+            </v-col>
+            <v-col
+              v-else
+              cols="8"
+            >
+              <v-btn
+                text
+                class="primary--text"
+                :to="{ name: 'order_sequence' }"
+              >
+                添加订单流程
+              </v-btn>
             </v-col>
           </v-row>
           <v-row>
@@ -674,24 +686,24 @@
 </template>
 
 <script>
-import * as R from 'ramda';
-import { mapState, mapActions } from 'vuex';
-import CustomerList from '@/components/CustomerList.vue';
-import CustomerShippingList from '@/views/CustomerShippingList.vue';
-import ProductSelection from '@/components/ProductSelection.vue';
+import * as R from "ramda";
+import { mapState, mapActions } from "vuex";
+import CustomerList from "@/components/CustomerList.vue";
+import CustomerShippingList from "@/views/CustomerShippingList.vue";
+import ProductSelection from "@/components/ProductSelection.vue";
 
 export default {
-  name: 'OrderAdd',
+  name: "OrderAdd",
   components: {
     CustomerList,
     CustomerShippingList,
-    ProductSelection,
+    ProductSelection
   },
   props: {
     id: {
       type: String,
-      default: '',
-    },
+      default: ""
+    }
   },
   data() {
     return {
@@ -709,98 +721,102 @@ export default {
       valid: true,
       menuDate: false,
       order: {
-        isInvoice: '0',
+        isInvoice: "0"
       },
-      selectedOrderSequence: {},
+      selectedOrderSequence: {
+        flowType: "1",
+        flowName: "标准流程",
+        flowDescription: "标准流程"
+      },
       useInvoice: [
         {
-          text: '是',
-          value: '1',
+          text: "是",
+          value: "1"
         },
         {
-          text: '否',
-          value: '0',
-        },
+          text: "否",
+          value: "0"
+        }
       ],
       selectedProductsUnits: [],
-      invoiceRules: [v => !!v || '请选择是否开票'],
-      orderSequenceRules: [v => !!v || '请选择订单流程'],
-      invoiceTitleRules: [v => !!v || '请填写发票抬头'],
-      priceRules: [v => !!v || '请填写商品价格'],
-      numberRules: [v => v > 0 || '商品数量必须大于0'],
+      invoiceRules: [v => !!v || "请选择是否开票"],
+      orderSequenceRules: [v => !!v || "请选择订单流程"],
+      invoiceTitleRules: [v => !!v || "请填写发票抬头"],
+      priceRules: [v => !!v || "请填写商品价格"],
+      numberRules: [v => v > 0 || "商品数量必须大于0"],
       // ltzRules: [v => v >= 0 || '数字不能小于0'],
       // phoneRules: [v => /^1[3456789]\d{9}$/.test(v) || '手机号码格式有误'],
       headers: [
         {
-          text: '图片',
-          align: 'center',
+          text: "图片",
+          align: "center",
           sortable: false,
-          value: 'image',
-          width: '100px',
+          value: "image",
+          width: "100px"
         },
         {
-          text: '商品名称',
-          value: 'goodName',
-          align: 'center',
-          sortable: false,
+          text: "商品名称",
+          value: "goodName",
+          align: "center",
+          sortable: false
         },
         {
-          text: '商品规格',
-          value: 'goodDetailName',
-          align: 'center',
-          sortable: false,
+          text: "商品规格",
+          value: "goodDetailName",
+          align: "center",
+          sortable: false
         },
         {
-          text: '销售价(元)',
-          value: 'price',
-          align: 'center',
+          text: "销售价(元)",
+          value: "price",
+          align: "center",
           sortable: false,
-          width: '160px',
+          width: "160px"
         },
         {
-          text: '数量',
-          value: 'buNumber',
-          align: 'center',
+          text: "数量",
+          value: "buNumber",
+          align: "center",
           sortable: false,
-          width: '160px',
+          width: "160px"
         },
         {
-          text: '销售单位',
-          value: 'unit',
-          align: 'center',
+          text: "销售单位",
+          value: "unit",
+          align: "center",
           sortable: false,
-          width: '200px',
+          width: "200px"
         },
         {
-          text: '小计(元)',
-          value: 'amount',
-          align: 'center',
-          sortable: false,
+          text: "小计(元)",
+          value: "amount",
+          align: "center",
+          sortable: false
         },
         {
-          text: '备注',
-          value: 'memo',
-          align: 'center',
+          text: "备注",
+          value: "memo",
+          align: "center",
           sortable: false,
-          width: '200px',
+          width: "200px"
         },
         {
-          text: '操作',
-          value: 'action',
-          align: 'center',
-          sortable: false,
-        },
-      ],
+          text: "操作",
+          value: "action",
+          align: "center",
+          sortable: false
+        }
+      ]
     };
   },
   computed: {
-    ...mapState('finance', ['invoiceList']),
-    ...mapState('system', ['orderSequence']),
+    ...mapState("finance", ["invoiceList"]),
+    ...mapState("system", ["orderSequence"]),
     taxRate() {
       return (
         +R.prop(
-          'invoiceTax',
-          R.find(R.propEq('id', this.selectedInvoice.id), this.invoiceList.data)
+          "invoiceTax",
+          R.find(R.propEq("id", this.selectedInvoice.id), this.invoiceList.data)
         ) / 100
       );
     },
@@ -812,12 +828,12 @@ export default {
     },
     disallowSubmit() {
       return (
-        !this.selectedAddress
-        || R.isEmpty(this.selectedAddress)
-        || R.isEmpty(this.selectedOrderSequence)
-        || (this.order.isInvoice === '1' && R.isEmpty(this.selectedInvoice))
-        || !this.selectedCustomer.length
-        || !this.selectedProductsApply.length
+        !this.selectedAddress ||
+        R.isEmpty(this.selectedAddress) ||
+        R.isEmpty(this.selectedOrderSequence) ||
+        (this.order.isInvoice === "1" && R.isEmpty(this.selectedInvoice)) ||
+        !this.selectedCustomer.length ||
+        !this.selectedProductsApply.length
       );
     },
     totalAmount() {
@@ -828,15 +844,15 @@ export default {
       );
     },
     selectedProductsApply() {
-      return R.map((item) => {
+      return R.map(item => {
         item.buNumber = 1;
-        item.memo = '';
+        item.memo = "";
         item.priceOld = item.price;
-        item.price = item.byPrice;
+        item.price = item.byPrice.toFixed(2);
         item.buUnitId = item.unitId;
         item.units = R.prop(
-          'units',
-          R.find(R.propEq('goodId', item.goodId), this.selectedProductsUnits)
+          "units",
+          R.find(R.propEq("goodId", item.goodId), this.selectedProductsUnits)
         );
         return item;
       }, R.clone(this.selectedProducts));
@@ -850,42 +866,42 @@ export default {
           price: item.price,
           memo: item.memo,
           packeNum: R.prop(
-            'packeNum',
-            R.find(R.propEq('unitId', item.buUnitId), item.units)
-          ),
+            "packeNum",
+            R.find(R.propEq("unitId", item.buUnitId), item.units)
+          )
         }),
         this.selectedProductsApply
       );
-    },
+    }
   },
   created() {
-    this.$store.commit('SET_BREADCRUMBS', [
+    this.$store.commit("SET_BREADCRUMBS", [
       {
-        text: '首页',
+        text: "首页",
         disabled: false,
-        to: { name: 'home' },
-        exact: true,
+        to: { name: "home" },
+        exact: true
       },
       {
-        text: '代客下单',
+        text: "代客下单",
         disabled: true,
-        exact: true,
-      },
+        exact: true
+      }
     ]);
   },
   methods: {
-    ...mapActions(['uploadAttachmentSync']),
-    ...mapActions('finance', ['getInvoiceListAsync']),
-    ...mapActions('system', ['orderSequenceListAsync']),
-    ...mapActions('order', ['getProductUnitsAsync', 'addOrderAsync']),
+    ...mapActions(["uploadAttachmentSync"]),
+    ...mapActions("finance", ["getInvoiceListAsync"]),
+    ...mapActions("system", ["orderSequenceListAsync"]),
+    ...mapActions("order", ["getProductUnitsAsync", "addOrderAsync"]),
     getProductPrice(item) {
       if (item.unitId && item.units) {
         return (
-          +item.buNumber
-          * +item.price
-          * +R.prop(
-            'packeNum',
-            R.find(R.propEq('unitId', item.buUnitId), item.units)
+          +item.buNumber *
+          +item.price *
+          +R.prop(
+            "packeNum",
+            R.find(R.propEq("unitId", item.buUnitId), item.units)
           )
         );
       }
@@ -895,22 +911,22 @@ export default {
       const res = await this.getProductUnitsAsync(params);
       return {
         goodId: params.goodId,
-        units: res,
+        units: res
       };
     },
     getSelectedProducts(arr) {
       this.selectedProducts = arr;
-      const goodIds = R.uniq(R.pluck('goodId', arr));
+      const goodIds = R.uniq(R.pluck("goodId", arr));
       const resUnits = R.map(
         goodId => this.getProductUnits({ goodId }),
         goodIds
       );
       Promise.all(resUnits)
-        .then((res) => {
+        .then(res => {
           this.selectedProductsUnits = res;
         })
-        .catch((err) => {
-          this.checkErr(err, 'getSelectedProducts');
+        .catch(err => {
+          this.checkErr(err, "getSelectedProducts");
         });
     },
     getSelectedInvoice(invoice) {
@@ -926,10 +942,10 @@ export default {
       this.order.buyerUid = arr[0].buyerUid;
     },
     getInvoiceList(v) {
-      if (v === '1' && !this.invoiceList.status) {
+      if (v === "1" && !this.invoiceList.status) {
         this.loadingInvoices = true;
         this.getInvoiceListAsync()
-          .catch((err) => {
+          .catch(err => {
             this.checkErr(err);
           })
           .finally(() => {
@@ -941,12 +957,22 @@ export default {
     getOrderSequenceList() {
       // if (!this.orderSequence.status) {
       this.loadingOrderSequence = true;
-      this.orderSequenceListAsync({ isDelete: '0' })
-        .then((res) => {
-          this.dataItems = res;
-        })
-        .catch((err) => {
-          this.checkErr(err, 'orderSequenceList');
+      this.orderSequenceListAsync({ isDelete: "0" })
+        // .then(res => {
+        //   if (res.length) {
+        //     this.dataItems = res;
+        //   } else {
+        //     this.dataItems = [
+        //       {
+        //         flowType: "1",
+        //         flowName: "标准流程",
+        //         flowDescription: "标准流程"
+        //       }
+        //     ];
+        //   }
+        // })
+        .catch(err => {
+          this.checkErr(err, "orderSequenceList");
         })
         .finally(() => {
           this.loadingOrderSequence = false;
@@ -959,12 +985,12 @@ export default {
     getAttachmentUrl(file) {
       this.loadingAttachment = true;
       const dataPost = new FormData();
-      dataPost.append('file', file);
+      dataPost.append("file", file);
       this.uploadAttachmentSync(dataPost)
-        .then((res) => {
+        .then(res => {
           this.order.annex = res;
         })
-        .catch((err) => {
+        .catch(err => {
           this.checkErr(err);
         })
         .finally(() => {
@@ -975,14 +1001,14 @@ export default {
       this.addingOrder = true;
       this.addOrderAsync(R.mergeRight(this.order, { detail: this.detail }))
         .then(() => {
-          this.$store.commit('TOGGLE_SNACKBAR', {
-            type: 'success',
-            text: '恭喜，添加成功!',
+          this.$store.commit("TOGGLE_SNACKBAR", {
+            type: "success",
+            text: "恭喜，添加成功!"
           });
-          this.$router.replace({ name: 'order_list' });
+          this.$router.replace({ name: "order_list" });
         })
-        .catch((err) => {
-          this.checkErr(err, 'addOrder');
+        .catch(err => {
+          this.checkErr(err, "addOrder");
         })
         .finally(() => {
           this.addingOrder = false;
@@ -990,10 +1016,10 @@ export default {
     },
     deleteSelectedProduct(id) {
       this.selectedProducts = R.reject(
-        R.propEq('goodId', id),
+        R.propEq("goodId", id),
         this.selectedProducts
       );
-    },
-  },
+    }
+  }
 };
 </script>

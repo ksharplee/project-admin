@@ -159,7 +159,7 @@
       style="background-color: #fafafa"
     >
       <v-btn
-        v-if="order.receivedAmount !== order.actualAmount"
+        v-if="order.receivedAmount !== order.actualAmount && (order.dStatus === '4' || order.dStatus === '5' || order.dStatus === '7' || order.dStatus === '8' || order.dStatus === '9' || order.dStatus === '10')"
         color="primary"
         large
         class="px-12 body-1 mr-4"
@@ -475,7 +475,7 @@
                     cols="4"
                     class="text-right required"
                   >
-                    收款账号：
+                    收款银行：
                   </v-col>
                   <v-col cols="7">
                     <v-select
@@ -485,13 +485,35 @@
                       :rules="accountRules"
                       placeholder="请选择收款账户"
                       item-value="id"
-                      item-text="dnames"
+                      item-text="bankName"
                       clearable
                       outlined
                       dense
                       single-line
                       hide-details
                       no-data-text="暂无数据"
+                    />
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="6">
+                <v-row align="center">
+                  <v-col
+                    cols="4"
+                    class="text-right required"
+                  >
+                    收款账号：
+                  </v-col>
+                  <v-col cols="7">
+                    <v-text-field
+                      :value="paymentAccount"
+                      disabled
+                      dense
+                      outlined
+                      required
+                      readonly
+                      single-line
+                      hide-details
                     />
                   </v-col>
                 </v-row>
@@ -713,6 +735,12 @@ export default {
           },
         ],
       });
+    },
+    paymentAccount() {
+      return R.prop(
+        'account',
+        R.find(R.propEq('id', this.payment.paymentId), this.paymentList.data)
+      );
     },
     downloadUrl() {
       return `${process.env.VUE_APP_API}${this.dialogDetailItem.annex}`;

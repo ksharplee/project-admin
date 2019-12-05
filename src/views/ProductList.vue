@@ -646,7 +646,7 @@
                 icon
                 class="mx-1"
                 :to="{ name: 'product_edit', params: { id: item.id }}"
-                :disabled="item.dstatus === '1'"
+                :disabled="item.dstatus === '4'"
                 v-on="on"
               >
                 <v-icon color="teal">
@@ -659,7 +659,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
-                :disabled="item.dstatus === '1'"
+                :disabled="item.dstatus === '4'"
                 icon
                 class="mx-1"
                 v-on="on"
@@ -971,7 +971,7 @@ export default {
         });
         return;
       }
-      if (R.find(R.propEq('dstatus', '1'), this.selectedProducts)) {
+      if (R.find(R.propEq('dstatus', '4'), this.selectedProducts)) {
         this.$store.commit('TOGGLE_SNACKBAR', {
           type: 'error',
           text: '已上架商品不能删除',

@@ -8,10 +8,10 @@
       <v-row class="pt-5">
         <v-col
           cols="12"
-          md="6"
-          lg="4"
-          offset-md="3"
-          offset-lg="4"
+          md="4"
+          lg="2"
+          offset-md="4"
+          offset-lg="5"
         >
           <v-img
             :src="image"
@@ -36,10 +36,10 @@
       <v-row class="py-4">
         <v-col
           cols="12"
-          md="6"
-          lg="4"
-          offset-md="3"
-          offset-lg="4"
+          md="4"
+          lg="2"
+          offset-md="4"
+          offset-lg="5"
         >
           <v-btn
             color="secondary"
@@ -56,48 +56,48 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState } from "vuex";
 
 export default {
-  name: 'SystemQrCode',
+  name: "SystemQrCode",
   data() {
     return {
-      image: '',
-      loadingQrcode: false,
+      image: "",
+      loadingQrcode: false
     };
   },
   computed: {
-    ...mapState(['user']),
+    ...mapState(["user"])
   },
   created() {
-    this.$store.commit('SET_BREADCRUMBS', [
+    this.$store.commit("SET_BREADCRUMBS", [
       {
-        text: '首页',
+        text: "首页",
         disabled: false,
-        to: { name: 'home' },
-        exact: true,
+        to: { name: "home" },
+        exact: true
       },
       {
-        text: '小程序二维码',
+        text: "小程序二维码",
         disabled: true,
-        exact: true,
-      },
+        exact: true
+      }
     ]);
     this.getQrcode();
   },
   methods: {
-    ...mapActions('system', ['getQrcodeAsync']),
+    ...mapActions("system", ["getQrcodeAsync"]),
     getQrcode() {
       this.loadingQrcode = true;
       this.getQrcodeAsync({ sellerId: this.user.sellerId })
-        .then((res) => {
+        .then(res => {
           this.image = res;
         })
         .catch(err => this.checkErr(err))
         .finally(() => {
           this.loadingQrcode = false;
         });
-    },
-  },
+    }
+  }
 };
 </script>

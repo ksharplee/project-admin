@@ -380,7 +380,7 @@
                       :disabled="!orderList.length"
                       placeholder="请选择收款账户"
                       item-value="id"
-                      item-text="dnames"
+                      item-text="bankName"
                       class="white"
                       clearable
                       outlined

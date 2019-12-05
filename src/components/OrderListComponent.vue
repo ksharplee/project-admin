@@ -136,6 +136,23 @@
             </template>
             <span>取消订单</span>
           </v-tooltip>
+          <!-- 已确认，未完成，并且未作废的订单可以添加收款记录 -->
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :disabled="!(item.dStatus === '4' || item.dStatus === '5' || item.dStatus === '7' || item.dStatus === '8' || item.dStatus === '9' || item.dStatus === '10')"
+                icon
+                class="mx-1"
+                :to="{ name: 'order_detail', params: { id: item.id, currentTab: '2' }}"
+                v-on="on"
+              >
+                <v-icon color="warning lighten-1">
+                  mdi-credit-card
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>添加收款记录</span>
+          </v-tooltip>
           <!-- 已确认订单可财务审核，但只有付款状态为未付款的才可作废订单 -->
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -185,23 +202,6 @@
               </v-btn>
             </template>
             <span>订单发货</span>
-          </v-tooltip>
-          <!-- 已通过财务审核，未完成，并且未作废的订单可以添加收款记录 -->
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="!(item.dStatus === '5' || item.dStatus === '7' || item.dStatus === '8' || item.dStatus === '9')"
-                icon
-                class="mx-1"
-                :to="{ name: 'order_detail', params: { id: item.id, currentTab: '2' }}"
-                v-on="on"
-              >
-                <v-icon color="warning lighten-1">
-                  mdi-credit-card
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>添加收款记录</span>
           </v-tooltip>
           <!-- 已确认收货或者完成发货并且完成收款的订单可以进行完成订单操作 -->
           <v-tooltip bottom>

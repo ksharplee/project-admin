@@ -19,12 +19,17 @@
       style="`border:1px solid #ccc !important`"
       @click="getImgClick"
     >
-      <v-icon
-        v-if="!image"
-        class="white--text"
-      >
-        mdi-plus {{ `mdi-${iconSize}` }}
-      </v-icon>
+      <template v-if="!image">
+        <v-icon class="white--text">
+          mdi-plus {{ `mdi-${iconSize}` }}
+        </v-icon>
+        <div
+          v-if="bestSize"
+          class="text-center"
+        >
+          图片最佳尺寸：{{ bestSize }}
+        </div>
+      </template>
       <template v-slot:placeholder>
         <v-row
           v-if="image"
@@ -85,6 +90,10 @@ export default {
       default: '1',
     },
     image: {
+      type: String,
+      default: '',
+    },
+    bestSize: {
       type: String,
       default: '',
     },

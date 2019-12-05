@@ -40,7 +40,7 @@ export default {
     editor.customConfig.showLinkImg = false;
     editor.customConfig.debug = process.env.NODE_ENV === 'development';
     editor.customConfig.zIndex = 1;
-    editor.customConfig.uploadImgServer = `${process.env.VUE_APP_API}sy/upload_multiple_image.html`;
+    editor.customConfig.uploadImgServer = `${process.env.VUE_APP_API}/sy/upload_multiple_image.html`;
     editor.customConfig.uploadImgMaxSize = 4 * 1024 * 1024;
     editor.customConfig.withCredentials = true;
     editor.customConfig.uploadImgParams = {

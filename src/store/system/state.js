@@ -18,6 +18,12 @@ export default {
   },
   orderSequence: {
     status: 0,
-    data: [],
+    data: [
+      {
+        flowType: '1',
+        flowName: '标准流程',
+        flowDescription: '标准流程',
+      },
+    ],
   },
 };

@@ -320,13 +320,13 @@
                   />
                 </div>
                 <div class="input-group-append">
-                  <span class="input-group-text py-0 ">
+                  <span class="input-group-text py-0 mb-0">
                     <v-checkbox
                       v-model="product.zeroInventory"
                       label="零库存出售"
                       color="primary"
                       class="mt-0 pt-0 overflow-hidden"
-                      style="height:34px;"
+                      hide-details
                     />
                   </span>
                 </div>
@@ -684,7 +684,7 @@
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card
-          v-if="specOptions.length && product.containSpec === '1'"
+          v-if="useableSpecOptions.length"
           outlined
           elevation="1"
           class="mb-4"
@@ -695,7 +695,7 @@
           <v-card-text class="pt-4">
             <v-row>
               <v-col
-                v-for="specOption in specOptions"
+                v-for="specOption in useableSpecOptions"
                 :key="specOption.index"
                 cols="12"
                 lg="6"
@@ -709,8 +709,8 @@
                     <v-select
                       v-model="specOption.selected"
                       :items="specOption.specItem"
-                      item-text="itemName"
                       :placeholder="`请选择${specOption.specName}`"
+                      item-text="itemName"
                       single-line
                       hide-details
                       dense
@@ -766,10 +766,7 @@
           class="mb-4"
           outlined
         >
-          <v-simple-table
-            class="text-center"
-            fixed-header
-          >
+          <v-simple-table class="text-center">
             <thead>
               <tr>
                 <th
@@ -1168,8 +1165,14 @@ export default {
           index: item.index,
           specItem: item.selected,
         }),
-        this.specOptions
+        R.filter(
+          item => item.selected && item.selected.length,
+          this.specOptions
+        )
       );
+    },
+    useableSpecOptions() {
+      return R.filter(R.has('selected'), this.specOptions);
     },
     params() {
       return R.evolve(
@@ -1197,17 +1200,39 @@ export default {
     },
     // 已选规格
     selectedSpecOptions() {
-      return R.map(R.prop('selected'), this.specOptions);
+      return R.map(
+        R.prop('selected'),
+        R.filter(
+          item => item.selected && item.selected.length,
+          this.specOptions
+        )
+      );
+    },
+    headSelectedSpecOptions() {
+      return this.selectedSpecOptions.length
+        ? R.head(this.selectedSpecOptions)
+        : [];
+    },
+    tailSelectedSpecOptions() {
+      if (this.selectedSpecOptions.length) {
+        return R.tail(this.selectedSpecOptions);
+      }
+      return [];
     },
     // 所有规格组合
     currentSpecOptions() {
-      return (
-        R.reduce(
-          R.xprod,
-          R.head(this.selectedSpecOptions),
-          R.tail(this.selectedSpecOptions)
-        ) || []
-      );
+      if (this.tailSelectedSpecOptions.length) {
+        return (
+          R.reduce(
+            (acc, arr) => R.map(R.flatten, R.xprod(acc, arr)),
+            this.headSelectedSpecOptions,
+            this.tailSelectedSpecOptions
+          ) || []
+        );
+      }
+      return this.headSelectedSpecOptions.length
+        ? R.map(item => [item], this.headSelectedSpecOptions)
+        : [];
     },
     // 可选规格组合
     selectedDetails() {
@@ -1337,7 +1362,8 @@ export default {
     getCateAttrSpec(edit) {
       this.getCateAttrSpecAsync({ categoryId: this.product.categoryId })
         .then((res) => {
-          this.attrOptions = res.attr;
+          const response = R.clone(res);
+          this.attrOptions = response.attr;
           if (edit) {
             // 编辑时设置属性
             this.attrOptions = R.map((item) => {
@@ -1351,31 +1377,57 @@ export default {
               return item;
             }, this.attrOptions || []);
             // 编辑时设置规格
-            this.specOptions = mapIndexed((item, i) => {
-              item = R.mergeRight(
-                item,
-                R.dissoc('specItem', this.product.spec[i])
-              );
-              item.selected = this.product.spec[i].specItem;
-              item.specItem = R.map((specSingleItem) => {
-                const fetchSpec = R.find(
-                  subitem => subitem.index === `${specSingleItem.index}`,
-                  item.selected
+            if (this.product.containSpec === '1') {
+              this.specOptions = R.map((item) => {
+                const selectedSpec = R.find(
+                  R.propEq('index', `${item.index}`),
+                  this.product.spec
                 );
-                if (fetchSpec) {
-                  specSingleItem = fetchSpec;
+                if (selectedSpec) {
+                  item = R.mergeRight(item, R.dissoc('specItem', selectedSpec));
+                  item.selected = selectedSpec.specItem;
+                  item.specItem = R.map((specSingleItem) => {
+                    const fetchSpec = R.find(
+                      subitem => subitem.index === `${specSingleItem.index}`,
+                      item.selected
+                    );
+                    if (fetchSpec) {
+                      specSingleItem = fetchSpec;
+                    }
+                    return specSingleItem;
+                  }, item.specItem);
                 }
-                return specSingleItem;
-              }, item.specItem);
-              return item;
-            }, res.spec || []);
+
+                return item;
+              }, response.spec);
+              // if (this.product.containSpec === '1') {
+              //   this.specOptions = mapIndexed((item, i) => {
+              //     item = R.mergeRight(
+              //       item,
+              //       R.dissoc('specItem', this.product.spec[i])
+              //     );
+              //     item.selected = this.product.spec[i].specItem;
+              //     item.specItem = R.map((specSingleItem) => {
+              //       const fetchSpec = R.find(
+              //         subitem => subitem.index === `${specSingleItem.index}`,
+              //         item.selected
+              //       );
+              //       if (fetchSpec) {
+              //         specSingleItem = fetchSpec;
+              //       }
+              //       return specSingleItem;
+              //     }, item.specItem);
+              //     return item;
+              //   }, response.spec);
+            }
             this.dataItemsDetailNames = R.pluck(
               'detailName',
               this.product.detail || []
             );
-          } else {
-            this.specOptions = R.map(R.assoc('selected', []), res.spec);
           }
+          // else {
+          //   this.specOptions = R.map(R.assoc('selected', []), response.spec);
+          // }
         })
         .catch((err) => {
           this.checkErr(err, 'getCateAttrSpec');

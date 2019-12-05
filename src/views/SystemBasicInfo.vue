@@ -348,33 +348,7 @@ export default {
       },
     ]);
     if (!this.basicInfo.status) {
-      this.$store.commit('START_LOADING');
-      this.getBasicInfoAsync()
-        .then(() => {
-          this.info = R.defaultTo(
-            {
-              logo: '',
-              image: '',
-              addressSecondId: '',
-              addressId: '',
-              addressFirstId: '',
-            },
-            R.head(this.basicInfo.data)
-          );
-          console.log('函数: created -> this.info', this.info);
-          if (this.info.addressSecondId) {
-            this.getCities(this.info.addressFirstId);
-          }
-          if (this.info.addressId) {
-            this.getRegions(this.info.addressSecondId);
-          }
-        })
-        .catch((err) => {
-          this.checkErr(err);
-        })
-        .finally(() => {
-          this.$store.commit('END_LOADING');
-        });
+      this.getBasicInfo();
     } else {
       this.info = R.defaultTo(
         {
@@ -411,6 +385,34 @@ export default {
       'getAreaInfoAsync',
       'getAreaRegionInfoAsync',
     ]),
+    getBasicInfo() {
+      this.$store.commit('START_LOADING');
+      this.getBasicInfoAsync()
+        .then(() => {
+          this.info = R.defaultTo(
+            {
+              logo: '',
+              image: '',
+              addressSecondId: '',
+              addressId: '',
+              addressFirstId: '',
+            },
+            R.head(this.basicInfo.data)
+          );
+          if (this.info.addressSecondId) {
+            this.getCities(this.info.addressFirstId);
+          }
+          if (this.info.addressId) {
+            this.getRegions(this.info.addressSecondId);
+          }
+        })
+        .catch((err) => {
+          this.checkErr(err);
+        })
+        .finally(() => {
+          this.$store.commit('END_LOADING');
+        });
+    },
     addOrEditBasicInfo() {
       this.submitting = true;
       this.addOrEditBasicInfoAsync(this.info)
@@ -419,7 +421,7 @@ export default {
             type: 'success',
             text: '恭喜，修改成功!',
           });
-          this.info = R.head(this.basicInfo.data);
+          this.getBasicInfo();
         })
         .catch((err) => {
           this.checkErr(err, 'addOrEditBasicInfo');

@@ -33,10 +33,10 @@
     <template v-slot:item.buNumber="{ item }">
       <div class="input-group">
         <div class="input-group-control">
+          <!-- :rules="rulesNumber(item)" -->
           <v-text-field
             v-model="item.buNumber"
             :suffix="getItemUnitName(item)"
-            :rules="rulesNumber(item)"
             type="number"
             dense
             outlined
@@ -47,7 +47,7 @@
       </div>
     </template>
     <template v-slot:item.needToSend="{ item }">
-      {{ +item.goodNumber - +item.sendNumber }}{{ item.buUnitName }}
+      {{ +item.goodNumber - +item.sendNumber }}{{ item.unitName }}
     </template>
     <template v-slot:item.image="{ item }">
       <div class="py-3">
@@ -270,12 +270,12 @@ export default {
       }
       return unit.unitName;
     },
-    rulesNumber(item) {
-      return [
-        v => v * item.packeNum <= +item.goodNumber - +item.sendNumber
-          || '发货数量不能超过未发货数量',
-      ];
-    },
+    // rulesNumber(item) {
+    //   return [
+    //     v => v * item.packeNum <= +item.goodNumber - +item.sendNumber
+    //       || '发货数量不能超过未发货数量',
+    //   ];
+    // },
   },
 };
 </script>

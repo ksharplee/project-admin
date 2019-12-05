@@ -157,7 +157,7 @@ export default {
             if (this.sevenDayLasting) {
               this.setUserCookie();
             }
-            this.$router.push({ name: 'home' });
+            this.$router.replace({ name: 'home' });
           }
         })
         .catch((err) => {

@@ -25,6 +25,11 @@ export default new Router({
           component: Dashboard,
         },
         {
+          path: 'system/ads',
+          name: 'ads',
+          component: () => import(/* webpackChunkName: "group-system" */ './views/SystemAds.vue'),
+        },
+        {
           path: 'system/qrcode',
           name: 'qrcode',
           component: () => import(/* webpackChunkName: "group-system" */ './views/SystemQrcode.vue'),
@@ -171,4 +176,10 @@ export default new Router({
       ],
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    }
+    return { x: 0, y: 0 };
+  },
 });
