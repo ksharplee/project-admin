@@ -889,14 +889,13 @@ export default {
               text: '恭喜，添加成功!',
             });
             this.getPaymentOrderList();
-            this.$emit('update:refresh');
-          })
-          .catch(err => this.checkErr(err, 'addPaymentOrder'))
-          .finally(() => {
-            this.adding = false;
             this.dialogSingle = false;
+            this.$emit('update:refresh');
           });
-      });
+      }).catch(err => this.checkErr(err, 'addPaymentOrder'))
+        .finally(() => {
+          this.adding = false;
+        });
 
       // if (this.addOrEdit) {
       //   this.editPaymentOrderAsync(this.addOrEditParams)

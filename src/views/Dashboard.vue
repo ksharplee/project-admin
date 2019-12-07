@@ -653,11 +653,7 @@ export default {
       });
       this.resizeWindowForCharts();
       const data = [];
-      goodsAmountChart.source(data, {
-        allAmount: {
-          tickCount: 6,
-        },
-      });
+      goodsAmountChart.source(data);
       goodsAmountChart.axis('allAmount', {
         label: {
           textStyle: {
@@ -687,8 +683,7 @@ export default {
         share: true,
       });
       goodsAmountChart.scale('allAmount', {
-        tickInterval: 5000,
-        alias: '销售额（元）',
+        tickCount: 6,
       });
       goodsAmountChart
         .interval()
@@ -717,11 +712,7 @@ export default {
       });
       this.resizeWindowForCharts();
       const data = [];
-      orderAmountChart.source(data, {
-        allAmount: {
-          tickCount: 6,
-        },
-      });
+      orderAmountChart.source(data);
       orderAmountChart.axis('allAmount', {
         label: {
           textStyle: {
@@ -751,7 +742,7 @@ export default {
         share: true,
       });
       orderAmountChart.scale('allAmount', {
-        tickInterval: 5000,
+        tickCount: 6,
       });
       orderAmountChart
         .interval()

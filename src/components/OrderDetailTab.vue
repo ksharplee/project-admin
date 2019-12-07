@@ -775,7 +775,9 @@ export default {
             type: 'success',
             text: '恭喜，确认订单成功!',
           });
-          this.$router.replace({ name: 'order_list' });
+          this.dialogConfirm = false;
+          this.$emit('update:refresh');
+          // this.$router.replace({ name: 'order_list' });
         })
         .catch((err) => {
           this.checkErr(err, 'confirmOrder');
@@ -796,7 +798,9 @@ export default {
             type: 'success',
             text: '恭喜，财务审核订单成功!',
           });
-          this.$router.replace({ name: 'order_list' });
+          this.dialogFinacialCheck = false;
+          this.$emit('update:refresh');
+          // this.$router.replace({ name: 'order_list' });
         })
         .catch((err) => {
           this.checkErr(err, 'finacialCheckOrder');
@@ -838,7 +842,9 @@ export default {
             type: 'success',
             text: '恭喜，订单已完成!',
           });
-          this.$router.replace({ name: 'order_list' });
+          this.dialogComplete = false;
+          this.$emit('update:refresh');
+          // this.$router.replace({ name: 'order_list' });
         })
         .catch((err) => {
           this.checkErr(err, 'completeOrder');
