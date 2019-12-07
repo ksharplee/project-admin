@@ -395,6 +395,7 @@ export default {
       'getDepartmentListAsync',
       'addDepartmentAsync',
       'editDepartmentAsync',
+      'deleteDepartmentAsync',
     ]),
     openDialogAdd(param) {
       this.dialogAdd = true;

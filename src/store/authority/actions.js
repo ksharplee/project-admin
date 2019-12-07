@@ -39,4 +39,16 @@ export default {
       return Promise.reject(error);
     }
   },
+  async deleteDepartmentAsync(context, payload) {
+    try {
+      const res = await axios.post('/r/sectionDelete.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getDepartmentListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };
