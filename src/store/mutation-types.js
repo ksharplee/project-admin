@@ -38,3 +38,6 @@ export const SET_PAYMENT_ORDER_LIST = 'SET_PAYMENT_ORDER_LIST';
 
 // order
 export const SET_ORDER_LIST = 'SET_ORDER_LIST';
+
+// authority
+export const SET_DEPARTMENT_LIST = 'SET_DEPARTMENT_LIST';

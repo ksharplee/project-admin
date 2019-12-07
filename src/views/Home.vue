@@ -6,7 +6,7 @@
       app
       color="secondary darken-3"
       dark
-      width="210"
+      width="220"
     >
       <v-list class="py-0">
         <v-list-item
@@ -151,6 +151,12 @@ export default {
         children: [{ text: '供应商列表', url: { name: 'supplier_list' } }],
       },
       {
+        icon: 'mdi-account-card-details',
+        text: '员工/部门',
+        model: false,
+        children: [{ text: '部门设置', url: { name: 'authority_department' } }],
+      },
+      {
         icon: 'mdi-settings',
         text: '系统',
         model: false,
@@ -162,12 +168,12 @@ export default {
           { text: '广告图设置', url: { name: 'ads' } },
         ],
       },
-      {
-        icon: 'mdi-chart-areaspline-variant',
-        text: '报表',
-        model: false,
-        children: [{ text: '报表数据', url: { name: '' } }],
-      },
+      // {
+      //   icon: 'mdi-chart-areaspline-variant',
+      //   text: '报表',
+      //   model: false,
+      //   children: [{ text: '报表数据', url: { name: '' } }],
+      // },
       {
         icon: 'mdi-home-currency-usd',
         text: '财务',

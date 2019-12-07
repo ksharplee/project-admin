@@ -10,6 +10,7 @@ import system from './system/index';
 import customer from './customer/index';
 import finance from './finance/index';
 import order from './order/index';
+import authority from './authority/index';
 
 Vue.use(Vuex);
 
@@ -56,6 +57,13 @@ export default new Vuex.Store({
       getters: finance.getters,
       mutations: finance.mutations,
       actions: finance.actions,
+    },
+    authority: {
+      namespaced: true,
+      state: authority.state,
+      getters: authority.getters,
+      mutations: authority.mutations,
+      actions: authority.actions,
     },
   },
   state,

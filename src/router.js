@@ -130,6 +130,12 @@ export default new Router({
           props: true,
           component: () => import(/* webpackChunkName: "group-customer" */ './views/CustomerShippingList.vue'),
         },
+        // 权限
+        {
+          path: 'authority/department',
+          name: 'authority_department',
+          component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityDepartment.vue'),
+        },
         // 财务
         {
           path: 'finance/invoice/list',
