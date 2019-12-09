@@ -623,19 +623,18 @@
       </v-card>
       <v-slide-y-transition>
         <v-card
-          v-if="attrOptions.length"
           outlined
           elevation="1"
           class="mb-4"
         >
           <v-card-title class="pa-3 grey lighten-3 title d-flex">
-            商品属性
+            商品参数
           </v-card-title>
           <v-card-text class="pt-4">
             <v-row>
               <v-col
-                v-for="attr in attrOptions"
-                :key="attr.attrId"
+                v-for="(attr, i) in attrOptions"
+                :key="i"
                 cols="12"
                 lg="6"
                 xl="4"
@@ -655,6 +654,8 @@
                       required
                       single-line
                       hide-details
+                      :append-icon="attr.attrId === '0' ? 'mdi-delete' : ''"
+                      @click:append="deleteAttrAdded(i)"
                     />
                     <v-select
                       v-else
@@ -678,13 +679,22 @@
                   </div>
                 </div>
               </v-col>
+              <v-col cols="12">
+                <v-btn
+                  color="secondary"
+                  outlined
+                  @click="dialogAddAttr = true"
+                >
+                  <v-icon>mdi-plus</v-icon>添加参数
+                </v-btn>
+              </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card
-          v-if="specOptions.length && product.containSpec === '1'"
+          v-if="product.containSpec === '1'"
           outlined
           elevation="1"
           class="mb-4"
@@ -726,6 +736,15 @@
                     />
                   </div>
                 </div>
+              </v-col>
+              <v-col cols="12">
+                <v-btn
+                  color="secondary"
+                  outlined
+                  @click="dialogAddSpec = true"
+                >
+                  <v-icon>mdi-plus</v-icon>添加规格
+                </v-btn>
               </v-col>
             </v-row>
             <v-slide-y-transition>
@@ -1032,6 +1051,168 @@
       :show="dialogSupplier"
       @close-dialog="dialogSupplier = false"
     />
+    <v-dialog
+      v-model="dialogAddAttr"
+      width="500"
+    >
+      <v-card>
+        <v-form
+          ref="form"
+          v-model="validAddAttr"
+        >
+          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
+            添加商品属性
+          </v-card-title>
+          <div class="pa-4">
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>属性名称：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="attrToAdd.attrName"
+                  :rules="attrNameRules"
+                  placeholder="请输入属性名称"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>属性值：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="attrToAdd.attrValue"
+                  :rules="attrValueRules"
+                  placeholder="请输入属性值"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+          </div>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              :disabled="!validAddAttr"
+              @click="addAttrLocal"
+            >
+              确定
+            </v-btn>
+            <v-btn
+              color="secondary"
+              @click="dialogAddAttr = false"
+            >
+              取消
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="dialogAddSpec"
+      width="500"
+    >
+      <v-card>
+        <v-form
+          ref="form"
+          v-model="validAddSpec"
+        >
+          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
+            添加商品规格
+          </v-card-title>
+          <div class="pa-4">
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>规格名称：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="specToAdd.specName"
+                  :rules="specNameRules"
+                  placeholder="请输入属性名称"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>属性值：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="specToAdd.specValue"
+                  :rules="specValueRules"
+                  placeholder="多个属性值用/分隔"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+          </div>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              :disabled="!validAddSpec"
+              @click="addSpecLocal"
+            >
+              确定
+            </v-btn>
+            <v-btn
+              color="secondary"
+              @click="dialogAddSpec = false"
+            >
+              取消
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -1043,6 +1224,8 @@ import ImgUpload from '@/components/ImgUpload.vue';
 import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
 import SupplierSingle from '@/components/SupplierSingle.vue';
 import WangEditor from '@/components/WangEditor.vue';
+
+const mapIndexed = R.addIndex(R.map);
 
 export default {
   name: 'ProductAdd',
@@ -1062,6 +1245,10 @@ export default {
       addable: true,
       adding: false,
       valid: true,
+      validAddAttr: true,
+      validAddSpec: true,
+      dialogAddAttr: false,
+      dialogAddSpec: false,
       dialogBrand: false,
       dialogSupplier: false,
       dialogCategory: false,
@@ -1083,6 +1270,18 @@ export default {
           { src: '' },
         ],
         detailDesc: '',
+      },
+      attrToAdd: {
+        attrId: '0',
+        attrValue: '',
+        attrName: '',
+        genre: '1',
+      },
+      specToAdd: {
+        id: '0',
+        index: 0,
+        specValue: '',
+        specName: '',
       },
       // 是否打包销售
       isBundle: '0',
@@ -1123,6 +1322,10 @@ export default {
       moqRules: [v => !!v || '请填写起订量'],
       stockRules: [v => !!v || '请填写库存数量'],
       unitRules: [v => !!v || '请选择商品单位'],
+      attrNameRules: [v => !!v || '请填写属性名称'],
+      attrValueRules: [v => !!v || '请填写属性值'],
+      specNameRules: [v => !!v || '请填写规格名称'],
+      specValueRules: [v => !!v || '请填写规格值'],
       costRules: [v => (v && v >= 0) || '成本价不能小于0'],
       costPriceRules: [
         v => !!v || '请填写成本价',
@@ -1284,7 +1487,6 @@ export default {
         exact: true,
       },
     ]);
-    // if (!this.productCategory.status) {
     this.loadingCate = true;
     this.getCateListAsync()
       .catch((err) => {
@@ -1293,8 +1495,6 @@ export default {
       .finally(() => {
         this.loadingCate = false;
       });
-    // }
-    // if (!this.productBrand.status) {
     this.loadingBrand = true;
     this.getBrandListAsync({ isUse: '1' })
       .catch((err) => {
@@ -1303,8 +1503,6 @@ export default {
       .finally(() => {
         this.loadingBrand = false;
       });
-    // }
-    // if (!this.productUnits.status) {
     this.loadingUnits = true;
     this.getUnitsListAsync()
       .catch((err) => {
@@ -1313,8 +1511,6 @@ export default {
       .finally(() => {
         this.loadingUnits = false;
       });
-    // }
-    // if (!this.supplierList.status) {
     this.loadingSuppliers = true;
     this.getSupplierListAsync({ locked: '0' })
       .catch((err) => {
@@ -1323,7 +1519,6 @@ export default {
       .finally(() => {
         this.loadingSuppliers = false;
       });
-    // }
   },
   methods: {
     ...mapActions('product', [
@@ -1334,6 +1529,50 @@ export default {
       'addProductAsync',
     ]),
     ...mapActions('supplier', ['getSupplierListAsync']),
+    // 删除本地添加的属性
+    deleteAttrAdded(i) {
+      this.attrOptions = R.remove(i, 1, this.attrOptions);
+    },
+    // 本地添加属性
+    addAttrLocal() {
+      this.attrOptions = R.append(this.attrToAdd, this.attrOptions);
+      this.attrToAdd = {
+        attrId: '0',
+        attrValue: '',
+        attrName: '',
+        genre: '1',
+      };
+      this.dialogAddAttr = false;
+    },
+    // 删除本地添加的规格
+    deleteSpecAdded(i) {
+      this.specOptions = R.remove(i, 1, this.specOptions);
+    },
+    // 本地添加规格
+    addSpecLocal() {
+      const index = this.specOptions.length;
+      const spec = R.dissoc('specValue', R.clone(this.specToAdd));
+      spec.index = index;
+      const specItemArr = R.split('/', this.specToAdd.specValue);
+      spec.specItem = mapIndexed(
+        (item, i) => ({
+          id: '0',
+          index: i,
+          itemName: item,
+          specIndex: index,
+          specName: spec.specName,
+        }),
+        specItemArr
+      );
+      this.specOptions = R.append(spec, this.specOptions);
+      this.specToAdd = {
+        id: '0',
+        index: 0,
+        specValue: '',
+        specName: '',
+      };
+      this.dialogAddSpec = false;
+    },
     // xprod
     xprod(arr1, arr2) {
       return R.xprod(arr1, arr2);

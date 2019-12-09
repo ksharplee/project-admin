@@ -382,14 +382,13 @@ export default {
         {
           text: '待审核订单',
           orCount: 0,
-          url: '/pages/order/orderList/orderList?orderStatus=1',
+          url: { name: 'order_list', params: { active: '1' } },
           color: 'cyan darken-1',
         },
         {
           text: '待支付订单',
           orCount: 0,
-          url:
-            '/pages/order/orderList/orderList?paymentStatus=1&&orderStatus=1000',
+          url: { name: 'order_list', params: { active: '2' } },
           color: 'teal darken-1',
         },
         {

@@ -40,14 +40,10 @@
           {{ item.flowType === '1' ? '订货单流程' : '退货单流程' }}
         </template>
         <template v-slot:item.flowContentDesc="{ item }">
-          <div class="text-left">
-            {{ item.flowContentDesc | flowContentFilter }}
-          </div>
+          {{ item.flowContentDesc | flowContentFilter }}
         </template>
         <template v-slot:item.flowDescription="{ item }">
-          <div class="text-left">
-            {{ item.flowDescription }}
-          </div>
+          {{ item.flowDescription }}
         </template>
         <template v-slot:item.isDelete="{ item }">
           <div :class="item.isDelete === '1' ? 'grey--text' : 'success--text'">
@@ -125,12 +121,12 @@
 </template>
 
 <script>
-import * as R from 'ramda';
+// import * as R from 'ramda';
 import { mapActions, mapState } from 'vuex';
 import OrderSequenceSingle from '@/components/OrderSequenceSingle.vue';
 
 export default {
-  name: 'CustomerShippingList',
+  name: 'OrderSequenceList',
   components: { OrderSequenceSingle },
   // filters: {
   //   flowContentFilter: (v) => {

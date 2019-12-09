@@ -741,6 +741,7 @@ export default {
       'confirmOrderAsync',
       'finacialCheckOrderAsync',
       'nullifyOrderAsync',
+      'completeOrderAsync',
     ]),
     // 取消订单
     cancelOrder() {
@@ -754,7 +755,7 @@ export default {
             type: 'success',
             text: '恭喜，取消订单成功!',
           });
-          this.$router.replace({ name: 'order_list' });
+          this.$router.replace({ name: 'order_list', params: { active: '0' } });
         })
         .catch((err) => {
           this.checkErr(err, 'cancelOrder');
@@ -821,7 +822,7 @@ export default {
             type: 'success',
             text: '恭喜，作废订单成功!',
           });
-          this.$router.replace({ name: 'order_list' });
+          this.$router.replace({ name: 'order_list', params: { active: '0' } });
         })
         .catch((err) => {
           this.checkErr(err, 'nullifyOrder');

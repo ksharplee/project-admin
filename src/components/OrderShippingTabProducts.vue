@@ -28,16 +28,16 @@
         single-line
         hide-details
         no-data-text="暂无数据"
+        @change="changeUnit(item)"
       />
     </template>
     <template v-slot:item.buNumber="{ item }">
       <div class="input-group">
         <div class="input-group-control">
-          <!-- :rules="rulesNumber(item)" -->
           <v-text-field
             v-model="item.buNumber"
-            :suffix="getItemUnitName(item)"
             type="number"
+            :suffix="getItemUnitName(item)"
             dense
             outlined
             required
@@ -212,22 +212,40 @@ export default {
       ];
     },
     productsApply() {
+      // 只返回购买数量和发货数量不同的商品
       return R.reject(
         item => item.goodNumber === item.sendNumber,
         R.map((item) => {
-          item.buUnitId = item.buUnitId;
-          // 单条的buNumber需要计算，不能大于goodNumber - sendNumber
-          if (!this.edit) {
-            item.buNumber = (item.goodNumber - item.sendNumber) / item.packeNum;
-          }
-          item.units = R.prop(
-            'units',
-            R.find(R.propEq('goodId', item.goodId), this.selectedProductsUnits)
+          // 判断:当前商品购买数量是否大于等于打包数量，若是，保持原来的打包单位，若否，使用最小打包单位
+          const buNumberGtePacknum = R.gte(item.buNumber, item.sendNumber);
+          // item.buUnitId = item.buUnitId;
+          // 计算当前商品的购买数量
+          const buNumber = R.subtract(item.goodNumber, item.sendNumber);
+          // 根据前面的判断设置发货数量
+          item.buNumber = buNumberGtePacknum
+            ? R.divide(buNumber, item.packeNum)
+            : buNumber;
+          // 根据前面的判断设置发货单位
+          item.buUnitId = buNumberGtePacknum ? item.buUnitId : item.unitId;
+          // if (!this.edit) {
+          //   item.buNumber =              (+item.goodNumber - +item.sendNumber) / item.packeNum;
+          // }
+          const unitsAll = R.filter(
+            unit => +unit.packeNum <= buNumber,
+            R.prop(
+              'units',
+              R.find(
+                R.propEq('goodId', item.goodId),
+                this.selectedProductsUnits
+              )
+            ) || []
           );
+          item.units = unitsAll;
           return item;
         }, R.clone(this.products))
       );
     },
+    // 所有剩下需要发货的商品详情
     detail() {
       return R.map(
         item => ({
@@ -242,6 +260,7 @@ export default {
         this.productsApply
       );
     },
+    // 需要提交的发货单商品详情
     detailToPost() {
       return R.filter(
         item => item.buNumber && item.buNumber !== '0',
@@ -261,14 +280,17 @@ export default {
       'addShippingOrderAsync',
     ]),
     getItemUnitName(item) {
-      if (!item.units) {
-        return item.buUnitName;
+      if (!item.units.length) {
+        return item.unitName;
       }
       const unit = R.find(R.propEq('unitId', item.buUnitId), item.units);
       if (item.unitId !== item.buUnitId) {
-        return `${unit.unitName} = ${unit.packeNum}${item.unitName}`;
+        return `1${unit.unitName} = ${unit.packeNum}${item.unitName}`;
       }
       return unit.unitName;
+    },
+    changeUnit(item) {
+      console.log('函数: changeUnit -> item', item);
     },
     // rulesNumber(item) {
     //   return [

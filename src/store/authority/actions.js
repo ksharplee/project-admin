@@ -51,4 +51,17 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 权限列表
+  async getAuthorityListAsync(context, payload) {
+    try {
+      const res = await axios.post('/r/rightList.html', payload);
+      if (res.data.status === 1) {
+        context.commit('SET_AUTHORITY_LIST', res.data.data);
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

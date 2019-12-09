@@ -171,8 +171,8 @@
 </template>
 
 <script>
-import * as R from 'ramda';
-import { mapState, mapActions } from 'vuex';
+// import * as R from 'ramda';
+// import { mapState, mapActions } from 'vuex';
 import OrderListComponent from '@/components/OrderListComponent.vue';
 
 export default {
@@ -184,6 +184,10 @@ export default {
     id: {
       type: String,
       default: '',
+    },
+    active: {
+      type: String,
+      default: '0',
     },
   },
   data() {
@@ -214,6 +218,7 @@ export default {
     },
   },
   created() {
+    this.activeTab = +this.active;
     this.$store.commit('SET_BREADCRUMBS', [
       {
         text: '首页',

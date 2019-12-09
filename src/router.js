@@ -136,6 +136,16 @@ export default new Router({
           name: 'authority_department',
           component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityDepartment.vue'),
         },
+        {
+          path: 'authority/role',
+          name: 'authority_role',
+          component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityRole.vue'),
+        },
+        {
+          path: 'authority/role/add',
+          name: 'authority_role_single',
+          component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityRoleSingle.vue'),
+        },
         // 财务
         {
           path: 'finance/invoice/list',
@@ -169,8 +179,9 @@ export default new Router({
           component: () => import(/* webpackChunkName: "group-finance" */ './views/OrderAdd.vue'),
         },
         {
-          path: 'order/list',
+          path: 'order/list/active=:active',
           name: 'order_list',
+          props: true,
           component: () => import(/* webpackChunkName: "group-finance" */ './views/OrderList.vue'),
         },
         {

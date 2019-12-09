@@ -139,7 +139,10 @@ export default {
         text: '订单',
         model: false,
         children: [
-          { text: '订货单', url: { name: 'order_list' } },
+          {
+            text: '订货单',
+            url: { name: 'order_list', params: { active: '0' } },
+          },
           // { text: '退货单', url: { name: '' } },
           { text: '代客下单', url: { name: 'order_add' } },
         ],
@@ -154,7 +157,10 @@ export default {
         icon: 'mdi-account-card-details',
         text: '员工/部门',
         model: false,
-        children: [{ text: '部门设置', url: { name: 'authority_department' } }],
+        children: [
+          { text: '部门设置', url: { name: 'authority_department' } },
+          { text: '角色管理', url: { name: 'authority_role' } },
+        ],
       },
       {
         icon: 'mdi-settings',

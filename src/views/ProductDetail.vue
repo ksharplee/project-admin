@@ -188,7 +188,10 @@
               xl="4"
             >
               <v-row justify="start">
-                <v-col cols="auto">
+                <v-col
+                  cols="auto"
+                  class="grey--text"
+                >
                   &nbsp;成&nbsp;本&nbsp;价&nbsp;：
                 </v-col>
                 <v-col cols="auto">
@@ -205,7 +208,10 @@
               xl="4"
             >
               <v-row justify="start">
-                <v-col cols="auto">
+                <v-col
+                  cols="auto"
+                  class="grey--text"
+                >
                   &nbsp;销&nbsp;售&nbsp;价&nbsp;：
                 </v-col>
                 <v-col cols="auto">
@@ -222,7 +228,10 @@
               xl="4"
             >
               <v-row justify="start">
-                <v-col cols="auto">
+                <v-col
+                  cols="auto"
+                  class="grey--text"
+                >
                   商品重量：
                 </v-col>
                 <v-col cols="auto">
@@ -239,7 +248,10 @@
               xl="4"
             >
               <v-row justify="start">
-                <v-col cols="auto">
+                <v-col
+                  cols="auto"
+                  class="grey--text"
+                >
                   &nbsp;条&nbsp;形&nbsp;码&nbsp;：
                 </v-col>
                 <v-col cols="auto">
@@ -288,7 +300,7 @@
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
-          商品属性
+          商品参数
         </v-card-title>
         <v-container fluid>
           <v-row>

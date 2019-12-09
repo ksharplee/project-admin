@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-card>
     <div class="title">
       编辑商品
     </div>
@@ -24,79 +24,23 @@
               lg="6"
               xl="4"
             >
-              <v-dialog
-                ref="dialog"
-                v-model="dialogCategory"
-                width="600px"
-              >
-                <template v-slot:activator="{ on }">
-                  <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text required">商品分类</span>
-                    </div>
-                    <div class="input-group-control">
-                      <v-text-field
-                        v-model="product.categoryName"
-                        :rules="cateRules"
-                        :loading="loadingCate"
-                        :disabled="loadingCate"
-                        placeholder="请选择分类"
-                        readonly
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                        dense
-                        append-icon="mdi-menu-down"
-                        v-on="on"
-                        @click:clear="product.categoryName = '';product.categoryId = ''"
-                      />
-                    </div>
-                  </div>
-                </template>
-                <v-card>
-                  <v-card-title class="title grey lighten-3 pa-4">
-                    选择商品分类
-                  </v-card-title>
-                  <v-card-text class="pt-4">
-                    <v-treeview
-                      :items="productCategory.data.items"
-                      :active="categorySelected"
-                      dense
-                      item-text="dnames"
-                      item-key="id"
-                      item-children="son"
-                      open-on-click
-                      rounded
-                      activatable
-                      return-object
-                      @update:active="getActiveCategory"
-                    >
-                      <template v-slot:prepend="{ item, leaf, open }">
-                        <v-icon>
-                          {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
-                        </v-icon>
-                      </template>
-                    </v-treeview>
-                  </v-card-text>
-                  <v-card-actions>
-                    <v-spacer />
-                    <v-btn
-                      color="primary"
-                      @click="setProductCategory"
-                    >
-                      确定
-                    </v-btn>
-                    <v-btn
-                      color="secondary"
-                      @click="dialogCategory = false"
-                    >
-                      取消
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text required">商品分类</span>
+                </div>
+                <div class="input-group-control">
+                  <v-text-field
+                    :value="product.categoryName"
+                    disabled
+                    placeholder="请选择分类"
+                    outlined
+                    required
+                    single-line
+                    hide-details
+                    dense
+                  />
+                </div>
+              </div>
             </v-col>
             <v-col
               cols="12"
@@ -111,13 +55,12 @@
                   <v-select
                     v-model="product.containSpec"
                     :items="containSpecOptions"
-                    :disabled="!spec.length"
+                    disabled
                     placeholder="请选择是否包含规格"
                     single-line
                     hide-details
                     dense
                     outlined
-                    clearable
                     no-data-text="暂无数据"
                   />
                 </div>
@@ -474,7 +417,7 @@
               <v-card
                 flat
                 outlined
-                class="body-1"
+                class="body-1 mt-2"
               >
                 <v-card-title class="pa-3 grey lighten-3 title d-flex">
                   打包设置
@@ -623,19 +566,18 @@
       </v-card>
       <v-slide-y-transition>
         <v-card
-          v-if="attrOptions.length"
           outlined
           elevation="1"
           class="mb-4"
         >
           <v-card-title class="pa-3 grey lighten-3 title d-flex">
-            商品属性
+            商品参数
           </v-card-title>
           <v-card-text class="pt-4">
             <v-row>
               <v-col
-                v-for="attr in attrOptions"
-                :key="attr.attrId"
+                v-for="(attr, i) in product.attr"
+                :key="i"
                 cols="12"
                 lg="6"
                 xl="4"
@@ -646,7 +588,7 @@
                   </div>
                   <div class="input-group-control">
                     <v-text-field
-                      v-if="attr.genre === '1'"
+                      v-if="attr.genre == '1'"
                       v-model="attr.attrValue"
                       :placeholder="`请输入${attr.attrName}`"
                       outlined
@@ -655,6 +597,8 @@
                       single-line
                       hide-details
                       dense
+                      :append-icon="attr.attrId === '0' ? 'mdi-delete' : ''"
+                      @click:append="deleteAttrAdded(i)"
                     />
                     <v-select
                       v-else
@@ -678,13 +622,22 @@
                   </div>
                 </div>
               </v-col>
+              <v-col cols="12">
+                <v-btn
+                  color="secondary"
+                  outlined
+                  @click="dialogAdd = true"
+                >
+                  <v-icon>mdi-plus</v-icon>添加参数
+                </v-btn>
+              </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card
-          v-if="useableSpecOptions.length"
+          v-if="product.containSpec === '1'"
           outlined
           elevation="1"
           class="mb-4"
@@ -693,176 +646,109 @@
             商品规格
           </v-card-title>
           <v-card-text class="pt-4">
-            <v-row>
-              <v-col
-                v-for="specOption in useableSpecOptions"
-                :key="specOption.index"
-                cols="12"
-                lg="6"
-                xl="4"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">{{ specOption.specName }}</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-select
-                      v-model="specOption.selected"
-                      :items="specOption.specItem"
-                      :placeholder="`请选择${specOption.specName}`"
-                      item-text="itemName"
-                      single-line
-                      hide-details
-                      dense
-                      outlined
-                      clearable
-                      return-object
-                      no-data-text="暂无数据"
-                      chips
-                      small-chips
-                      deletable-chips
-                      multiple
-                      @click:clear="dataItems = []"
-                    />
-                  </div>
-                </div>
-              </v-col>
-            </v-row>
-            <v-slide-y-transition>
-              <v-card
-                v-if="selectedDetails.length"
-                class="mt-4"
-                outlined
-              >
-                <v-card-title class="grey lighten-3 pa-4 title d-flex align-center">
-                  可选规格
-                  <span class="error--text body-2 ml-auto">请选择您要设置的规格</span>
-                </v-card-title>
-                <v-card-text class="pt-4">
-                  <v-chip-group
-                    v-model="dataItemsDetailNames"
-                    multiple
-                    column
-                    active-class="primary"
-                  >
-                    <v-chip
-                      v-for="detail in selectedDetails"
-                      :key="detail.detailName"
-                      :value="detail.detailName"
-                      filter
+            <v-card
+              outlined
+              elevation="0"
+            >
+              <v-simple-table class="text-center">
+                <thead>
+                  <tr>
+                    <th
+                      width="100"
+                      class="text-center"
                     >
-                      {{ detail.detailName }}
-                    </v-chip>
-                  </v-chip-group>
-                </v-card-text>
-              </v-card>
-            </v-slide-y-transition>
+                      主图
+                    </th>
+                    <th class="text-center">
+                      规格
+                    </th>
+                    <th class="text-center">
+                      成本价
+                    </th>
+                    <th class="text-center">
+                      销售价
+                    </th>
+                    <th class="text-center">
+                      重量
+                    </th>
+                    <th class="text-center">
+                      条形码
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(item, i) in product.detail"
+                    :key="i"
+                  >
+                    <td class="py-3">
+                      <img-upload
+                        :image="item.image"
+                        @update:src="item.image = $event;$forceUpdate()"
+                        @update:delete="item.image = '';$forceUpdate()"
+                      />
+                    </td>
+                    <td class="py-3">
+                      {{ item.detailName }}
+                    </td>
+                    <td class="py-3">
+                      <v-text-field
+                        v-model="item.costPrice"
+                        :rules="costRules"
+                        type="number"
+                        placeholder=""
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                        dense
+                      />
+                    </td>
+                    <td class="py-3">
+                      <v-text-field
+                        v-model="item.price"
+                        :rules="priceRules"
+                        type="number"
+                        placeholder=""
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                        dense
+                      />
+                    </td>
+                    <td class="py-3">
+                      <v-text-field
+                        v-model="item.weight"
+                        type="number"
+                        suffix="克"
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                        dense
+                      />
+                    </td>
+                    <td class="py-3">
+                      <v-text-field
+                        v-model="item.barCode"
+                        placeholder=""
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                        dense
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </v-simple-table>
+            </v-card>
           </v-card-text>
-        </v-card>
-      </v-slide-y-transition>
-      <v-slide-y-transition>
-        <v-card
-          v-if="dataItems.length && product.containSpec === '1'"
-          class="mb-4"
-          outlined
-        >
-          <v-simple-table class="text-center">
-            <thead>
-              <tr>
-                <th
-                  width="100"
-                  class="text-center"
-                >
-                  主图
-                </th>
-                <th class="text-center">
-                  规格
-                </th>
-                <th class="text-center">
-                  成本价
-                </th>
-                <th class="text-center">
-                  销售价
-                </th>
-                <th class="text-center">
-                  重量
-                </th>
-                <th class="text-center">
-                  条形码
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(item, i) in dataItems"
-                :key="i"
-              >
-                <td class="py-3">
-                  <img-upload
-                    :image="item.image"
-                    @update:src="item.image = $event;$forceUpdate()"
-                    @update:delete="item.image = '';$forceUpdate()"
-                  />
-                </td>
-                <td class="py-3">
-                  {{ item.detailName }}
-                </td>
-                <td class="py-3">
-                  <v-text-field
-                    v-model="item.costPrice"
-                    :rules="costRules"
-                    type="number"
-                    placeholder=""
-                    outlined
-                    clearable
-                    required
-                    single-line
-                    hide-details
-                    dense
-                  />
-                </td>
-                <td class="py-3">
-                  <v-text-field
-                    v-model="item.price"
-                    :rules="priceRules"
-                    type="number"
-                    placeholder=""
-                    outlined
-                    clearable
-                    required
-                    single-line
-                    hide-details
-                    dense
-                  />
-                </td>
-                <td class="py-3">
-                  <v-text-field
-                    v-model="item.weight"
-                    type="number"
-                    suffix="克"
-                    outlined
-                    clearable
-                    required
-                    single-line
-                    hide-details
-                    dense
-                  />
-                </td>
-                <td class="py-3">
-                  <v-text-field
-                    v-model="item.barCode"
-                    placeholder=""
-                    outlined
-                    clearable
-                    required
-                    single-line
-                    hide-details
-                    dense
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </v-simple-table>
         </v-card>
       </v-slide-y-transition>
       <v-card
@@ -1028,7 +914,88 @@
       :show="dialogSupplier"
       @close-dialog="dialogSupplier = false"
     />
-  </div>
+    <v-dialog
+      v-model="dialogAdd"
+      width="500"
+    >
+      <v-card>
+        <v-form
+          ref="form"
+          v-model="validAdd"
+        >
+          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
+            添加商品属性
+          </v-card-title>
+          <div class="pa-4">
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>属性名称：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="attrToAdd.attrName"
+                  :rules="attrNameRules"
+                  placeholder="请输入属性名称"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>属性值：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="attrToAdd.attrValue"
+                  :rules="attrValueRules"
+                  placeholder="请输入属性值"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+          </div>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              :disabled="!validAdd"
+              @click="addAttrLocal"
+            >
+              确定
+            </v-btn>
+            <v-btn
+              color="secondary"
+              @click="dialogAdd = false"
+            >
+              取消
+            </v-btn>
+          </v-card-actions>
+        </v-form>
+      </v-card>
+    </v-dialog>
+  </v-card>
 </template>
 
 <script>
@@ -1066,11 +1033,19 @@ export default {
       addable: true,
       editing: false,
       valid: true,
+      validAdd: true,
+      dialogAdd: false,
       dialogBrand: false,
       dialogSupplier: false,
       dialogCategory: false,
       searchSupplier: '',
       searchBrand: '',
+      attrToAdd: {
+        attrId: '0',
+        attrValue: '',
+        attrName: '',
+        genre: '1',
+      },
       product: {
         containSpec: '0',
         zeroInventory: false,
@@ -1116,12 +1091,11 @@ export default {
           text: '否',
         },
       ],
-      attrOptions: [],
-      specOptions: [],
-      dataItemsDetailNames: [],
       unitsLeft: [],
       cateRules: [v => !!v || '请选择商品分类'],
       nameRules: [v => !!v || '请填写商品名称'],
+      attrNameRules: [v => !!v || '请填写属性名称'],
+      attrValueRules: [v => !!v || '请填写属性值'],
       numberRules: [v => !!v || '请填写商品货号'],
       moqRules: [v => !!v || '请填写起订量'],
       stockRules: [v => !!v || '请填写库存数量'],
@@ -1146,34 +1120,6 @@ export default {
     unitString() {
       return R.join(',', R.pluck('dnames', this.unitsLeft));
     },
-    attrTransed() {
-      return R.map((item) => {
-        if (item.genre === '3') {
-          return R.compose(
-            R.mergeRight({ id: '0' }),
-            R.dissoc('attrItem')
-          )(item);
-        }
-        return R.dissoc('attrItem', item);
-      }, this.attrOptions);
-    },
-    spec() {
-      return R.map(
-        item => ({
-          id: item.id,
-          specName: item.specName,
-          index: item.index,
-          specItem: item.selected,
-        }),
-        R.filter(
-          item => item.selected && item.selected.length,
-          this.specOptions
-        )
-      );
-    },
-    useableSpecOptions() {
-      return R.filter(R.has('selected'), this.specOptions);
-    },
     params() {
       return R.evolve(
         {
@@ -1182,7 +1128,7 @@ export default {
             R.reject(R.isEmpty),
             R.pluck('image')
           ),
-          attr: () => R.filter(R.has('attrValue'), this.attrTransed),
+          attr: () => R.filter(R.has('attrValue'), this.product.attr),
           units: arr => R.map(
               item => ({
                 unitId: item.id,
@@ -1197,91 +1143,6 @@ export default {
     // 不允许添加打包单位
     disallowAddBundle() {
       return !this.bundleCurrent.id || !this.bundleCurrent.packeNum;
-    },
-    // 已选规格
-    selectedSpecOptions() {
-      return R.map(
-        R.prop('selected'),
-        R.filter(
-          item => item.selected && item.selected.length,
-          this.specOptions
-        )
-      );
-    },
-    headSelectedSpecOptions() {
-      return this.selectedSpecOptions.length
-        ? R.head(this.selectedSpecOptions)
-        : [];
-    },
-    tailSelectedSpecOptions() {
-      if (this.selectedSpecOptions.length) {
-        return R.tail(this.selectedSpecOptions);
-      }
-      return [];
-    },
-    // 所有规格组合
-    currentSpecOptions() {
-      if (this.tailSelectedSpecOptions.length) {
-        return (
-          R.reduce(
-            (acc, arr) => R.map(R.flatten, R.xprod(acc, arr)),
-            this.headSelectedSpecOptions,
-            this.tailSelectedSpecOptions
-          ) || []
-        );
-      }
-      return this.headSelectedSpecOptions.length
-        ? R.map(item => [item], this.headSelectedSpecOptions)
-        : [];
-    },
-    // 可选规格组合
-    selectedDetails() {
-      return R.map(
-        R.compose(
-          R.mergeRight({
-            id: '0',
-            image: '',
-            costPrice: '',
-            price: '',
-            weight: '',
-            barCode: '',
-          }),
-          arr => ({
-            specItems: R.map(
-              item => ({
-                specId: item.specIndex,
-                specName: item.specName,
-                specItemId: item.index,
-                specItemName: item.itemName,
-                isNew: '1',
-              }),
-              arr
-            ),
-            detailName: R.join('/', R.pluck('itemName', arr)),
-          })
-        ),
-        this.currentSpecOptions
-      );
-    },
-    // 已选规格组合
-    dataItems() {
-      let arr = R.filter(
-        item => R.includes(item.detailName, this.dataItemsDetailNames),
-        this.selectedDetails
-      );
-      if (this.product.detail) {
-        arr = R.map((item) => {
-          const fetchDetail = R.find(
-            R.propEq('detailName', item.detailName),
-            this.product.detail
-          );
-          if (fetchDetail) {
-            item = R.mergeRight(item, fetchDetail);
-          }
-          return item;
-        }, arr);
-      }
-      return arr;
     },
   },
   created() {
@@ -1305,17 +1166,6 @@ export default {
       },
     ]);
     this.getProductDetailEdit();
-    // if (!this.productCategory.status) {
-    this.loadingCate = true;
-    this.getCateListAsync()
-      .catch((err) => {
-        this.checkErr(err, 'getCateListAsync');
-      })
-      .finally(() => {
-        this.loadingCate = false;
-      });
-    // }
-    // if (!this.productBrand.status) {
     this.loadingBrand = true;
     this.getBrandListAsync({ isUse: '1' })
       .catch((err) => {
@@ -1324,8 +1174,6 @@ export default {
       .finally(() => {
         this.loadingBrand = false;
       });
-    // }
-    // if (!this.supplierList.status) {
     this.loadingSuppliers = true;
     this.getSupplierListAsync({ locked: '0' })
       .catch((err) => {
@@ -1334,104 +1182,33 @@ export default {
       .finally(() => {
         this.loadingSuppliers = false;
       });
-    // }
   },
   methods: {
     ...mapActions('product', [
-      'getCateListAsync',
-      'getCateAttrSpecAsync',
       'getBrandListAsync',
       'getUnitsListAsync',
       'editProductAsync',
       'getProductDetailEditAsync',
     ]),
     ...mapActions('supplier', ['getSupplierListAsync']),
-    // 获取当前产品分类
-    getActiveCategory(arr) {
-      this.categorySelected = arr;
+    // 删除本地添加的属性
+    deleteAttrAdded(i) {
+      this.$set(this.product, 'attr', R.remove(i, 1, this.product.attr));
     },
-    setProductCategory() {
-      this.product.categoryId = R.prop('id', R.head(this.categorySelected));
-      this.product.categoryName = R.prop(
-        'dnames',
-        R.head(this.categorySelected)
+    // 本地添加属性
+    addAttrLocal() {
+      this.$set(
+        this.product,
+        'attr',
+        R.append(this.attrToAdd, this.product.attr)
       );
-      this.dialogCategory = false;
-      this.getCateAttrSpec();
-    },
-    getCateAttrSpec(edit) {
-      this.getCateAttrSpecAsync({ categoryId: this.product.categoryId })
-        .then((res) => {
-          const response = R.clone(res);
-          this.attrOptions = response.attr;
-          if (edit) {
-            // 编辑时设置属性
-            this.attrOptions = R.map((item) => {
-              const value = R.prop(
-                'attrValue',
-                R.find(R.propEq('attrId', item.attrId), this.product.attr)
-              );
-              if (value) {
-                item.attrValue = value;
-              }
-              return item;
-            }, this.attrOptions || []);
-            // 编辑时设置规格
-            if (this.product.containSpec === '1') {
-              this.specOptions = R.map((item) => {
-                const selectedSpec = R.find(
-                  R.propEq('index', `${item.index}`),
-                  this.product.spec
-                );
-                if (selectedSpec) {
-                  item = R.mergeRight(item, R.dissoc('specItem', selectedSpec));
-                  item.selected = selectedSpec.specItem;
-                  item.specItem = R.map((specSingleItem) => {
-                    const fetchSpec = R.find(
-                      subitem => subitem.index === `${specSingleItem.index}`,
-                      item.selected
-                    );
-                    if (fetchSpec) {
-                      specSingleItem = fetchSpec;
-                    }
-                    return specSingleItem;
-                  }, item.specItem);
-                }
-
-                return item;
-              }, response.spec);
-              // if (this.product.containSpec === '1') {
-              //   this.specOptions = mapIndexed((item, i) => {
-              //     item = R.mergeRight(
-              //       item,
-              //       R.dissoc('specItem', this.product.spec[i])
-              //     );
-              //     item.selected = this.product.spec[i].specItem;
-              //     item.specItem = R.map((specSingleItem) => {
-              //       const fetchSpec = R.find(
-              //         subitem => subitem.index === `${specSingleItem.index}`,
-              //         item.selected
-              //       );
-              //       if (fetchSpec) {
-              //         specSingleItem = fetchSpec;
-              //       }
-              //       return specSingleItem;
-              //     }, item.specItem);
-              //     return item;
-              //   }, response.spec);
-            }
-            this.dataItemsDetailNames = R.pluck(
-              'detailName',
-              this.product.detail || []
-            );
-          }
-          // else {
-          //   this.specOptions = R.map(R.assoc('selected', []), response.spec);
-          // }
-        })
-        .catch((err) => {
-          this.checkErr(err, 'getCateAttrSpec');
-        });
+      this.attrToAdd = {
+        attrId: '0',
+        attrValue: '',
+        attrName: '',
+        genre: '1',
+      };
+      this.dialogAdd = false;
     },
     // 设置打包销售
     setUnitsLeft(params) {
@@ -1466,10 +1243,6 @@ export default {
     editProduct() {
       this.editing = true;
       const postData = this.params;
-      if (this.product.containSpec === '1') {
-        postData.spec = this.spec;
-        postData.detail = this.dataItems;
-      }
       this.editProductAsync(postData)
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
@@ -1487,7 +1260,6 @@ export default {
     },
     // 批量添加图片
     getMultipleImgs(pics) {
-      // const mapIndexed = R.addIndex(R.map);
       this.$set(
         this.product,
         'images',
@@ -1546,15 +1318,10 @@ export default {
               return item;
             }, response.units);
             R.map(item => this.setUnitsLeft(item.id), response.units);
-            // console.log(
-            //   '函数: getProductDetailEdit -> response.units',
-            //   response.units
-            // );
           }
           this.product = response;
           // 异步获取描述结束再挂载编辑器
           this.component = WangEditor;
-          this.getCateAttrSpec(true);
         })
         .catch((err) => {
           this.checkErr(err, 'getProductDetailEditAsync');

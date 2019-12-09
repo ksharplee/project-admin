@@ -100,7 +100,7 @@ export default {
       {
         text: '订单列表',
         disabled: false,
-        to: { name: 'order_list' },
+        to: { name: 'order_list', params: { active: '0' } },
         exact: true,
       },
       {
