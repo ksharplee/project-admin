@@ -133,7 +133,7 @@
                     icon
                     class="mx-1"
                     v-on="on"
-                    @click="deleteSelectedProduct(item.goodId)"
+                    @click="deleteSelectedProduct(item.goodDetailId)"
                   >
                     <v-icon color="secondary">
                       mdi-delete-forever
@@ -207,7 +207,7 @@
                     class="display-1 error--text pl-0 font-weight-bold"
                     align-self="start"
                   >
-                    ￥{{ totalAmount + +(orderToEdit.freight ? orderToEdit.freight : 0) - +(orderToEdit.freeAmount ? orderToEdit.freeAmount : 0) }}
+                    ￥{{ totalAmountCacul }}
                   </v-col>
                 </v-row>
               </v-container>
@@ -284,6 +284,7 @@ export default {
           text: '商品名称',
           value: 'goodName',
           align: 'center',
+          width: '150px',
           sortable: false,
         },
         {
@@ -304,14 +305,14 @@ export default {
           value: 'buNumber',
           align: 'center',
           sortable: false,
-          width: '160px',
+          width: '100px',
         },
         {
           text: '销售单位',
           value: 'unit',
           align: 'center',
           sortable: false,
-          width: '200px',
+          width: '120px',
         },
         {
           text: '小计',
@@ -324,7 +325,7 @@ export default {
           value: 'memo',
           align: 'center',
           sortable: false,
-          width: '200px',
+          width: '150px',
         },
         {
           text: '操作',
@@ -336,12 +337,19 @@ export default {
     };
   },
   computed: {
+    totalAmountCacul() {
+      return (
+        +this.totalAmount
+        + +(this.orderToEdit.freight ? +this.orderToEdit.freight : 0)
+        - +(this.orderToEdit.freeAmount ? +this.orderToEdit.freeAmount : 0)
+      ).toFixed(2);
+    },
     totalAmount() {
       return R.reduce(
         (acc, item) => R.add(acc, this.getProductPrice(item)),
         0,
         this.selectedProductsApply
-      );
+      ).toFixed(2);
     },
     selectedProductsIds() {
       return R.pluck('goodDetailId', this.selectedProductsApply);
@@ -349,7 +357,7 @@ export default {
     selectedProductsApply() {
       return R.map((item) => {
         item.buUnitId = item.buUnitId ? item.buUnitId : item.unitId;
-        item.buNumber = item.buNumber ? item.buNumber : item.unitId;
+        item.buNumber = item.buNumber ? item.buNumber : 1;
         item.units = R.prop(
           'units',
           R.find(R.propEq('goodId', item.goodId), this.selectedProductsUnits)
@@ -384,17 +392,18 @@ export default {
   methods: {
     ...mapActions('order', ['getProductUnitsAsync', 'editOrderAsync']),
     getProductPrice(item) {
+      let price = null;
       if (item.unitId && item.units) {
-        return (
-          +item.buNumber
+        price =          +item.buNumber
           * +item.price
           * +R.prop(
             'packeNum',
             R.find(R.propEq('unitId', item.buUnitId), item.units)
-          )
-        );
+          );
+      } else {
+        price = +item.buNumber * +item.price;
       }
-      return +item.buNumber * +item.price;
+      return price.toFixed(2);
     },
     async getProductUnits(params) {
       const res = await this.getProductUnitsAsync(params);
@@ -448,7 +457,7 @@ export default {
     },
     deleteSelectedProduct(id) {
       this.selectedProducts = R.reject(
-        R.propEq('goodId', id),
+        R.propEq('goodDetailId', id),
         this.selectedProducts
       );
     },

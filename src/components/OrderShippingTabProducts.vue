@@ -18,7 +18,9 @@
       {{ item.goodDetailName ? item.goodDetailName : '无' }}
     </template>
     <template v-slot:item.unit="{ item }">
+      <span v-if="edit">{{ item.buUnitName }}</span>
       <v-select
+        v-else
         v-model="item.buUnitId"
         :items="item.units"
         item-value="unitId"
@@ -28,7 +30,6 @@
         single-line
         hide-details
         no-data-text="暂无数据"
-        @change="changeUnit(item)"
       />
     </template>
     <template v-slot:item.buNumber="{ item }">
@@ -37,7 +38,7 @@
           <v-text-field
             v-model="item.buNumber"
             type="number"
-            :suffix="getItemUnitName(item)"
+            :suffix="edit ? item.buUnitName : getItemUnitName(item)"
             dense
             outlined
             required
@@ -216,31 +217,32 @@ export default {
       return R.reject(
         item => item.goodNumber === item.sendNumber,
         R.map((item) => {
-          // 判断:当前商品购买数量是否大于等于打包数量，若是，保持原来的打包单位，若否，使用最小打包单位
-          const buNumberGtePacknum = R.gte(item.buNumber, item.sendNumber);
-          // item.buUnitId = item.buUnitId;
-          // 计算当前商品的购买数量
-          const buNumber = R.subtract(item.goodNumber, item.sendNumber);
-          // 根据前面的判断设置发货数量
-          item.buNumber = buNumberGtePacknum
-            ? R.divide(buNumber, item.packeNum)
-            : buNumber;
-          // 根据前面的判断设置发货单位
-          item.buUnitId = buNumberGtePacknum ? item.buUnitId : item.unitId;
-          // if (!this.edit) {
-          //   item.buNumber =              (+item.goodNumber - +item.sendNumber) / item.packeNum;
-          // }
-          const unitsAll = R.filter(
-            unit => +unit.packeNum <= buNumber,
-            R.prop(
-              'units',
-              R.find(
-                R.propEq('goodId', item.goodId),
-                this.selectedProductsUnits
-              )
-            ) || []
-          );
-          item.units = unitsAll;
+          if (!this.edit) {
+            // 计算当前商品的购买数量
+            const buNumber = R.subtract(item.goodNumber, item.sendNumber);
+            // 判断:当前商品购买数量是否大于等于打包数量，若是，保持原来的打包单位，若否，使用最小打包单位
+            const buNumberGtePacknum = R.gte(buNumber, item.packeNum);
+            // 根据前面的判断设置发货数量
+            item.buNumber = buNumberGtePacknum
+              ? R.divide(buNumber, item.packeNum)
+              : buNumber;
+            // 根据前面的判断设置发货单位
+            item.buUnitId = buNumberGtePacknum ? item.buUnitId : item.unitId;
+            // if (!this.edit) {
+            //   item.buNumber =              (+item.goodNumber - +item.sendNumber) / item.packeNum;
+            // }
+            const unitsAll = R.filter(
+              unit => +unit.packeNum <= buNumber,
+              R.prop(
+                'units',
+                R.find(
+                  R.propEq('goodId', item.goodId),
+                  this.selectedProductsUnits
+                )
+              ) || []
+            );
+            item.units = unitsAll;
+          }
           return item;
         }, R.clone(this.products))
       );
@@ -252,10 +254,12 @@ export default {
           indexId: item.indexId,
           buUnitId: item.buUnitId,
           buNumber: item.buNumber,
-          packeNum: R.prop(
-            'packeNum',
-            R.find(R.propEq('unitId', item.buUnitId), item.units)
-          ),
+          packeNum: this.edit
+            ? item.packeNum
+            : R.prop(
+              'packeNum',
+              R.find(R.propEq('unitId', item.buUnitId), item.units)
+            ),
         }),
         this.productsApply
       );
@@ -288,9 +292,6 @@ export default {
         return `1${unit.unitName} = ${unit.packeNum}${item.unitName}`;
       }
       return unit.unitName;
-    },
-    changeUnit(item) {
-      console.log('函数: changeUnit -> item', item);
     },
     // rulesNumber(item) {
     //   return [

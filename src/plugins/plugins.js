@@ -143,7 +143,7 @@ export default {
         let str = '';
         mapIndexed((s, i) => {
           if (s === '1') {
-            str = R.concat(`-->${texts[i]}`, str);
+            str = R.concat(str, `-->${texts[i]}`);
           }
         }, v);
         str = R.slice(3, str.length, str);
