@@ -4,19 +4,24 @@ import axios from '@/plugins/axios';
 export default {
   // 选择商品
   async getProductListForSelectAsync(context, payload) {
-    try {
-      const res = await axios.post('/g/get_goods_list.html', R.mergeRight({
-        pageSize: process.env.VUE_APP_PAGESIZE,
-        timeLimit: context.state.productListForSelect.data.timeLimit,
-        p: context.state.productListForSelect.data.p,
-      }, payload));
-      if (res.data.status === 1) {
-        context.commit('SET_PRODUCT_LIST_FOR_SELECT', res.data.data);
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 320 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/g/get_goods_list.html', R.mergeRight({
+          pageSize: process.env.VUE_APP_PAGESIZE,
+          timeLimit: context.state.productListForSelect.data.timeLimit,
+          p: context.state.productListForSelect.data.p,
+        }, payload));
+        if (res.data.status === 1) {
+          context.commit('SET_PRODUCT_LIST_FOR_SELECT', res.data.data);
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 获取订单列表
@@ -74,67 +79,92 @@ export default {
   },
   // 取消订单
   async cancelOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/o/orderSuCancel.html', { id: payload.id });
-      if (res.data.status === 1) {
-        if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1038 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/o/orderSuCancel.html', { id: payload.id });
+        if (res.data.status === 1) {
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 确认订单
   async confirmOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/o/orderConfirm.html', { id: payload.id });
-      if (res.data.status === 1) {
-        if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1039 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/o/orderConfirm.html', { id: payload.id });
+        if (res.data.status === 1) {
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 财务审核订单
   async finacialCheckOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/o/orderFinanceCheck.html', { id: payload.id });
-      if (res.data.status === 1) {
-        if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1040 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/o/orderFinanceCheck.html', { id: payload.id });
+        if (res.data.status === 1) {
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 作废订单
   async nullifyOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/o/orderInvalid.html', { id: payload.id });
-      if (res.data.status === 1) {
-        if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1041 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/o/orderInvalid.html', { id: payload.id });
+        if (res.data.status === 1) {
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 完成订单
   async completeOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/o/orderSuComplete.html', { id: payload.id });
-      if (res.data.status === 1) {
-        if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
-        return Promise.resolve(res.data.status);
-      }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1043 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/o/orderSuComplete.html', { id: payload.id });
+        if (res.data.status === 1) {
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
+      } 
+} else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 订单详情
@@ -187,62 +217,87 @@ export default {
   // },
   // 添加发货单
   async addShippingOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/sd/add.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1201 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/sd/add.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 编辑发货单
   async editShippingOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/sd/edit.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1202 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/sd/edit.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 审核发货单
   async confirmShippingOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/sd/sendCheck.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1204 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/sd/sendCheck.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 删除发货单
   async deleteShippingOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/sd/delete.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1203 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/sd/delete.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 作废发货单
   async nullifyShippingOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/sd/sendInvalid.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1205 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/sd/sendInvalid.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 收款单列表
@@ -258,58 +313,78 @@ export default {
     }
   },
   async addPaymentOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/add.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.id);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1101 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/re/add.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.id);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
-  async editPaymentOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/edit.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
-      }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  },
-  async deletePaymentOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/delete.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
-      }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  },
+  // async editPaymentOrderAsync(context, payload) {
+  //   try {
+  //     const res = await axios.post('/re/edit.html', payload);
+  //     if (res.data.status === 1) {
+  //       return Promise.resolve(res.data.status);
+  //     }
+  //     return Promise.reject(new Error(res.data.info));
+  //   } catch (error) {
+  //     return Promise.reject(error);
+  //   }
+  // },
+  // async deletePaymentOrderAsync(context, payload) {
+  //   const right = await context.dispatch('checkAuthorityAsync', { rightId: 6501 }, { root: true });
+  //   if (right) {
+  //   try {
+  //     const res = await axios.post('/re/delete.html', payload);
+  //     if (res.data.status === 1) {
+  //       return Promise.resolve(res.data.status);
+  //     }
+  //     return Promise.reject(new Error(res.data.info));
+  //   } catch (error) {
+  //     return Promise.reject(error);
+  //   }
+  //     } else {
+  //     return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
+  //   }
+  // },
   async confirmPaymentOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/receiptCheck.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1104 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/re/receiptCheck.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async nullifyPaymentOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/receiptInvalid.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1105 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/re/receiptInvalid.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
 };

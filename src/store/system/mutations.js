@@ -1,3 +1,4 @@
+import * as R from 'ramda';
 import {
   SET_EMPLOYEE_LIST,
   SET_BASIC_INFO,
@@ -16,8 +17,9 @@ export default {
     state.areaInfo = payload;
   },
   [SET_ORDER_SEQUENCE](state, payload) {
-    if (payload.length) {
-      state.orderSequence = payload;
+    if (payload.data.length) {
+      state.orderSequence.data = R.prepend(state.orderSequence.data[0], payload.data);
     }
+    state.orderSequence.status = payload.status;
   },
 };

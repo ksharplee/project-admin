@@ -15,27 +15,37 @@ export default {
     }
   },
   async addEditInvoiceAsync(context, payload) {
-    try {
-      const res = await axios.post('/finance/add_save_invoice_type.html', payload);
-      if (res.data.status === 1) {
-        context.dispatch('getInvoiceListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4001 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/finance/add_save_invoice_type.html', payload);
+        if (res.data.status === 1) {
+          context.dispatch('getInvoiceListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteInvoiceAsync(context, payload) {
-    try {
-      const res = await axios.post('/finance/del_invoice_type.html', payload);
-      if (res.data.status === 1) {
-        context.dispatch('getInvoiceListAsync');
-        return Promise.resolve(res.data.status);
-      }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4003 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/finance/del_invoice_type.html', payload);
+        if (res.data.status === 1) {
+          context.dispatch('getInvoiceListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
+      } 
+} else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async getPaymentListAsync(context, payload) {
@@ -51,52 +61,72 @@ export default {
     }
   },
   async addEditPaymentAsync(context, payload) {
-    try {
-      const res = await axios.post('/finance/add_save_payment.html', payload);
-      if (res.data.status === 1) {
-        context.dispatch('getPaymentListAsync');
-        return Promise.resolve(res.data.status);
-      }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4005 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/finance/add_save_payment.html', payload);
+        if (res.data.status === 1) {
+          context.dispatch('getPaymentListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
+      } 
+} else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deletePaymentAsync(context, payload) {
-    try {
-      const res = await axios.post('/finance/del_payment.html', payload);
-      if (res.data.status === 1) {
-        context.dispatch('getPaymentListAsync');
-        return Promise.resolve(res.data.status);
-      }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4007 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/finance/del_payment.html', payload);
+        if (res.data.status === 1) {
+          context.dispatch('getPaymentListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
+      } 
+} else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 添加/编辑银行
   async addOrEditBankAsync(context, payload) {
-    try {
-      const res = await axios.post('/finance/add_save_bank.html', payload);
-      if (res.data.status === 1) {
-        context.dispatch('getBankListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4009 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/finance/add_save_bank.html', payload);
+        if (res.data.status === 1) {
+          context.dispatch('getBankListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteBankAsync(context, payload) {
-    try {
-      const res = await axios.post('/finance/del_bank.html', payload);
-      if (res.data.status === 1) {
-        context.dispatch('getBankListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4011 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/finance/del_bank.html', payload);
+        if (res.data.status === 1) {
+          context.dispatch('getBankListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async getBankListAsync(context, payload) {
@@ -129,25 +159,35 @@ export default {
     }
   },
   async getPaymentOrderDetailAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/receiptDesc.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1112 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/re/receiptDesc.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async rejectPaymentOrderAsync(context, payload) {
-    try {
-      const res = await axios.post('/re/receiptReject.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1106 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/re/receiptReject.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
 };

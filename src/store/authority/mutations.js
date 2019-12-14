@@ -2,6 +2,7 @@ import * as R from 'ramda';
 import {
   SET_DEPARTMENT_LIST,
   SET_AUTHORITY_LIST,
+  SET_AUTHORITY_ROLE_LIST,
 } from '../mutation-types';
 
 // 权限对象转为数组
@@ -25,10 +26,20 @@ const departmentFlatten = (arr) => {
 
 export default {
   [SET_DEPARTMENT_LIST](state, payload) {
-    const arr = departmentFlatten(objToArray(payload, R.keys(payload).length));
+    const { length } = R.keys(payload);
+    let arrAll = [];
+    const resource = R.clone(payload);
+    for (let i = 1; i <= length; i += 1) {
+      arrAll = R.concat(resource[`${i}`], arrAll);
+    }
+    state.departmentAll = arrAll;
+    const arr = departmentFlatten(objToArray(payload, length));
     state.departmentList = arr;
   },
   [SET_AUTHORITY_LIST](state, payload) {
     state.authorityList = payload;
+  },
+  [SET_AUTHORITY_ROLE_LIST](state, payload) {
+    state.roleList = payload;
   },
 };

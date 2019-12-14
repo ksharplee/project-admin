@@ -148,7 +148,35 @@ body {
   font-size: inherit;
 }
 
+// treeview自定义active class
+.active-treenode {
+  .v-treeview-node__content {
+    display: block;
+  }
+
+  .v-treeview-node__label {
+    position: relative;
+    left: -8px;
+    display: inline;
+    padding: 8px;
+    background-color: #E3F2FD;
+  }
+}
+
+.custom-treeview-class {
+  .v-treeview-node__label {
+    cursor: pointer;
+  }
+}
+
+.custom-text-filed {
+  .v-text-field__details {
+    top: 100% !important;
+  }
+}
+
 // 图片上传
+
 .img-uploader {
   position: relative;
   cursor: pointer;

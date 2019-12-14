@@ -20,9 +20,11 @@ export default {
     status: 0,
     data: [
       {
+        processId: '0',
         flowType: '1',
         flowName: '标准流程',
         flowDescription: '标准流程',
+        flowContent: '111111',
       },
     ],
   },

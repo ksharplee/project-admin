@@ -161,4 +161,16 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 验证权限
+  async checkAuthorityAsync(context, payload) {
+    try {
+      const res = await axios.post('/r/userCheckRight.html', payload);
+      if (res.data.status === 1 && res.data.hasRight === 1) {
+        return Promise.resolve(true);
+      }
+      return Promise.resolve(false);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

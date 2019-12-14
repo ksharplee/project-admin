@@ -753,7 +753,7 @@ export default {
     ...mapActions('order', [
       'getPaymentOrderListAsync',
       'addPaymentOrderAsync',
-      'editPaymentOrderAsync',
+      // 'editPaymentOrderAsync',
       // 'deletePaymentOrderAsync',
       'confirmPaymentOrderAsync',
       'nullifyPaymentOrderAsync',
@@ -881,9 +881,9 @@ export default {
     },
     addPaymentOrder() {
       this.adding = true;
-      this.addPaymentOrderAsync(this.addOrEditParams).then((res) => {
-        this.confirmPaymentOrderAsync({ id: res })
-          .then(() => {
+      this.addPaymentOrderAsync(this.addOrEditParams)
+        .then((res) => {
+          this.confirmPaymentOrderAsync({ id: res }).then(() => {
             this.$store.commit('TOGGLE_SNACKBAR', {
               type: 'success',
               text: '恭喜，添加成功!',
@@ -892,7 +892,8 @@ export default {
             this.dialogSingle = false;
             this.$emit('update:refresh');
           });
-      }).catch(err => this.checkErr(err, 'addPaymentOrder'))
+        })
+        .catch(err => this.checkErr(err, 'addPaymentOrder'))
         .finally(() => {
           this.adding = false;
         });

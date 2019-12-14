@@ -36,7 +36,7 @@
                     </div>
                     <div class="input-group-control">
                       <v-text-field
-                        v-model="role.name"
+                        v-model="role.dnames"
                         :rules="nameRules"
                         placeholder="请输入角色名称"
                         outlined
@@ -74,47 +74,61 @@
                       cols="4"
                       md="2"
                       lg="1"
-                      class="pa-3 grey lighten-4"
+                      class="pa-3 grey lighten-4 d-flex align-center"
                     >
-                      {{ item.dnames }}
+                      <div>
+                        <v-checkbox
+                          v-model="item.all"
+                          :label="item.dnames"
+                          color="primary"
+                          hide-details
+                          dense
+                          class="mt-0"
+                          @change="selectAll(item)"
+                        />
+                      </div>
                     </v-col>
                     <v-divider vertical />
                     <v-col
-                      class="pa-3"
+                      class="pa-3 d-flex flex-wrap"
                       :class="hover ? 'grey lighten-4' : ''"
                     >
-                      1
+                      <template v-for="(base) in item.bases">
+                        <div
+                          :key="base.baseId"
+                          style="width:170px"
+                        >
+                          <v-checkbox
+                            v-model="role.baseData"
+                            :label="base.baseName"
+                            color="primary"
+                            hide-details
+                            dense
+                            :value="base.baseId"
+                            class="mt-0 mr-4"
+                          />
+                        </div>
+                        <div
+                          v-if="base.isEnd === '1'"
+                          :key="base.baseName"
+                          class="col-12 pa-0"
+                        />
+                      </template>
                     </v-col>
                   </v-row>
                 </v-card>
               </v-hover>
             </v-col>
           </v-row>
-          <!-- <v-simple-table style="border:1px solid #ddd">
-            <template v-slot:default>
-              <tbody>
-                <tr
-                  v-for="item in authorityList"
-                  :key="item.id"
-                >
-                  <td style="border-right:1px solid #ddd;width:120px">
-                    {{ item.dnames }}
-                  </td>
-                  <td>
-                    1
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table> -->
         </div>
       </v-card>
       <v-btn
         :disabled="!valid || submitting"
-        color="secondary"
+        :loading="submitting"
+        color="primary"
         large
         class="px-12 body-1 my-4"
-        @click="addOrEditEmployee"
+        @click="addOrEditAuthorityRole"
       >
         提交
       </v-btn>
@@ -125,7 +139,6 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import * as R from 'ramda';
-import md5 from 'md5';
 
 export default {
   name: 'AuthorityRoleSingle',
@@ -139,7 +152,10 @@ export default {
     return {
       valid: true,
       submitting: false,
-      role: {},
+      role: {
+        dnames: '',
+        baseData: [],
+      },
       nameRules: [v => !!v || '请填写角色姓名'],
     };
   },
@@ -168,17 +184,41 @@ export default {
     ]);
     if (!this.authorityList) {
       this.getAuthorityList();
+    } else if (this.id) {
+      this.$store.commit('START_LOADING');
+      this.getAuthorityRoleDetail();
     }
-    // if (this.id) {
-    //   this.$store.commit('START_LOADING');
-    //   this.getEmployeeSingle({ id: this.id });
-    // }
   },
   methods: {
-    ...mapActions('authority', ['getAuthorityListAsync']),
+    ...mapActions('authority', [
+      'getAuthorityListAsync',
+      'addAuthorityRoleAsync',
+      'editAuthorityRoleAsync',
+      'getAuthorityRoleDetailAsync',
+    ]),
+    selectAll(item) {
+      if (item.all) {
+        this.$set(
+          this.role,
+          'baseData',
+          R.uniq(R.concat(R.pluck('baseId', item.bases), this.role.baseData))
+        );
+      } else {
+        this.$set(
+          this.role,
+          'baseData',
+          R.without(R.pluck('baseId', item.bases), this.role.baseData)
+        );
+      }
+    },
     getAuthorityList() {
       this.$store.commit('START_LOADING');
       this.getAuthorityListAsync()
+        .then(() => {
+          if (this.id) {
+            this.getAuthorityRoleDetail();
+          }
+        })
         .catch((err) => {
           this.checkErr(err, 'getAuthorityList');
         })
@@ -186,37 +226,47 @@ export default {
           this.$store.commit('END_LOADING');
         });
     },
-    // 添加/编辑角色
-    addOrEditEmployee() {
+    // 添加角色
+    addOrEditAuthorityRole() {
       this.submitting = true;
-      const postData = this.employee;
-      if (postData.passwords) {
-        postData.passwords = md5(this.employee.passwords);
-      }
-      this.addOrEditEmployeeAsync(postData)
-        // this.addOrEditEmployeeAsync(this.employee)
-        .then(() => {
-          this.$store.commit('TOGGLE_SNACKBAR', {
-            type: 'success',
-            text: '恭喜，添加成功!',
+      if (this.id) {
+        this.editAuthorityRoleAsync(R.omit(['hasRight', 'right'], this.role))
+          .then(() => {
+            this.$store.commit('TOGGLE_SNACKBAR', {
+              type: 'success',
+              text: '恭喜，修改成功!',
+            });
+            this.$router.replace({ name: 'authority_role' });
+          })
+          .catch(err => [this.checkErr(err, 'addOrEditAuthorityRole')])
+          .finally(() => {
+            this.submitting = false;
           });
-          this.$router.replace({ name: 'employee_list' });
-        })
-        .catch((err) => {
-          this.checkErr(err);
-        })
-        .finally(() => {
-          this.submitting = false;
-        });
+      } else {
+        this.addAuthorityRoleAsync(this.role)
+          .then(() => {
+            this.$store.commit('TOGGLE_SNACKBAR', {
+              type: 'success',
+              text: '恭喜，添加成功!',
+            });
+            this.$router.replace({ name: 'authority_role' });
+          })
+          .catch((err) => {
+            this.checkErr(err, 'addAuthorityRole');
+          })
+          .finally(() => {
+            this.submitting = false;
+          });
+      }
     },
-    // 获取角色详情
-    getEmployeeSingle(params) {
-      this.getEmployeeSingleAsync(params)
+    getAuthorityRoleDetail() {
+      this.getAuthorityRoleDetailAsync({ id: this.id })
         .then((res) => {
-          this.employee = res;
+          this.role = res;
+          this.$set(this.role, 'baseData', res.hasRight);
         })
         .catch((err) => {
-          this.checkErr(err);
+          this.checkErr(err, 'getAuthorityRoleDetail');
         })
         .finally(() => {
           this.$store.commit('END_LOADING');

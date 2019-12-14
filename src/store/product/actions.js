@@ -16,39 +16,54 @@ export default {
     }
   },
   async addCateAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/do_category_add.html', payload);
-      if (res.data.status === 1) {
-        context.commit('SET_PRODUCT_CATEGORY', res.data.data);
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 20 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/do_category_add.html', payload);
+        if (res.data.status === 1) {
+          context.commit('SET_PRODUCT_CATEGORY', res.data.data);
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async editCateAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/do_category_edit.html', payload);
-      if (res.data.status === 1) {
-        context.commit('SET_PRODUCT_CATEGORY', res.data.data);
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 21 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/do_category_edit.html', payload);
+        if (res.data.status === 1) {
+          context.commit('SET_PRODUCT_CATEGORY', res.data.data);
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteCateAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/del_category.html', payload);
-      if (res.data.status === 1) {
-        context.commit('SET_PRODUCT_CATEGORY', res.data.data);
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 22 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/del_category.html', payload);
+        if (res.data.status === 1) {
+          context.commit('SET_PRODUCT_CATEGORY', res.data.data);
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 商品分类规格
@@ -64,36 +79,51 @@ export default {
     }
   },
   async addCateSpecAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/do_category_spec_add.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 50 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/do_category_spec_add.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async editCateSpecAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/do_category_spec_edit.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 51 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/do_category_spec_edit.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteCateSpecAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/del_category_spec.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 52 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/del_category_spec.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 商品分类属性
@@ -109,36 +139,51 @@ export default {
     }
   },
   async addCateAttrAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/do_category_attr_add.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 35 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/do_category_attr_add.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async editCateAttrAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/do_category_attr_edit.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 36 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/do_category_attr_edit.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteCateAttrAsync(context, payload) {
-    try {
-      const res = await axios.post('/cate/del_category_attr.html', payload);
-      if (res.data.status === 1) {
-        return Promise.resolve(res.data.data);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 37 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/cate/del_category_attr.html', payload);
+        if (res.data.status === 1) {
+          return Promise.resolve(res.data.data);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 获取产品分类属性和规格
@@ -155,27 +200,37 @@ export default {
   },
   // 商品品牌
   async addOrEditBrandAsync(context, payload) {
-    try {
-      const res = await axios.post('/brand/add_save_brand.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getBrandListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 357 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/brand/add_save_brand.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getBrandListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteBrandAsync(context, payload) {
-    try {
-      const res = await axios.post('/brand/del_brand.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getBrandListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 359 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/brand/del_brand.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getBrandListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async getBrandListAsync(context, payload) {
@@ -192,27 +247,37 @@ export default {
   },
   // 商品单位
   async addOrEditUnitsAsync(context, payload) {
-    try {
-      const res = await axios.post('/unit/add_save.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getUnitsListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 65 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/unit/add_save.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getUnitsListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async deleteUnitsAsync(context, payload) {
-    try {
-      const res = await axios.post('/unit/del_unit.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getUnitsListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 67 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/unit/del_unit.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getUnitsListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async getUnitsListAsync(context, payload) {
@@ -242,28 +307,38 @@ export default {
   },
   // 删除商品
   async deleteProductAsync(context, payload) {
-    try {
-      const res = await axios.post('/g/delete.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getProductListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 302 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/g/delete.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getProductListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 上下架商品
   async operateProductAsync(context, payload) {
-    try {
-      const res = await axios.post('/g/setVisible.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getProductListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 305 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/g/setVisible.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getProductListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 商品列表
@@ -321,15 +396,20 @@ export default {
   },
   // 编辑商品标签
   async setProductLabelAsync(context, payload) {
-    try {
-      const res = await axios.post('/g/setLabel.html', payload);
-      if (res.data.status === 1) {
-        await context.dispatch('getProductListAsync');
-        return Promise.resolve(res.data.status);
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: 306 }, { root: true });
+    if (right) {
+      try {
+        const res = await axios.post('/g/setLabel.html', payload);
+        if (res.data.status === 1) {
+          await context.dispatch('getProductListAsync');
+          return Promise.resolve(res.data.status);
+        }
+        return Promise.reject(new Error(res.data.info));
+      } catch (error) {
+        return Promise.reject(error);
       }
-      return Promise.reject(new Error(res.data.info));
-    } catch (error) {
-      return Promise.reject(error);
+    } else {
+      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
 };

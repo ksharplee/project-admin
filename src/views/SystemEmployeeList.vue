@@ -287,6 +287,21 @@
                     <v-btn
                       icon
                       class="mx-1"
+                      :to="{ name: 'authority_employee_right', params: { id: item.id, name: item.userName, mobile: item.mobile }}"
+                      v-on="on"
+                    >
+                      <v-icon color="amber">
+                        mdi-shield-key
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>设置权限</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      icon
+                      class="mx-1"
                       :to="{ name: 'employee_edit', params: { id: item.id }}"
                       v-on="on"
                     >
