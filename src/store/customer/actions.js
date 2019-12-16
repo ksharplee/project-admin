@@ -4,7 +4,7 @@ import axios from '@/plugins/axios';
 export default {
   // 添加客户
   async addOrEditCustomerAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 259 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 263 : 259 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/buyer/add_save_buyer.html', payload);
@@ -52,7 +52,7 @@ export default {
   },
   // 传buyerId,buyerUid
   async addOrEditCustomerShippingAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 350 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 351 : 350 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/buyer/do_addr.html', payload);
@@ -182,7 +182,7 @@ export default {
     }
   },
   async addOrEditCustomerGradeAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 254 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 254 : 253 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/buyer/add_save_level.html', payload);

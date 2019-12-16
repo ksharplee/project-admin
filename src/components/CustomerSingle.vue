@@ -160,7 +160,7 @@ export default {
     ...mapActions('customer', ['addOrEditCustomerAsync']),
     addCustomer() {
       this.submitting = true;
-      this.addOrEditCustomerAsync(this.customer)
+      this.addOrEditCustomerAsync({ ...this.customer, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

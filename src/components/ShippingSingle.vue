@@ -228,6 +228,7 @@ export default {
         buyerId: this.buyerId,
         buyerUid: this.buyerUid,
         ...this.shipping,
+        edit: this.edit,
       })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {

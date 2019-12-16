@@ -357,7 +357,7 @@ export default {
         [0, 0, 0, 0]
       );
       postData.flowContent = R.join('', R.prepend(1, R.append(1, flowContent)));
-      this.addOrEditOrderSequenceAsync(postData)
+      this.addOrEditOrderSequenceAsync({ ...postData, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

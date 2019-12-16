@@ -4,7 +4,15 @@ import axios from '@/plugins/axios';
 export default {
   // 添加编辑员工，设置员工启停用，修改密码
   async addOrEditEmployeeAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 243 }, { root: true });
+    let rightId;
+    if (payload.stop) {
+      rightId = 246;
+    } else if (payload.edit) {
+      rightId = 244;
+    } else {
+      rightId = 243;
+    }
+    const right = await context.dispatch('checkAuthorityAsync', { rightId }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/a/do_admin.html', payload);
@@ -63,7 +71,7 @@ export default {
   },
   // 订单处理流程设置
   async addOrEditOrderSequenceAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 71 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 72 : 71 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/system/add_save_order_flow_setting.html', payload);

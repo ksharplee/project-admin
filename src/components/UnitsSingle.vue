@@ -166,7 +166,7 @@ export default {
     ...mapActions('product', ['addOrEditUnitsAsync']),
     addOrEditUnit() {
       this.submitting = true;
-      this.addOrEditUnitsAsync(this.unit)
+      this.addOrEditUnitsAsync({ ...this.unit, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

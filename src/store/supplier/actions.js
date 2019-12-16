@@ -4,7 +4,7 @@ import axios from '@/plugins/axios';
 export default {
   // 添加供应商
   async addSupplierAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 217 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 218 : 217 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/supplierOffline/add_save_supplier_offline.html', payload);

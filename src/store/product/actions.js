@@ -200,7 +200,7 @@ export default {
   },
   // 商品品牌
   async addOrEditBrandAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 357 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 358 : 357 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/brand/add_save_brand.html', payload);
@@ -247,7 +247,7 @@ export default {
   },
   // 商品单位
   async addOrEditUnitsAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 65 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 66 : 65 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/unit/add_save.html', payload);

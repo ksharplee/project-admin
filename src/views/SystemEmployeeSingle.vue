@@ -495,7 +495,7 @@
       </v-card>
       <v-btn
         :disabled="!valid || submitting"
-        color="secondary"
+        color="primary"
         large
         class="px-12 body-1 my-4"
         @click="addOrEditEmployee"
@@ -610,6 +610,11 @@ export default {
       if (postData.passwords) {
         postData.passwords = md5(this.employee.passwords);
       }
+      if (this.id) {
+        postData.edit = true;
+      } else {
+        postData.add = true;
+      }
       this.addOrEditEmployeeAsync(postData)
         // this.addOrEditEmployeeAsync(this.employee)
         .then(() => {
@@ -620,7 +625,7 @@ export default {
           this.$router.replace({ name: 'employee_list' });
         })
         .catch((err) => {
-          this.checkErr(err);
+          this.checkErr(err, 'addOrEditEmployee');
         })
         .finally(() => {
           this.submitting = false;

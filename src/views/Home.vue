@@ -101,7 +101,7 @@
       class="body-2 grey--text justify-center align-center py-3"
       elevation="2"
     >
-      Copyright © 九域饰品, All Rights Reserved
+      Copyright © 九域科技, All Rights Reserved
     </v-footer>
   </div>
 </template>

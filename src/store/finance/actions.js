@@ -15,7 +15,7 @@ export default {
     }
   },
   async addEditInvoiceAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4001 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 4002 : 4001 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/finance/add_save_invoice_type.html', payload);
@@ -43,8 +43,8 @@ export default {
         return Promise.reject(new Error(res.data.info));
       } catch (error) {
         return Promise.reject(error);
-      } 
-} else {
+      }
+    } else {
       return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
@@ -61,7 +61,7 @@ export default {
     }
   },
   async addEditPaymentAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4005 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 4006 : 4005 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/finance/add_save_payment.html', payload);
@@ -72,8 +72,8 @@ export default {
         return Promise.reject(new Error(res.data.info));
       } catch (error) {
         return Promise.reject(error);
-      } 
-} else {
+      }
+    } else {
       return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
@@ -89,14 +89,14 @@ export default {
         return Promise.reject(new Error(res.data.info));
       } catch (error) {
         return Promise.reject(error);
-      } 
-} else {
+      }
+    } else {
       return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   // 添加/编辑银行
   async addOrEditBankAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 4009 }, { root: true });
+    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 4010 : 4009 }, { root: true });
     if (right) {
       try {
         const res = await axios.post('/finance/add_save_bank.html', payload);

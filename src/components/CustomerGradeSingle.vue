@@ -175,7 +175,7 @@ export default {
     ...mapActions('customer', ['addOrEditCustomerGradeAsync']),
     addOrEditCustomerGrade() {
       this.submitting = true;
-      this.addOrEditCustomerGradeAsync(this.grade)
+      this.addOrEditCustomerGradeAsync({ ...this.grade, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

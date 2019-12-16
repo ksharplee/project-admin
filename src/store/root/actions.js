@@ -163,6 +163,7 @@ export default {
   },
   // 验证权限
   async checkAuthorityAsync(context, payload) {
+    // return Promise.resolve(true);
     try {
       const res = await axios.post('/r/userCheckRight.html', payload);
       if (res.data.status === 1 && res.data.hasRight === 1) {

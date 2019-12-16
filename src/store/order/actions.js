@@ -162,8 +162,8 @@ export default {
         return Promise.reject(new Error(res.data.info));
       } catch (error) {
         return Promise.reject(error);
-      } 
-} else {
+      }
+    } else {
       return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },

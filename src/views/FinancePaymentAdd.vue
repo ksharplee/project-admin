@@ -1,11 +1,318 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <!-- <div class="title d-flex flex-wrap align-center">
       新增收款单
     </div>
-    <v-divider class="my-4" />
-    <v-form>
-      <v-row>
+    <v-divider class="my-4" /> -->
+    <v-form
+      ref="form"
+      v-model="valid"
+    >
+      <v-card class="mb-4">
+        <v-card-text class="pt-4 black--text body-1">
+          <v-row align="center">
+            <v-col
+              cols="12"
+              md="4"
+              lg="3"
+              xl="2"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text required">选择客户</span>
+                </div>
+                <div class="input-group-control">
+                  <v-select
+                    v-model="search.buyerId"
+                    :items="customerFilter(searchCustomer)"
+                    placeholder="请选择客户"
+                    class="white"
+                    item-text="dnames"
+                    item-value="buyerId"
+                    single-line
+                    dense
+                    outlined
+                    clearable
+                    no-data-text="暂无数据"
+                    hide-details
+                    @click:clear="clearSearchConditions('buyerId')"
+                    @change="setGlobalCustomer"
+                  >
+                    <template v-slot:prepend-item>
+                      <div class="pa-3">
+                        <v-text-field
+                          v-model="searchCustomer"
+                          placeholder="输入客户名称搜索"
+                          append-icon="mdi-magnify"
+                          dense
+                          outlined
+                          clearable
+                          required
+                          single-line
+                          hide-details
+                        />
+                      </div>
+                    </template>
+                  </v-select>
+                </div>
+              </div>
+            </v-col>
+            <v-spacer />
+            <v-col cols="auto">
+              <v-btn
+                depressed
+                color="primary"
+              >
+                <v-icon class="mb-1">
+                  mdi-exit-to-app
+                </v-icon> 导出Excel
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-card color="#fdfdfd">
+          <v-card-text class="pt-4 black--text body-1">
+            <v-row>
+              <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                xl="2"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text required">收款日期</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-menu
+                      ref="menuDate"
+                      v-model="menuDate"
+                      :close-on-content-click="false"
+                      :return-value.sync="payment.receiptTime"
+                      transition="scale-transition"
+                      offset-y
+                      min-width="290px"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-text-field
+                          v-model="payment.receiptTime"
+                          :disabled="!orderList.length"
+                          class="white rounded-right-0"
+                          placeholder="请选择上架时间"
+                          outlined
+                          single-line
+                          dense
+                          hide-details
+                          append-icon="mdi-calendar-import"
+                          readonly
+                          v-on="on"
+                        />
+                      </template>
+                      <v-date-picker
+                        v-model="payment.receiptTime"
+                        color="primary"
+                        scrollable
+                      >
+                        <div class="flex-grow-1" />
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="menuDate = false"
+                        >
+                          取消
+                        </v-btn>
+                        <v-btn
+                          text
+                          color="primary"
+                          @click="$refs.menuDate.save(payment.receiptTime)"
+                        >
+                          确定
+                        </v-btn>
+                      </v-date-picker>
+                    </v-menu>
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                xl="2"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text required">收款账户</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-select
+                      v-model="payment.paymentId"
+                      :items="paymentList.data"
+                      :loading="loadingPaymentList"
+                      :rules="accountRules"
+                      :disabled="!orderList.length"
+                      placeholder="请选择收款账户"
+                      item-value="id"
+                      item-text="bankName"
+                      class="white"
+                      clearable
+                      outlined
+                      dense
+                      single-line
+                      hide-details
+                      no-data-text="暂无数据"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                xl="2"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text required">收款金额</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="payment.amount"
+                      :rules="amountRules"
+                      :disabled="!selectedOrderList.length"
+                      placeholder="请输入收款金额"
+                      outlined
+                      single-line
+                      clearable
+                      class="white"
+                      hide-details
+                      dense
+                      @blur="setShareAmount"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                xl="2"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">优惠金额</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="payment.freeAmount"
+                      :disabled="!selectedOrderList.length"
+                      placeholder="请输入优惠金额"
+                      outlined
+                      single-line
+                      clearable
+                      class="white"
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                xl="2"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">核销金额</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      :value="checkAmount"
+                      disabled
+                      placeholder="请输入优惠金额"
+                      outlined
+                      single-line
+                      class="white"
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="4"
+                lg="3"
+                xl="2"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">附件</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-file-input
+                      ref="uploader"
+                      :label="payment.annex"
+                      :loading="loadingAttachment"
+                      :disabled="!selectedOrderList.length"
+                      class="white"
+                      outlined
+                      hide-details
+                      dense
+                      placeholder="请选择附件"
+                      prepend-icon=""
+                      append-icon="mdi-paperclip"
+                      clearable
+                      @change="getAttachmentUrl"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="8"
+                lg="6"
+                xl="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">备注</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="payment.memo"
+                      :disabled="!selectedOrderList.length"
+                      placeholder="请输入付款单备注"
+                      outlined
+                      single-line
+                      clearable
+                      class="white"
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <!-- <v-col
+                align-self="center"
+                cols="auto"
+              >
+                <v-btn
+                  :disabled="!orderList.length"
+                  color="secondary"
+                  depressed
+                  class="mr-2"
+                  @click="checkBySequence"
+                >
+                  顺序分摊
+                </v-btn>
+              </v-col> -->
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-card>
+      <!-- <v-row>
         <v-col
           cols="12"
           md="4"
@@ -34,21 +341,19 @@
                 @change="setGlobalCustomer"
               >
                 <template v-slot:prepend-item>
-                  <v-form>
-                    <div class="pa-3">
-                      <v-text-field
-                        v-model="searchCustomer"
-                        placeholder="输入客户名称搜索"
-                        append-icon="mdi-magnify"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                      />
-                    </div>
-                  </v-form>
+                  <div class="pa-3">
+                    <v-text-field
+                      v-model="searchCustomer"
+                      placeholder="输入客户名称搜索"
+                      append-icon="mdi-magnify"
+                      dense
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                    />
+                  </div>
                 </template>
               </v-select>
             </div>
@@ -260,378 +565,195 @@
             重置
           </v-btn>
         </v-col>
-      </v-row>
-    </v-form>
-    <v-card class="mt-4">
-      <v-card-text class="py-2 d-flex align-center">
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          :to="{ name: 'product_add' }"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-exit-to-app
-            </v-icon> 导出Excel
-          </div>
-        </v-btn>
-      </v-card-text>
-      <v-data-table
-        :headers="headers"
-        :items="orderList"
-        :loading="loadingDataItems"
-        loading-text="加载中，请稍候..."
-        class="text-center elevation-1"
-        no-data-text="暂无数据"
-        hide-default-footer
-        :items-per-page="20"
-      >
-        <template v-slot:top>
-          <v-divider />
-          <v-form
-            ref="form"
-            v-model="valid"
-            class="pa-3 grey lighten-4"
+      </v-row> -->
+      <v-card class="mb-4">
+        <!-- <v-card-text class="py-2 d-flex align-center">
+          <v-btn
+            color="white"
+            depressed
+            class="height-auto py-2 mr-2"
+            :to="{ name: 'product_add' }"
           >
-            <h4 class="text-left py-3 error--text">
-              请选择客户或输入订单号搜索未完成收款订单
-            </h4>
-            <v-row>
-              <v-col
-                cols="12"
-                md="4"
-                lg="3"
-                xl="2"
+            <div class="d-flex flex-column">
+              <v-icon
+                color="grey darken-2"
+                class="mb-1"
               >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text required">收款日期</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-menu
-                      ref="menuDate"
-                      v-model="menuDate"
-                      :close-on-content-click="false"
-                      :return-value.sync="payment.receiptTime"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="290px"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="payment.receiptTime"
-                          :disabled="!orderList.length"
-                          class="white rounded-right-0"
-                          placeholder="请选择上架时间"
-                          outlined
-                          single-line
-                          dense
-                          hide-details
-                          append-icon="mdi-calendar-import"
-                          readonly
-                          v-on="on"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="payment.receiptTime"
-                        color="primary"
-                        scrollable
-                      >
-                        <div class="flex-grow-1" />
-                        <v-btn
-                          text
-                          color="primary"
-                          @click="menuDate = false"
-                        >
-                          取消
-                        </v-btn>
-                        <v-btn
-                          text
-                          color="primary"
-                          @click="$refs.menuDate.save(payment.receiptTime)"
-                        >
-                          确定
-                        </v-btn>
-                      </v-date-picker>
-                    </v-menu>
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                lg="3"
-                xl="2"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text required">收款账户</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-select
-                      v-model="payment.paymentId"
-                      :items="paymentList.data"
-                      :loading="loadingPaymentList"
-                      :rules="accountRules"
-                      :disabled="!orderList.length"
-                      placeholder="请选择收款账户"
-                      item-value="id"
-                      item-text="bankName"
-                      class="white"
-                      clearable
-                      outlined
-                      dense
-                      single-line
-                      hide-details
-                      no-data-text="暂无数据"
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                lg="3"
-                xl="2"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text required">收款金额</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-model="payment.amount"
-                      :rules="amountRules"
-                      :disabled="!orderList.length"
-                      placeholder="请输入收款金额"
-                      outlined
-                      single-line
-                      clearable
-                      class="white"
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                lg="3"
-                xl="2"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">优惠金额</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-model="payment.freeAmount"
-                      :disabled="!orderList.length"
-                      placeholder="请输入优惠金额"
-                      outlined
-                      single-line
-                      clearable
-                      class="white"
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                lg="3"
-                xl="2"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">核销金额</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      :value="checkAmount"
-                      disabled
-                      placeholder="请输入优惠金额"
-                      outlined
-                      single-line
-                      class="white"
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                md="4"
-                lg="3"
-                xl="2"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">附件</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-file-input
-                      ref="uploader"
-                      :label="payment.annex"
-                      :loading="loadingAttachment"
-                      :disabled="!orderList.length"
-                      class="white"
-                      outlined
-                      hide-details
-                      dense
-                      placeholder="请选择附件"
-                      prepend-icon=""
-                      append-icon="mdi-paperclip"
-                      clearable
-                      @change="getAttachmentUrl"
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                md="8"
-                lg="6"
-                xl="4"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">备注</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-model="payment.memo"
-                      :disabled="!orderList.length"
-                      placeholder="请输入付款单备注"
-                      outlined
-                      single-line
-                      clearable
-                      class="white"
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                align-self="center"
-                cols="auto"
-              >
+                mdi-exit-to-app
+              </v-icon> 导出Excel
+            </div>
+          </v-btn>
+        </v-card-text> -->
+        <v-data-table
+          :headers="headersSelected"
+          :items="selectedOrderList"
+          class="text-center elevation-1"
+          no-data-text="暂无数据"
+          hide-default-footer
+          :items-per-page="20"
+        >
+          <template v-slot:item.check="{ item }">
+            <v-text-field
+              v-model="item.check"
+              placeholder="请输入本次核销金额"
+              outlined
+              single-line
+              clearable
+              class="white my-3"
+              hide-details
+              dense
+            />
+          </template>
+          <template v-slot:item.action="{ item }">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
                 <v-btn
-                  :disabled="!orderList.length"
-                  color="secondary"
-                  depressed
-                  class="mr-2"
-                  @click="checkBySequence"
+                  icon
+                  class="mx-1"
+                  :to="{ name: 'order_detail', params: { id: item.id, currentTab: '0' }}"
+                  v-on="on"
                 >
-                  顺序分摊
+                  <v-icon color="primary">
+                    mdi-file-document-box-search
+                  </v-icon>
                 </v-btn>
-                <v-btn
-                  :disabled="!orderList.length"
-                  color="secondary"
-                  depressed
-                  class="mr-2"
-                  @click="checkByEvery"
-                >
-                  全部分摊
-                </v-btn>
-                <v-btn
-                  :loading="adding"
-                  :disabled="!valid || adding"
-                  color="primary"
-                  depressed
-                  @click="addPaymentOrder"
-                >
-                  新增收款单
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-form>
-          <v-divider />
-        </template>
-        <template v-slot:item.check="{ item }">
-          <v-text-field
-            v-model="item.check"
-            placeholder="请输入本次核销金额"
-            outlined
-            single-line
-            clearable
-            class="white my-3"
-            hide-details
-            dense
-          />
-        </template>
-        <template v-slot:item.action="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                icon
-                class="mx-1"
-                :to="{ name: 'order_detail', params: { id: item.id, currentTab: '0' }}"
-                v-on="on"
-              >
-                <v-icon color="primary">
-                  mdi-file-document-box-search
-                </v-icon>
-              </v-btn>
+              </template>
+              <span>订单详情</span>
+            </v-tooltip>
+          </template>
+          <template v-slot:item.receivedAmount="{ item }">
+            <div class="error--text">
+              {{ item.receivedAmount }}
+            </div>
+          </template>
+          <template v-slot:item.unreceivedAmount="{ item }">
+            <div class="error--text">
+              {{ item.unreceivedAmount | toFixed }}
+            </div>
+          </template>
+          <template v-slot:item.amontStatus="{ item }">
+            <div class="error--text">
+              {{ item.amontStatus | paymentStatus }}
+            </div>
+          </template>
+          <template v-slot:item.actualAmount="{ item }">
+            <div class="error--text">
+              {{ item.actualAmount }}
+            </div>
+          </template>
+          <template v-slot:body.append="{ headers }">
+            <tr v-if="orderList.length">
+              <td>合计</td>
+              <td />
+              <td />
+              <td>{{ totalProductAmount | toFixed }}</td>
+              <td>{{ totalFreightAmount | toFixed }}</td>
+              <td>{{ totalFreeAmount | toFixed }}</td>
+              <td class="error--text">
+                {{ totalActualAmount | toFixed }}
+              </td>
+              <td />
+              <td class="error--text">
+                {{ totalReceivedAmount | toFixed }}
+              </td>
+              <td class="error--text">
+                {{ totalUnreceivedAmount | toFixed }}
+              </td>
+              <td class="error--text">
+                {{ checkAmountSet | toFixed }}
+              </td>
+              <td />
+            </tr>
+          </template>
+        </v-data-table>
+      </v-card>
+      <v-btn
+        :disabled="!$store.state.customerId"
+        color="secondary"
+        class="px-8 body-1 mr-2"
+        depressed
+        @click="getPaymentOrderList"
+      >
+        <v-icon left>
+          mdi-plus
+        </v-icon>添加订单
+      </v-btn>
+      <v-btn
+        :loading="adding"
+        :disabled="!valid || adding"
+        color="primary"
+        class="px-12 body-1"
+        depressed
+        @click="addPaymentOrder"
+      >
+        提交
+      </v-btn>
+    </v-form>
+    <v-dialog
+      v-model="dialog"
+      max-width="1200px"
+      @click:outside="dialog = false;"
+    >
+      <v-card :loading="loadingDataItems">
+        <v-card-title class="title grey lighten-3 pa-4">
+          选择订单
+        </v-card-title>
+        <v-container
+          v-if="!loadingDataItems"
+          fluid
+        >
+          <v-data-table
+            v-model="selectedOrders"
+            :headers="headers"
+            :items="orderList"
+            :loading="loadingDataItems"
+            loading-text="加载中，请稍候..."
+            class="text-center elevation-1"
+            show-select
+            no-data-text="暂无数据"
+            hide-default-footer
+            :items-per-page="20"
+          >
+            <template v-slot:item.receivedAmount="{ item }">
+              <div class="error--text">
+                {{ item.receivedAmount }}
+              </div>
             </template>
-            <span>订单详情</span>
-          </v-tooltip>
-        </template>
-        <template v-slot:item.receivedAmount="{ item }">
-          <div class="error--text">
-            {{ item.receivedAmount }}
-          </div>
-        </template>
-        <template v-slot:item.unreceivedAmount="{ item }">
-          <div class="error--text">
-            {{ item.unreceivedAmount | toFixed }}
-          </div>
-        </template>
-        <template v-slot:item.amontStatus="{ item }">
-          <div class="error--text">
-            {{ item.amontStatus | paymentStatus }}
-          </div>
-        </template>
-        <template v-slot:item.actualAmount="{ item }">
-          <div class="error--text">
-            {{ item.actualAmount }}
-          </div>
-        </template>
-        <template v-slot:body.append="{ headers }">
-          <tr v-if="orderList.length">
-            <td>合计</td>
-            <td />
-            <td />
-            <td>{{ totalProductAmount | toFixed }}</td>
-            <td>{{ totalFreightAmount | toFixed }}</td>
-            <td>{{ totalFreeAmount | toFixed }}</td>
-            <td class="error--text">
-              {{ totalActualAmount | toFixed }}
-            </td>
-            <td />
-            <td class="error--text">
-              {{ totalReceivedAmount | toFixed }}
-            </td>
-            <td class="error--text">
-              {{ totalUnreceivedAmount | toFixed }}
-            </td>
-            <td class="error--text">
-              {{ checkAmountSet | toFixed }}
-            </td>
-            <td />
-          </tr>
-        </template>
-      </v-data-table>
-    </v-card>
+            <template v-slot:item.unreceivedAmount="{ item }">
+              <div class="error--text">
+                {{ item.unreceivedAmount | toFixed }}
+              </div>
+            </template>
+            <template v-slot:item.amontStatus="{ item }">
+              <div class="error--text">
+                {{ item.amontStatus | paymentStatus }}
+              </div>
+            </template>
+            <template v-slot:item.actualAmount="{ item }">
+              <div class="error--text">
+                {{ item.actualAmount }}
+              </div>
+            </template>
+          </v-data-table>
+        </v-container>
+        <v-card-actions>
+          <div class="flex-grow-1" />
+          <v-btn
+            color="primary"
+            :disabled="!selectedOrders.length"
+            @click="confirmSelectedOrders"
+          >
+            确定
+          </v-btn>
+          <v-btn
+            color="secondary"
+            @click="dialog = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -653,6 +775,7 @@ export default {
         operate: '3',
         buyerId: '',
       },
+      dialog: false,
       valid: true,
       expanded: [],
       loadingDataItems: false,
@@ -666,6 +789,8 @@ export default {
       amountRules: [v => !!v || '请输入收款金额'],
       searchCustomer: '',
       orderList: [],
+      selectedOrders: [],
+      selectedOrderList: [],
       payment: {
         receiptTime: new Date().toISOString().substr(0, 10),
         freeAmount: 0,
@@ -688,7 +813,7 @@ export default {
           value: '9',
         },
       ],
-      headers: [
+      headersSelected: [
         {
           text: '订单日期',
           value: 'createTime',
@@ -762,12 +887,50 @@ export default {
           sortable: false,
         },
       ],
-      totalReceivedAmount: '',
-      totalActualAmount: '',
-      totalFreeAmount: '',
-      totalFreightAmount: '',
-      totalProductAmount: '',
-      totalUnreceivedAmount: '',
+      headers: [
+        {
+          text: '订单日期',
+          value: 'createTime',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '订单号',
+          value: 'orderNo',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '成交金额',
+          value: 'actualAmount',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '收款状态',
+          value: 'amontStatus',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '已收金额',
+          value: 'receivedAmount',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '未收金额',
+          value: 'unreceivedAmount',
+          align: 'center',
+          sortable: false,
+        },
+      ],
+      totalReceivedAmount: 0,
+      totalActualAmount: 0,
+      totalFreeAmount: 0,
+      totalFreightAmount: 0,
+      totalProductAmount: 0,
+      totalUnreceivedAmount: 0,
     };
   },
   computed: {
@@ -801,7 +964,10 @@ export default {
             orderId: item.id,
             amount: item.check,
           }),
-          R.filter(item => item.check && item.check !== '0', this.orderList)
+          R.filter(
+            item => item.check && R.gt(+item.check, 0),
+            this.selectedOrderList
+          )
         ),
       });
     },
@@ -821,9 +987,7 @@ export default {
       },
     ]);
     this.getCustomerListForSelect();
-    // if (!this.paymentList.stauts) {
     this.getPaymentList();
-    // }
   },
   methods: {
     ...mapActions('customer', ['getCustomerListForSelectAsync']),
@@ -834,6 +998,52 @@ export default {
     ]),
     ...mapActions(['uploadAttachmentSync']),
     ...mapActions('finance', ['getPaymentListAsync']),
+    // 顺序分摊收款金额
+    setShareAmount() {
+      this.checkBySequence();
+    },
+    confirmSelectedOrders() {
+      let items = R.clone(this.selectedOrders);
+      this.totalReceivedAmount = this.reduceToTotal('receivedAmount', items);
+      this.totalActualAmount = this.reduceToTotal('actualAmount', items);
+      this.totalFreeAmount = this.reduceToTotal('freeAmount', items);
+      this.totalFreightAmount = this.reduceToTotal('freight', items);
+      this.totalProductAmount = this.reduceToTotal('amount', items);
+      this.totalActualAmount = this.reduceToTotal('actualAmount', items);
+      this.totalUnreceivedAmount = R.reduce(
+        R.add,
+        0,
+        R.map(item => R.subtract(item.actualAmount, item.receivedAmount), items)
+      );
+      items = R.map(
+        item => R.mergeRight(
+            {
+              check: '',
+              unreceivedAmount: R.subtract(
+                item.actualAmount,
+                item.receivedAmount
+              ),
+            },
+            item
+          ),
+        items
+      );
+      // items = R.map(
+      //   item => R.mergeRight(item, {
+      //       percentage: R.divide(
+      //         item.unreceivedAmount,
+      //         this.totalUnreceivedAmount
+      //       ),
+      //     }),
+      //   items
+      // );
+      this.selectedOrderList = items;
+      this.dialog = false;
+    },
+    getPaymentOrderList() {
+      this.dialog = true;
+      this.getOrderList();
+    },
     addPaymentOrder() {
       if (!this.params.detail.length) {
         this.$store.commit('TOGGLE_SNACKBAR', {
@@ -876,7 +1086,7 @@ export default {
     },
     checkBySequence() {
       let checkAmount = +this.checkAmount.toFixed(2);
-      this.orderList = R.map((item) => {
+      this.selectedOrderList = R.map((item) => {
         if (checkAmount >= item.unreceivedAmount) {
           item.check = item.unreceivedAmount.toFixed(2);
         } else {
@@ -884,12 +1094,12 @@ export default {
         }
         checkAmount -= +item.check;
         return item;
-      }, this.orderList);
+      }, this.selectedOrderList);
     },
     getPaymentList() {
       this.loadingPaymentList = true;
       this.getPaymentListAsync()
-        .catch(err => this.checkErr(err))
+        .catch(err => this.checkErr(err, 'getPaymentList'))
         .finally(() => {
           this.loadingPaymentList = false;
         });
@@ -909,9 +1119,9 @@ export default {
           this.loadingAttachment = false;
         });
     },
-    getOrderListBySearch() {
-      this.getOrderList();
-    },
+    // getOrderListBySearch() {
+    //   this.getOrderList();
+    // },
     reduceToTotal(target, arr) {
       return R.reduce(R.add, 0, R.pluck(target, arr));
     },
@@ -931,51 +1141,6 @@ export default {
         )
       )
         .then((res) => {
-          this.totalReceivedAmount = this.reduceToTotal(
-            'receivedAmount',
-            res.items
-          );
-          this.totalActualAmount = this.reduceToTotal(
-            'actualAmount',
-            res.items
-          );
-          this.totalFreeAmount = this.reduceToTotal('freeAmount', res.items);
-          this.totalFreightAmount = this.reduceToTotal('freight', res.items);
-          this.totalProductAmount = this.reduceToTotal('amount', res.items);
-          this.totalActualAmount = this.reduceToTotal(
-            'actualAmount',
-            res.items
-          );
-          this.totalUnreceivedAmount = R.reduce(
-            R.add,
-            0,
-            R.map(
-              item => R.subtract(item.actualAmount, item.receivedAmount),
-              res.items
-            )
-          );
-          res.items = R.map(
-            item => R.mergeRight(
-                {
-                  check: '',
-                  unreceivedAmount: R.subtract(
-                    item.actualAmount,
-                    item.receivedAmount
-                  ),
-                },
-                item
-              ),
-            res.items
-          );
-          res.items = R.map(
-            item => R.mergeRight(item, {
-                percentage: R.divide(
-                  item.unreceivedAmount,
-                  this.totalUnreceivedAmount
-                ),
-              }),
-            res.items
-          );
           this.orderList = res.items;
         })
         .catch(err => this.checkErr(err, 'getOrderList'))

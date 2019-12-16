@@ -289,7 +289,7 @@ export default {
     },
     addEditPayment() {
       this.submitting = true;
-      this.addEditPaymentAsync(this.payment)
+      this.addEditPaymentAsync({ ...this.payment, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

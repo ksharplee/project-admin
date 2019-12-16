@@ -131,7 +131,7 @@ export default {
     ...mapActions('finance', ['addOrEditBankAsync']),
     addOrEditBank() {
       this.submitting = true;
-      this.addOrEditBankAsync(this.bank)
+      this.addOrEditBankAsync({ ...this.bank, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

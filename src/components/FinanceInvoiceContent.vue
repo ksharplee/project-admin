@@ -171,7 +171,7 @@ export default {
     ...mapActions('finance', ['addEditInvoiceAsync']),
     addOrEditInvoice() {
       this.submitting = true;
-      this.addEditInvoiceAsync(this.invoice)
+      this.addEditInvoiceAsync({ ...this.invoice, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

@@ -350,7 +350,7 @@ export default {
     ...mapActions('supplier', ['addSupplierAsync']),
     addSupplier() {
       this.submitting = true;
-      this.addSupplierAsync(this.supplier)
+      this.addSupplierAsync({ ...this.supplier, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

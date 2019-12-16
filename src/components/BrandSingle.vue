@@ -207,7 +207,7 @@ export default {
     ...mapActions('product', ['addOrEditBrandAsync']),
     addOrEditProductBrand() {
       this.submitting = true;
-      this.addOrEditBrandAsync(this.brand)
+      this.addOrEditBrandAsync({ ...this.brand, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

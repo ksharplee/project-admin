@@ -597,7 +597,7 @@
                   员工性别：
                 </v-col>
                 <v-col cols="8">
-                  {{ employee.sex === '0' ? '男' : '女' }}
+                  {{ employee.sex === '1' ? '男' : '女' }}
                 </v-col>
               </v-row>
             </v-col>
@@ -892,6 +892,7 @@ export default {
       this.addOrEditEmployeeAsync({
         id: this.toDeleteEmployee.id,
         locked: this.toDeleteEmployee.locked === '0' ? '1' : '0',
+        stop: true,
       })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
@@ -900,7 +901,7 @@ export default {
           });
         })
         .catch((err) => {
-          this.checkErr(err);
+          this.checkErr(err, 'deleteEmployee');
         })
         .finally(() => {
           this.deleting = false;

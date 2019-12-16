@@ -20,7 +20,6 @@ router.beforeEach((to, from, next) => {
       store.commit('SET_USER', JSON.parse(sessionStorage.getItem('user')));
       if (to.meta.required) {
         store.dispatch('checkAuthorityAsync', { rightId: to.meta.id }).then((res) => {
-          console.log('函数: res', res);
           if (res) {
             next();
           } else {
@@ -38,7 +37,6 @@ router.beforeEach((to, from, next) => {
     }
   } else if (to.meta.required) {
     store.dispatch('checkAuthorityAsync', { rightId: to.meta.id }).then((res) => {
-      console.log('函数: res', res);
       if (res) {
         next();
       } else {
