@@ -82,65 +82,65 @@
               v-if="rangeType === '3'"
               align="center"
             >
-              <v-menu
-                v-model="showMenu"
-                offset-y
-                :close-on-content-click="false"
-              >
-                <template v-slot:activator="{ on }">
-                  <div style="position:relative">
-                    <div
-                      class="white"
-                      style="position:absolute;z-index:1;top:24px;left:8px;max-width:90%;height:24px;overflow:hidden"
-                    >
-                      <v-chip
-                        v-for="item in postDepartmentNames"
-                        :key="item.id"
-                        close
-                        small
-                        class="mr-2"
-                        @click:close="deletePostDepartment(item.id)"
-                      >
-                        {{ item.dnames }}
-                      </v-chip>
-                    </div>
-                    <v-text-field
-                      placeholder="请选择部门"
+              <v-col cols="12">
+                <v-menu
+                  v-model="showMenu"
+                  offset-y
+                  :close-on-content-click="false"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-textarea
+                      :placeholder="postDepartmentsLocal.length ? '' : '请选择部门'"
                       single-line
                       outlined
                       dense
-                      class="mt-4 custom-text-filed"
-                      style="width:500px"
+                      auto-grow
+                      rows="1"
+                      class="custom-text-area"
                       readonly
                       hide-details
+                      style="width:600px"
                       v-on="on"
                       @focus="getDepartmentList"
-                    />
-                  </div>
-                </template>
-                <v-card>
-                  <v-card-text class="custom-treeview-class">
-                    <v-treeview
-                      v-if="departmentList && departmentList.length"
-                      :items="departmentList"
-                      :active="postDepartments"
-                      item-text="dnames"
-                      item-key="id"
-                      activatable
-                      multiple-active
-                      dense
-                      active-class="active-treenode"
-                      @update:active="returnActiveDepartments"
-                    />
-                    <div
-                      v-else
-                      class="py-4 grey--text text-center"
                     >
-                      {{ loadingDepartment ? '加载中...' : '暂无部门信息' }}
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-menu>
+                      <template v-slot:prepend-inner>
+                        <v-chip
+                          v-for="item in postDepartmentsLocal"
+                          :key="item.id"
+                          close
+                          small
+                          class="mr-2 mb-2"
+                          @click:close="deletePostDepartment(item.id)"
+                        >
+                          {{ item.dnames }}
+                        </v-chip>
+                      </template>
+                    </v-textarea>
+                  </template>
+                  <v-card>
+                    <v-card-text class="custom-treeview-class">
+                      <v-treeview
+                        v-if="departmentList && departmentList.length"
+                        :items="departmentList"
+                        :active="postDepartments"
+                        item-text="dnames"
+                        item-key="id"
+                        activatable
+                        multiple-active
+                        dense
+                        active-class="active-treenode"
+                        @update:active="returnActiveDepartments"
+                      />
+                      <div
+                        v-else
+                        class="py-4 grey--text text-center"
+                      >
+                        {{ loadingDepartment ? '加载中...' : '暂无部门信息' }}
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </v-menu>
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -170,7 +170,7 @@
                   </v-col>
                   <v-divider vertical />
                   <v-col
-                    class="pa-3 d-flex flex-wrap"
+                    class="pa-3 d-flex flex-wrap disabled-readonly"
                     :class="hover ? 'grey lighten-4' : ''"
                   >
                     <template v-for="(base) in item.bases">
@@ -218,7 +218,7 @@
 
 <script>
 import * as R from 'ramda';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AuthorityEmployeeRight',
@@ -270,6 +270,10 @@ export default {
       'departmentList',
       'departmentAll',
     ]),
+    ...mapGetters('authority', ['postDepartmentsFilter']),
+    postDepartmentsLocal() {
+      return this.postDepartmentsFilter(this.postDepartments);
+    },
     allAuthority() {
       let arr = [];
       R.forEachObjIndexed((value, key) => {
@@ -278,12 +282,6 @@ export default {
         }
       }, this.baseData);
       return arr;
-    },
-    postDepartmentNames() {
-      return R.filter(
-        item => R.includes(item.id, this.postDepartments),
-        this.departmentAll ? this.departmentAll : []
-      );
     },
   },
   created() {

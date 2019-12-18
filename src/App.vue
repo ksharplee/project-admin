@@ -3,11 +3,11 @@
     <v-app id="inspire">
       <router-view />
       <v-snackbar
-        v-if="snackbarShow"
         :value="snackbarShow"
         :color="snackbarColor"
         :timeout="3000"
         top
+        @input="toggleSnackbar"
       >
         {{ snackbarText }}
         <v-icon dark>
@@ -46,10 +46,17 @@ export default {
       'loading',
     ]),
   },
-  watch: {
-    snackbarShow() {
-      if (this.snackbarShow) {
-        setTimeout(() => this.$store.commit('TOGGLE_SNACKBAR', {}), 3000);
+  // watch: {
+  //   snackbarShow() {
+  //     if (this.snackbarShow) {
+  //       setTimeout(() => this.$store.commit('TOGGLE_SNACKBAR', {}), 3000);
+  //     }
+  //   },
+  // },
+  methods: {
+    toggleSnackbar(v) {
+      if (!v) {
+        this.$store.commit('CLOSE_SNACKBAR');
       }
     },
   },

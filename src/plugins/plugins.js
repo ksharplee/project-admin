@@ -7,6 +7,7 @@ export default {
     Vue.mixin({
       methods: {
         checkErr(err, source) {
+          console.log('函数: checkErr -> err', err);
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'error',
             text: err.message,

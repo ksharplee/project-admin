@@ -70,7 +70,10 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-card color="#fdfdfd">
+        <v-card
+          v-if="search.buyerId"
+          color="#fdfdfd"
+        >
           <v-card-text class="pt-4 black--text body-1">
             <v-row>
               <v-col
@@ -294,296 +297,14 @@
                   </div>
                 </div>
               </v-col>
-              <!-- <v-col
-                align-self="center"
-                cols="auto"
-              >
-                <v-btn
-                  :disabled="!orderList.length"
-                  color="secondary"
-                  depressed
-                  class="mr-2"
-                  @click="checkBySequence"
-                >
-                  顺序分摊
-                </v-btn>
-              </v-col> -->
             </v-row>
           </v-card-text>
         </v-card>
       </v-card>
-      <!-- <v-row>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">客户名称</span>
-            </div>
-            <div class="input-group-control">
-              <v-select
-                v-model="search.buyerId"
-                :items="customerFilter(searchCustomer)"
-                placeholder="请选择客户"
-                class="white"
-                item-text="dnames"
-                item-value="buyerId"
-                single-line
-                dense
-                outlined
-                clearable
-                no-data-text="暂无数据"
-                hide-details
-                @click:clear="clearSearchConditions('buyerId')"
-                @change="setGlobalCustomer"
-              >
-                <template v-slot:prepend-item>
-                  <div class="pa-3">
-                    <v-text-field
-                      v-model="searchCustomer"
-                      placeholder="输入客户名称搜索"
-                      append-icon="mdi-magnify"
-                      dense
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                    />
-                  </div>
-                </template>
-              </v-select>
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="8"
-          lg="6"
-          xl="4"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">上架时间</span>
-            </div>
-            <div class="input-group-control">
-              <v-menu
-                ref="menuStart"
-                v-model="menuStart"
-                :close-on-content-click="false"
-                :return-value.sync="search.startShelfTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="search.startShelfTime"
-                    class="white rounded-right-0"
-                    placeholder="请选择上架时间"
-                    outlined
-                    single-line
-                    dense
-                    clearable
-                    hide-details
-                    append-icon="mdi-calendar-import"
-                    readonly
-                    v-on="on"
-                    @click:clear="clearSearchConditions('startShelfTime')"
-                  />
-                </template>
-                <v-date-picker
-                  v-model="search.startShelfTime"
-                  color="primary"
-                  scrollable
-                >
-                  <div class="flex-grow-1" />
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="menuStart = false"
-                  >
-                    取消
-                  </v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.menuStart.save(search.startShelfTime)"
-                  >
-                    确定
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </div>
-            <div class="input-group-innerpend">
-              <span class="input-group-text">到</span>
-            </div>
-            <div class="input-group-control">
-              <v-menu
-                ref="menuEnd"
-                v-model="menuEnd"
-                :close-on-content-click="false"
-                :return-value.sync="search.endShelfTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="search.endShelfTime"
-                    class="white rounded-left-0"
-                    placeholder="请选择下架时间"
-                    outlined
-                    single-line
-                    dense
-                    clearable
-                    hide-details
-                    append-icon="mdi-calendar-import"
-                    readonly
-                    v-on="on"
-                    @click:clear="clearSearchConditions('endShelfTime')"
-                  />
-                </template>
-                <v-date-picker
-                  v-model="search.endShelfTime"
-                  :min="search.startShelfTime"
-                  color="primary"
-                  scrollable
-                >
-                  <div class="flex-grow-1" />
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="menuEnd = false"
-                  >
-                    取消
-                  </v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.menuEnd.save(search.endShelfTime)"
-                  >
-                    确定
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">订单号</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.orderNo"
-                placeholder="请输入订单号"
-                outlined
-                single-line
-                clearable
-                class="white"
-                hide-details
-                dense
-                @click:clear="clearSearchConditions('orderNo')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">商品名</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.goodName"
-                placeholder="请输入商品名"
-                outlined
-                single-line
-                clearable
-                class="white"
-                hide-details
-                dense
-                @click:clear="clearSearchConditions('goodName')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">付款状态</span>
-            </div>
-            <div class="input-group-control">
-              <v-select
-                v-model="search.operate"
-                :items="operates"
-                class="white"
-                single-line
-                dense
-                outlined
-                no-data-text="暂无数据"
-                hide-details
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col align-self="center">
-          <v-btn
-            :disabled="!search.buyerId && !search.orderNo"
-            color="primary"
-            depressed
-            @click="getOrderListBySearch"
-          >
-            搜索
-          </v-btn>
-          <v-btn
-            color="secondary"
-            depressed
-            class="ml-2"
-            @click="resetSearchConditions"
-          >
-            重置
-          </v-btn>
-        </v-col>
-      </v-row> -->
-      <v-card class="mb-4">
-        <!-- <v-card-text class="py-2 d-flex align-center">
-          <v-btn
-            color="white"
-            depressed
-            class="height-auto py-2 mr-2"
-            :to="{ name: 'product_add' }"
-          >
-            <div class="d-flex flex-column">
-              <v-icon
-                color="grey darken-2"
-                class="mb-1"
-              >
-                mdi-exit-to-app
-              </v-icon> 导出Excel
-            </div>
-          </v-btn>
-        </v-card-text> -->
+      <v-card
+        v-if="search.buyerId && selectedOrderList.length"
+        class="mb-4"
+      >
         <v-data-table
           :headers="headersSelected"
           :items="selectedOrderList"
@@ -670,7 +391,7 @@
       <v-btn
         :disabled="!$store.state.customerId"
         color="secondary"
-        class="px-8 body-1 mr-2"
+        class="px-6 body-1 mr-2"
         depressed
         @click="getPaymentOrderList"
       >
@@ -679,6 +400,7 @@
         </v-icon>添加订单
       </v-btn>
       <v-btn
+        v-if="search.buyerId && selectedOrderList.length"
         :loading="adding"
         :disabled="!valid || adding"
         color="primary"
@@ -1017,15 +739,15 @@ export default {
       );
       items = R.map(
         item => R.mergeRight(
-            {
-              check: '',
-              unreceivedAmount: R.subtract(
-                item.actualAmount,
-                item.receivedAmount
-              ),
-            },
-            item
-          ),
+          {
+            check: '',
+            unreceivedAmount: R.subtract(
+              item.actualAmount,
+              item.receivedAmount
+            ),
+          },
+          item
+        ),
         items
       );
       // items = R.map(

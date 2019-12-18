@@ -545,6 +545,7 @@ export default {
     cancelOrder() {
       this.canceling = true;
       this.cancelOrderAsync({
+        sectionId: this.$store.state.user.sectionId,
         id: this.toCancelOrder,
         sortType: this.sortType.value,
         operate: this.index + 1,
@@ -569,6 +570,7 @@ export default {
       this.confirming = true;
       this.confirmOrderAsync({
         id: this.toConfirmOrder,
+        sectionId: this.$store.state.user.sectionId,
         sortType: this.sortType.value,
         operate: this.index + 1,
         ...this.search,
@@ -592,6 +594,7 @@ export default {
       this.finacialChecking = true;
       this.finacialCheckOrderAsync({
         id: this.toFinacialCheckOrder,
+        sectionId: this.$store.state.user.sectionId,
         sortType: this.sortType.value,
         operate: this.index + 1,
         ...this.search,
@@ -615,6 +618,7 @@ export default {
       this.nullifying = true;
       this.nullifyOrderAsync({
         id: this.toNullifyOrder,
+        sectionId: this.$store.state.user.sectionId,
         sortType: this.sortType.value,
         operate: this.index + 1,
         ...this.search,
@@ -638,6 +642,7 @@ export default {
       this.completing = true;
       this.completeOrderAsync({
         id: this.toCompleteOrder,
+        sectionId: this.$store.state.user.sectionId,
         sortType: this.sortType.value,
         operate: this.index + 1,
         ...this.search,

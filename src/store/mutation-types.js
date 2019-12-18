@@ -2,6 +2,7 @@
 export const SET_USER = 'SET_USER';
 export const CLEAR_USER = 'CLEAR_USER';
 export const TOGGLE_SNACKBAR = 'TOGGLE_SNACKBAR';
+export const CLOSE_SNACKBAR = 'CLOSE_SNACKBAR';
 export const SET_MENU = 'SET_MENU';
 export const SET_BREADCRUMBS = 'SET_BREADCRUMBS';
 export const START_LOADING = 'START_LOADING';

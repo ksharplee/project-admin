@@ -82,9 +82,9 @@ export default {
     const right = await context.dispatch('checkAuthorityAsync', { rightId: 1038 }, { root: true });
     if (right) {
       try {
-        const res = await axios.post('/o/orderSuCancel.html', { id: payload.id });
+        const res = await axios.post('/o/orderSuCancel.html', { id: payload.id, sectionId: payload.sectionId });
         if (res.data.status === 1) {
-          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.omit(['id', 'sectionId'], payload)); }
           return Promise.resolve(res.data.status);
         }
         return Promise.reject(new Error(res.data.info));
@@ -100,9 +100,9 @@ export default {
     const right = await context.dispatch('checkAuthorityAsync', { rightId: 1039 }, { root: true });
     if (right) {
       try {
-        const res = await axios.post('/o/orderConfirm.html', { id: payload.id });
+        const res = await axios.post('/o/orderConfirm.html', { id: payload.id, sectionId: payload.sectionId });
         if (res.data.status === 1) {
-          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.omit(['id', 'sectionId'], payload)); }
           return Promise.resolve(res.data.status);
         }
         return Promise.reject(new Error(res.data.info));
@@ -118,9 +118,9 @@ export default {
     const right = await context.dispatch('checkAuthorityAsync', { rightId: 1040 }, { root: true });
     if (right) {
       try {
-        const res = await axios.post('/o/orderFinanceCheck.html', { id: payload.id });
+        const res = await axios.post('/o/orderFinanceCheck.html', { id: payload.id, sectionId: payload.sectionId });
         if (res.data.status === 1) {
-          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.omit(['id', 'sectionId'], payload)); }
           return Promise.resolve(res.data.status);
         }
         return Promise.reject(new Error(res.data.info));
@@ -136,9 +136,9 @@ export default {
     const right = await context.dispatch('checkAuthorityAsync', { rightId: 1041 }, { root: true });
     if (right) {
       try {
-        const res = await axios.post('/o/orderInvalid.html', { id: payload.id });
+        const res = await axios.post('/o/orderInvalid.html', { id: payload.id, sectionId: payload.sectionId });
         if (res.data.status === 1) {
-          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.omit(['id', 'sectionId'], payload)); }
           return Promise.resolve(res.data.status);
         }
         return Promise.reject(new Error(res.data.info));
@@ -154,9 +154,9 @@ export default {
     const right = await context.dispatch('checkAuthorityAsync', { rightId: 1043 }, { root: true });
     if (right) {
       try {
-        const res = await axios.post('/o/orderSuComplete.html', { id: payload.id });
+        const res = await axios.post('/o/orderSuComplete.html', { id: payload.id, sectionId: payload.sectionId });
         if (res.data.status === 1) {
-          if (!payload.single) { await context.dispatch('getOrderListAsync', R.dissoc('id', payload)); }
+          if (!payload.single) { await context.dispatch('getOrderListAsync', R.omit(['id', 'sectionId'], payload)); }
           return Promise.resolve(res.data.status);
         }
         return Promise.reject(new Error(res.data.info));
@@ -356,8 +356,22 @@ export default {
   //   }
   // },
   async confirmPaymentOrderAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: 1104 }, { root: true });
-    if (right) {
+    if (payload.checkRight) {
+      const right = await context.dispatch('checkAuthorityAsync', { rightId: 1104 }, { root: true });
+      if (right) {
+        try {
+          const res = await axios.post('/re/receiptCheck.html', payload);
+          if (res.data.status === 1) {
+            return Promise.resolve(res.data.status);
+          }
+          return Promise.reject(new Error(res.data.info));
+        } catch (error) {
+          return Promise.reject(error);
+        }
+      } else {
+        return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
+      }
+    } else {
       try {
         const res = await axios.post('/re/receiptCheck.html', payload);
         if (res.data.status === 1) {
@@ -367,8 +381,6 @@ export default {
       } catch (error) {
         return Promise.reject(error);
       }
-    } else {
-      return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
   async nullifyPaymentOrderAsync(context, payload) {

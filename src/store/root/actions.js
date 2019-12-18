@@ -1,4 +1,5 @@
 import axios from '@/plugins/axios';
+import router from '@/router';
 
 export default {
   // 登录
@@ -168,6 +169,10 @@ export default {
       const res = await axios.post('/r/userCheckRight.html', payload);
       if (res.data.status === 1 && res.data.hasRight === 1) {
         return Promise.resolve(true);
+      }
+      if (res.data.info === '非法访问') {
+        router.replace({ name: 'login' });
+        return false;
       }
       return Promise.resolve(false);
     } catch (error) {

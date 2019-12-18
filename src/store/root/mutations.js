@@ -6,6 +6,7 @@ import {
   START_LOADING,
   END_LOADING,
   SET_GLOBAL_CUSTOMER,
+  CLOSE_SNACKBAR,
 } from '../mutation-types';
 
 export default {
@@ -38,6 +39,9 @@ export default {
       state.snackbarIcon = 'mdi-check';
     }
     state.snackbarText = payload.text;
-    state.snackbarShow = !state.snackbarShow;
+    state.snackbarShow = true;
+  },
+  [CLOSE_SNACKBAR](state) {
+    state.snackbarShow = false;
   },
 };

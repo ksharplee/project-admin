@@ -51,17 +51,6 @@
             </v-img>
           </div>
         </template>
-        <template v-slot:item.isUse="{ item }">
-          <div
-            class="py-3"
-            :class="item.isUse === '1' ? 'success--text' : 'grey--text'"
-          >
-            {{ item.isUse == '1' ? '是' : '否' }}
-          </div>
-        </template>
-        <template v-slot:item.isAdded="{ item }">
-          {{ item.isAdded === '1' ? '增值税发票' : '普通发票' }}
-        </template>
         <template v-slot:item.action="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
@@ -232,7 +221,7 @@ export default {
   },
   methods: {
     ...mapActions('finance', ['getPaymentListAsync', 'deletePaymentAsync']),
-    // 获取发票列表列表
+    // 获取收款账户列表列表
     getPaymentList(params) {
       this.loadingDataItems = true;
       this.getPaymentListAsync(params)
@@ -244,11 +233,10 @@ export default {
           this.loadingDataItems = false;
         });
     },
-
-    // 删除发票
+    // 删除收款账户
     deleteInvoice() {
       this.deleting = true;
-      this.deleteInvoiceAsync({ id: this.toDeleteInvoice })
+      this.deletePaymentAsync({ id: this.toDeleteInvoice })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

@@ -748,6 +748,7 @@ export default {
       this.canceling = true;
       this.cancelOrderAsync({
         id: this.order.id,
+        sectionId: this.$store.state.user.sectionId,
         single: true,
       })
         .then(() => {
@@ -769,6 +770,7 @@ export default {
       this.confirming = true;
       this.confirmOrderAsync({
         id: this.order.id,
+        sectionId: this.$store.state.user.sectionId,
         single: true,
       })
         .then(() => {
@@ -792,6 +794,7 @@ export default {
       this.finacialChecking = true;
       this.finacialCheckOrderAsync({
         id: this.order.id,
+        sectionId: this.$store.state.user.sectionId,
         single: true,
       })
         .then(() => {
@@ -815,6 +818,7 @@ export default {
       this.nullifying = true;
       this.nullifyOrderAsync({
         id: this.order.id,
+        sectionId: this.$store.state.user.sectionId,
         single: true,
       })
         .then(() => {
@@ -836,6 +840,7 @@ export default {
       this.completing = true;
       this.completeOrderAsync({
         id: this.order.id,
+        sectionId: this.$store.state.user.sectionId,
         single: true,
       })
         .then(() => {

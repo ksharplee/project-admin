@@ -10,7 +10,7 @@
       >
         <v-icon left>
           mdi-plus
-        </v-icon>分配客户
+        </v-icon>添加客户
       </v-btn>
     </div>
     <v-divider class="my-4" />
@@ -185,7 +185,7 @@
                   </template>
                   <span>收货地址</span>
                 </v-tooltip>
-                <v-tooltip bottom>
+                <!-- <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
                       icon
@@ -199,7 +199,7 @@
                     </v-btn>
                   </template>
                   <span>设置等级</span>
-                </v-tooltip>
+                </v-tooltip> -->
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
@@ -281,7 +281,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog
+    <!-- <v-dialog
       v-model="dialogSetGrade"
       max-width="500"
     >
@@ -340,7 +340,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </div>
 </template>
 
@@ -467,7 +467,11 @@ export default {
     // }
     // if (!this.customerGradeList.status) {
     this.loadingCustomerGrade = true;
-    this.getCustomerGradeListAsync()
+    const promises = [
+      this.getCustomerGradeListAsync(),
+      this.getDepartmentListAsync(),
+    ];
+    Promise.all(promises)
       .catch((err) => {
         this.checkErr(err);
       })
@@ -484,6 +488,7 @@ export default {
       'getCustomerGradeListAsync',
       'setCustomerGrade',
     ]),
+    ...mapActions('authority', ['getDepartmentListAsync']),
     // 获取客户列表
     getCustomerList(params) {
       this.loadingDataItems = true;
@@ -518,20 +523,20 @@ export default {
           this.dialogDelete = false;
         });
     },
-    setGrade() {
-      this.settingGrade = true;
-      this.setCustomerGrade({
-        id: this.toSetGradeItem.id,
-        gradeId: this.toSetGradeItem.gradeId,
-      })
-        .catch((err) => {
-          this.checkErr(err);
-        })
-        .finally(() => {
-          this.settingGrade = false;
-          this.dialogSetGrade = false;
-        });
-    },
+    // setGrade() {
+    //   this.settingGrade = true;
+    //   this.setCustomerGrade({
+    //     id: this.toSetGradeItem.id,
+    //     gradeId: this.toSetGradeItem.gradeId,
+    //   })
+    //     .catch((err) => {
+    //       this.checkErr(err);
+    //     })
+    //     .finally(() => {
+    //       this.settingGrade = false;
+    //       this.dialogSetGrade = false;
+    //     });
+    // },
     searchByConditions() {
       this.getCustomerList(this.search);
     },

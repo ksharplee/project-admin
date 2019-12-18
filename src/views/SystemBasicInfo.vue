@@ -44,8 +44,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text required">&nbsp;&nbsp;&nbsp;&nbsp;公司名称&nbsp;&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text required">公司名称</span>
                     </div>
                     <div class="input-group-control">
                       <v-text-field
@@ -69,8 +69,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;联系人&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text">联系人</span>
                     </div>
                     <div class="input-group-control">
                       <v-text-field
@@ -93,8 +93,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">&nbsp;&nbsp;&nbsp;&nbsp;联系电话&nbsp;&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text">联系电话</span>
                     </div>
                     <div class="input-group-control">
                       <v-text-field
@@ -119,8 +119,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;地&nbsp;&nbsp;&nbsp;&nbsp;区&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text required">地区</span>
                     </div>
                     <div class="input-group-control">
                       <v-row no-gutters>
@@ -191,8 +191,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text required">&nbsp;&nbsp;&nbsp;&nbsp;详细地址&nbsp;&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text required">详细地址</span>
                     </div>
                     <div class="input-group-control">
                       <v-text-field
@@ -216,7 +216,7 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
+                    <div class="input-group-prepend large">
                       <span class="input-group-text">短信服务平台</span>
                     </div>
                     <div class="input-group-control">
@@ -240,8 +240,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">&nbsp;&nbsp;短信宝账号&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text">短信宝账号</span>
                     </div>
                     <div class="input-group-control">
                       <v-text-field
@@ -264,8 +264,8 @@
                   class="text-right"
                 >
                   <div class="input-group">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">&nbsp;&nbsp;短信宝密码&nbsp;&nbsp;</span>
+                    <div class="input-group-prepend large">
+                      <span class="input-group-text">短信宝密码</span>
                     </div>
                     <div class="input-group-control">
                       <v-text-field

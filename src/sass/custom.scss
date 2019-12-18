@@ -3,7 +3,13 @@ body {
   background-color: #fafafa;
 }
 
+.disabled-readonly .v-input--is-readonly .v-label,
+.disabled-readonly .v-input--is-readonly .v-input--selection-controls__ripple {
+  cursor: not-allowed;
+}
+
 // 路由切换动态效果
+
 .slide-left-enter,
 .slide-right-leave-active {
   opacity: 0;
@@ -46,9 +52,6 @@ body {
     align-items: center;
     padding: .375rem .75rem;
     margin-bottom: 0;
-    max-width: 84px;
-    min-width: 84px;
-    text-align: right;
     font-size: 1rem;
     font-weight: 400;
     color: #495057;
@@ -68,6 +71,17 @@ body {
         color: red
       }
     }
+  }
+
+  .input-group-prepend {
+      max-width: 84px;
+      min-width: 84px;
+      justify-content: flex-end;
+
+      &.large {
+        max-width: 120px;
+        min-width: 120px;
+      }
   }
 
   .input-group-prepend {
@@ -125,9 +139,9 @@ body {
   }
 }
 
-.theme--light.v-text-field--outlined fieldset {
-  border-color: #ddd !important;
-}
+// .theme--light.v-text-field--outlined fieldset {
+//   border-color: #ddd !important;
+// }
 
 .v-input--radio-group.v-input--radio-group--column {
   .v-input__control {
@@ -172,9 +186,13 @@ body {
   }
 }
 
-.custom-text-filed {
-  .v-text-field__details {
-    top: 100% !important;
+.custom-text-area {
+  .v-input__prepend-inner {
+    flex-wrap: wrap;
+  }
+
+  textarea {
+    margin-top: 0 !important;
   }
 }
 

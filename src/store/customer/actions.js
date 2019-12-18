@@ -215,4 +215,16 @@ export default {
       return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
+  // 验证客户手机
+  async checkCustomerMobileAsync(context, payload) {
+    try {
+      const res = await axios.post('/user/checkMobile.html', payload);
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data.data);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

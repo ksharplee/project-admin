@@ -152,10 +152,6 @@ export default {
               .uploadImgSync(postData)
               .then((res) => {
                 that.$emit('update:src', res);
-                // that.$store.commit('TOGGLE_SNACKBAR', {
-                //   type: 'success',
-                //   text: '图片上传成功!',
-                // });
               })
               .catch((err) => {
                 this.checkErr(err);
@@ -165,10 +161,11 @@ export default {
               });
           },
           error(err) {
-            this.$store.commit('TOGGLE_SNACKBAR', {
+            that.$store.commit('TOGGLE_SNACKBAR', {
               type: 'error',
-              text: err.message,
+              text: '请上传图片文件',
             });
+            that.dialog = false;
           },
         });
       } else {

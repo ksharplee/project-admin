@@ -1000,7 +1000,7 @@ export default {
     },
     addOrder() {
       this.addingOrder = true;
-      this.addOrderAsync(R.mergeRight(this.order, { detail: this.detail }))
+      this.addOrderAsync(R.mergeRight(this.order, { detail: this.detail, sectionId: this.$store.state.user.sectionId }))
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

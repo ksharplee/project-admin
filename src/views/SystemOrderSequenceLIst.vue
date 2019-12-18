@@ -56,6 +56,7 @@
               <v-btn
                 icon
                 class="mx-1"
+                :disabled="item.processId === '0'"
                 v-on="on"
                 @click="target = item;edit = true;dialogSingle = true"
               >
@@ -71,6 +72,7 @@
               <v-btn
                 icon
                 class="mx-1"
+                :disabled="item.processId === '0'"
                 v-on="on"
                 @click="dialogDisable = true;toDisableSequence = item"
               >

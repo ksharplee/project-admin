@@ -394,7 +394,7 @@ export default {
     getProductPrice(item) {
       let price = null;
       if (item.unitId && item.units) {
-        price =          +item.buNumber
+        price = +item.buNumber
           * +item.price
           * +R.prop(
             'packeNum',
@@ -441,7 +441,7 @@ export default {
     },
     editOrder() {
       this.editing = true;
-      this.editOrderAsync(this.params)
+      this.editOrderAsync({ ...this.params, section: this.$store.state.user.sectionId })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

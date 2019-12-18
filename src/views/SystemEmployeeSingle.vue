@@ -474,6 +474,72 @@
                 >
                   <div class="input-group">
                     <div class="input-group-prepend">
+                      <span class="input-group-text required">所属部门</span>
+                    </div>
+                    <div class="input-group-control">
+                      <v-menu
+                        v-model="showMenu"
+                        offset-y
+                        :close-on-content-click="false"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-textarea
+                            :placeholder="postDepartmentsLocal.length ? '' : '请选择部门'"
+                            :loading="loadingDepartment"
+                            single-line
+                            outlined
+                            dense
+                            readonly
+                            hide-details
+                            v-on="on"
+                            @focus="getDepartmentList"
+                          >
+                            <template v-slot:prepend-inner>
+                              <v-chip
+                                v-for="item in postDepartmentsLocal"
+                                :key="item.id"
+                                close
+                                small
+                                class="mr-2 mb-2"
+                                @click:close="deletePostDepartment(item.id)"
+                              >
+                                {{ item.dnames }}
+                              </v-chip>
+                            </template>
+                          </v-textarea>
+                        </template>
+                        <v-card>
+                          <v-card-text class="custom-treeview-class">
+                            <v-treeview
+                              v-if="departmentList && departmentList.length"
+                              :items="departmentList"
+                              :active="employee.sectionId"
+                              item-text="dnames"
+                              item-key="id"
+                              activatable
+                              multiple-active
+                              dense
+                              active-class="active-treenode"
+                              @update:active="returnActiveDepartments"
+                            />
+                            <div
+                              v-else
+                              class="py-4 grey--text text-center"
+                            >
+                              {{ loadingDepartment ? '加载中...' : '暂无部门信息' }}
+                            </div>
+                          </v-card-text>
+                        </v-card>
+                      </v-menu>
+                    </div>
+                  </div>
+                </v-col>
+                <v-col
+                  rows="12"
+                  md="12"
+                >
+                  <div class="input-group">
+                    <div class="input-group-prepend">
                       <span class="input-group-text">员工特长</span>
                     </div>
                     <div class="input-group-control">
@@ -507,7 +573,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import * as R from 'ramda';
 import md5 from 'md5';
 import ImgUpload from '@/components/ImgUpload.vue';
@@ -527,11 +593,15 @@ export default {
       submitting: false,
       menuEntry: false,
       menuBirth: false,
+      showMenu: false,
+      postDepartments: [],
       employee: {
         logo: '',
         locked: '0',
         sex: '1',
+        sectionId: [],
       },
+      loadingDepartment: false,
       sexOptions: [
         {
           text: '男',
@@ -565,13 +635,20 @@ export default {
       idRules: [
         v => !!v || '请填写身份证号',
         v => /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/.test(
-            v
-          ) || '身份证号码格式有误',
+          v
+        ) || '身份证号码格式有误',
       ],
     };
   },
   computed: {
     ...mapState('system', ['employeeList']),
+    ...mapState('authority', ['departmentList', 'departmentAll']),
+    ...mapGetters('authority', ['postDepartmentsFilter']),
+    postDepartmentsLocal() {
+      return this.postDepartmentsFilter(
+        this.employee.sectionId ? this.employee.sectionId : []
+      );
+    },
   },
   created() {
     this.$store.commit('SET_BREADCRUMBS', [
@@ -595,7 +672,34 @@ export default {
     ]);
     if (this.id) {
       this.$store.commit('START_LOADING');
-      this.getEmployeeSingle({ id: this.id });
+      if (!this.departmentList) {
+        this.loadingDepartment = true;
+        this.getDepartmentListAsync()
+          .then(() => {
+            this.getEmployeeSingle({ id: this.id });
+          })
+          .catch((err) => {
+            this.checkErr(err, 'getDepartmentList');
+          })
+          .finally(() => {
+            this.loadingDepartment = false;
+          });
+      } else {
+        this.getEmployeeSingle({ id: this.id });
+      }
+    } else {
+      this.$store.commit('START_LOADING');
+      if (!this.departmentList) {
+        this.loadingDepartment = true;
+        this.getDepartmentListAsync()
+          .catch((err) => {
+            this.checkErr(err, 'getDepartmentList');
+          })
+          .finally(() => {
+            this.$store.commit('END_LOADING');
+            this.loadingDepartment = false;
+          });
+      }
     }
   },
   methods: {
@@ -603,6 +707,20 @@ export default {
       'addOrEditEmployeeAsync',
       'getEmployeeSingleAsync',
     ]),
+    ...mapActions('authority', ['getDepartmentListAsync']),
+    deletePostDepartment(id) {
+      this.$set(
+        this.employee,
+        'sectionId',
+        R.without([id], this.postDepartments)
+      );
+      // this.postDepartments = R.without([id], this.postDepartments);
+    },
+    returnActiveDepartments(v) {
+      this.$set(this.employee, 'sectionId', v);
+      // this.postDepartments = v;
+    },
+    getDepartmentList() {},
     // 添加/编辑员工
     addOrEditEmployee() {
       this.submitting = true;

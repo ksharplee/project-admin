@@ -37,6 +37,9 @@ export default {
         p: context.state.employeeList.data.p,
       }, payload));
       if (res.data.status === 1) {
+        if (payload.all === '1') {
+          return Promise.resolve(res.data.data.items);
+        }
         context.commit('SET_EMPLOYEE_LIST', res.data);
         return Promise.resolve(res.data.status);
       }
