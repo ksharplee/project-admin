@@ -1,7 +1,8 @@
 // src/sass/main.scss
 @import '~vuetify/src/styles/styles.sass';
+@import 'custom.scss';
 // The variables you want to modify
-$font-size-root: 14px;
+$font-size-root: 13px;
 $grid-gutter: $spacer * 4;
 $headings: map-merge($headings, ('h1': ('size': 6rem,
       'weight': 300,
@@ -57,5 +58,3 @@ $headings: map-merge($headings, ('h1': ('size': 6rem,
       'weight': 400,
       'letter-spacing': .1666666667em,
       'line-height': 1rem)));
-
-@import 'custom.scss';

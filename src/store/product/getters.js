@@ -10,4 +10,7 @@ export default {
     }
     return state.productBrand.data.items;
   },
+  productCategoryGetter(state) {
+    return R.prepend({ dnames: '全部分类', id: '0' }, state.productCategory.data.items);
+  },
 };

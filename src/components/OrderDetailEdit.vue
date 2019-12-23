@@ -441,7 +441,7 @@ export default {
     },
     editOrder() {
       this.editing = true;
-      this.editOrderAsync({ ...this.params, section: this.$store.state.user.sectionId })
+      this.editOrderAsync({ ...this.params, sectionId: this.$store.state.user.sectionId })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

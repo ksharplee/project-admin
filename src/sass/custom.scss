@@ -1,6 +1,6 @@
 html,
 body {
-  background-color: #fafafa;
+  background-color: #f6fbfd;
 }
 
 .disabled-readonly .v-input--is-readonly .v-label,
@@ -74,28 +74,28 @@ body {
   }
 
   .input-group-prepend {
-      max-width: 84px;
-      min-width: 84px;
-      justify-content: flex-end;
+    max-width: 84px;
+    min-width: 84px;
+    justify-content: flex-end;
 
-      &.large {
-        max-width: 120px;
-        min-width: 120px;
-      }
+    &.large {
+      max-width: 120px;
+      min-width: 120px;
+    }
   }
 
   .input-group-prepend {
     margin-right: -1px;
 
-    .input-group-text {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
-    }
+    // .input-group-text {
+    //   border-top-right-radius: 0;
+    //   border-bottom-right-radius: 0;
+    // }
 
-    .input-group-control>.v-input {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-    }
+    // .input-group-control>.v-input {
+    //   border-top-left-radius: 0;
+    //   border-bottom-left-radius: 0;
+    // }
 
     .v-btn {
       height: 100%;
@@ -153,16 +153,13 @@ body {
   font-size: 1rem;
 }
 
-.v-label,
-.v-tab,
-.v-input--dense.v-input {
-  font-size: 14px;
-}
+.custom-text-field-wrap {
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.24);
 
-// data-table
-
-.v-data-table th {
-  font-size: inherit;
+  &:hover {
+    border: 1px solid rgba(0, 0, 0, 0.86);
+  }
 }
 
 // treeview自定义active class
@@ -215,6 +212,20 @@ body {
   .input-hidden {
     position: absolute;
     clip: rect(0px, 0px, 0px, 0px);
+  }
+}
+
+// 商品列表高级搜索
+.advance-search {
+  position: relative;
+
+  .v-dialog__content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: block;
+    min-height: 500px;
   }
 }
 
@@ -317,6 +328,11 @@ body {
   right: 0;
   left: 220px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
 }
 
 .v-navigation-drawer--close~.v-breadcrumbs {

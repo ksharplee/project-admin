@@ -360,10 +360,10 @@ export default {
         },
         R.head(this.basicInfo.data)
       );
-      if (this.info.addressSecondId) {
+      if (this.info.addressSecondId && this.info.addressSecondId !== '0') {
         this.getCities(this.info.addressFirstId);
       }
-      if (this.info.addressId) {
+      if (this.info.addressId && this.info.addressId !== '0') {
         this.getRegions(this.info.addressSecondId);
       }
     }
@@ -399,10 +399,10 @@ export default {
             },
             R.head(this.basicInfo.data)
           );
-          if (this.info.addressSecondId) {
+          if (this.info.addressSecondId && this.info.addressSecondId !== '0') {
             this.getCities(this.info.addressFirstId);
           }
-          if (this.info.addressId) {
+          if (this.info.addressId && this.info.addressId !== '0') {
             this.getRegions(this.info.addressSecondId);
           }
         })

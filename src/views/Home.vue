@@ -22,7 +22,7 @@
           <v-list-item-title>首页</v-list-item-title>
         </v-list-item>
         <v-list-group
-          v-for="item in items"
+          v-for="item in navs"
           :key="item.text"
           v-model="item.model"
           no-action
@@ -84,14 +84,13 @@
     </v-app-bar>
     <v-breadcrumbs
       :items="breadCrumbs"
-      divider=">"
-      class="py-2 white pl-4"
+      class="py-3 white pl-4"
     />
     <v-content>
       <transition :name="transitionName">
         <router-view
           class="child-view mb-4 px-4 pt-4"
-          style="margin-top:38px"
+          style="margin-top:48px"
         />
       </transition>
     </v-content>
@@ -108,12 +107,13 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import * as R from 'ramda';
 
 export default {
   data: () => ({
     drawer: null,
     transitionName: 'v-slide-x-transition',
-    items: [
+    navs: [
       {
         icon: 'mdi-view-split-vertical',
         text: '商品',
@@ -197,18 +197,40 @@ export default {
   }),
   computed: {
     ...mapState(['breadCrumbs', 'user']),
+    routerArray() {
+      return R.pluck('children', this.navs);
+    },
+    routerNames() {
+      return R.map(item => R.map(v => R.path(['url', 'name'], v), item), this.routerArray);
+    },
   },
   watch: {
     $route(to, from) {
+      const index = R.findIndex(R.includes(to.name), this.routerNames);
+      if (index >= 0) {
+        const obj = this.navs[index];
+        obj.model = true;
+        this.$set(this.navs, index, obj);
+      }
       const toDepth = to.path.split('/').length;
       const fromDepth = from.path.split('/').length;
       this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
     },
   },
+  created() {
+    const index = R.findIndex(R.includes(this.$router.history.current.name), this.routerNames);
+    if (index >= 0) {
+      const obj = this.navs[index];
+      obj.model = true;
+      this.$set(this.navs, index, obj);
+    }
+  },
   methods: {
     ...mapMutations(['CLEAR_USER']),
+    ...mapMutations('system', ['CLEAR_BASIC_INFO']),
     loginOut() {
       this.CLEAR_USER();
+      this.CLEAR_BASIC_INFO();
       this.$router.replace({ name: 'login' });
     },
   },

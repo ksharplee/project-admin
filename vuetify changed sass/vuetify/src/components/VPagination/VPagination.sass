@@ -1,0 +1,117 @@
+@import './_variables.scss'
+
+// Theme
++theme(v-pagination) using ($material)
+  .v-pagination__item
+    background: map-get($material, 'cards')
+    color: map-deep-get($material, 'text', 'primary')
+    // changed 34px -> 30px
+    min-width: 30px
+    padding: 0 5px
+    width: auto
+
+    &--active
+      color: map-deep-get($material, 'text', 'theme')
+
+  .v-pagination__navigation
+    background: map-get($material, 'cards')
+
+.v-pagination
+  align-items: center
+  display: inline-flex
+  list-style-type: none
+  justify-content: center
+  margin: 0
+  max-width: 100%
+  // changed 100% -> none
+  width: 100%
+
+  &#{&}
+    padding-left: 0
+
+  > li
+    align-items: center
+    display: flex
+
+  &--circle
+    .v-pagination__item,
+    .v-pagination__more,
+    .v-pagination__navigation
+      border-radius: 50%
+
+  &--disabled
+    pointer-events: none
+    opacity: .6
+    // changed () => &&__item
+    +elevation(0)
+    border-radius: $pagination-border-radius
+    font-size: 13px
+    background: transparent
+    height: 30px
+    width: 30px
+    margin: 0
+    text-decoration: none
+    transition: .3s map-get($transition, 'linear-out-slow-in')
+    border: 1px solid rgb(237, 241, 249)
+
+  &__item
+    // changed 2 -> 0
+    +elevation(0)
+    border-radius: $pagination-border-radius
+    // changed 14px -> 13px
+    font-size: 13px
+    background: transparent
+    // changed 34px -> 30px
+    height: 30px
+    // changed 34px -> 30px
+    width: 30px
+    // changed .3rem -> 0
+    margin: 0
+    text-decoration: none
+    transition: .3s map-get($transition, 'linear-out-slow-in')
+    border: 1px solid rgb(237, 241, 249)
+
+    &--active
+      // changed 4 -> 0
+      +elevation(0)
+
+  &__navigation
+    // changed 2 -> 0
+    +elevation(2)
+    border-radius: $pagination-border-radius
+    display: inline-flex
+    justify-content: center
+    align-items: center
+    text-decoration: none
+    height: 2rem
+    width: 2rem
+    margin: .3rem 10px
+
+    .v-icon
+      // changed 2rem -> 18px
+      font-size: 18px
+      transition: $secondary-transition
+      vertical-align: middle
+
+    &--disabled
+      opacity: .6
+      pointer-events: none
+      // changed () => &&__item
+      +elevation(0)
+      border-radius: $pagination-border-radius
+      font-size: 13px
+      background: transparent
+      height: 30px
+      width: 30px
+      margin: 0
+      text-decoration: none
+      transition: .3s map-get($transition, 'linear-out-slow-in')
+      border: 1px solid rgb(237, 241, 249)
+
+  &__more
+    margin: .3rem
+    display: inline-flex
+    align-items: flex-end
+    justify-content: center
+    height: 2rem
+    width: 2rem

@@ -69,20 +69,34 @@
         </v-chip>
       </template>
       <template v-slot:footer>
+        <v-divider />
         <div
           v-if="orderList.status && orderList.data.items.length"
-          class="pa-4 grey lighten-5"
+          class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
         >
-          <div
-            v-if="orderList.status && orderList.data.items.length"
-            class="pa-4 grey lighten-5 d-flex align-center text-no-wrap"
-          >
-            <span>当前共有订单：<span class="error--text">{{ orderList.data.totalItem }}</span></span>
-            <v-pagination
-              v-model="page"
-              :length="pageCount"
-              @input="changePagination"
-            />
+          <div class="mr-2">
+            共<span class="error--text">{{ orderList.data.totalItem }}</span>订单
+          </div>
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            :total-visible="7"
+            @input="changePagination"
+          />
+          <div class="mx-2">
+            跳至
+          </div>
+          <div style="width:50px">
+            <input
+              v-model="pageEnter"
+              type="text"
+              class="width-100 px-2 text-center"
+              style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+              @keyup.enter="changePaginationDirectly"
+            >
+          </div>
+          <div class="ml-2">
+            页
           </div>
         </div>
       </template>
@@ -469,6 +483,7 @@ export default {
           sortable: false,
         },
       ],
+      pageEnter: 1,
     };
   },
   computed: {

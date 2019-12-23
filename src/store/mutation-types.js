@@ -30,6 +30,7 @@ export const SET_EMPLOYEE_LIST = 'SET_EMPLOYEE_LIST';
 export const SET_BASIC_INFO = 'SET_BASIC_INFO';
 export const SET_AREA_INFO = 'SET_AREA_INFO';
 export const SET_ORDER_SEQUENCE = 'SET_ORDER_SEQUENCE';
+export const CLEAR_BASIC_INFO = 'CLEAR_BASIC_INFO';
 
 // finance
 export const SET_INVOICE_LIST = 'SET_INVOICE_LIST';

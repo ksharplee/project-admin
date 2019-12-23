@@ -165,6 +165,8 @@
               <td :class="item.gradeName ? '' : 'grey--text'">
                 {{ item.gradeName ? item.gradeName : '无' }}
               </td>
+              <td>{{ item.sectionName ? item.sectionName : '无' }}</td>
+              <td>{{ item.sellMenName ? item.sellMenName : '无' }}</td>
               <td>{{ item.createTime | dateTruncate(16) }}</td>
               <td>
                 <v-tooltip bottom>
@@ -235,15 +237,35 @@
           </tbody>
         </template>
         <template v-slot:footer>
+          <v-divider />
           <div
             v-if="customerList.status && customerList.data.items.length"
-            class="pa-4 grey lighten-5"
+            class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
           >
+            <div class="mr-2">
+              共<span class="error--text">{{ customerList.data.totalItem }}</span>客户
+            </div>
             <v-pagination
               v-model="page"
               :length="pageCount"
+              :total-visible="7"
               @input="changePagination"
             />
+            <div class="mx-2">
+              跳至
+            </div>
+            <div style="width:50px">
+              <input
+                v-model="pageEnter"
+                type="text"
+                class="width-100 px-2 text-center"
+                style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+                @keyup.enter="changePaginationDirectly"
+              >
+            </div>
+            <div class="ml-2">
+              页
+            </div>
           </div>
         </template>
       </v-data-table>
@@ -345,7 +367,7 @@
 </template>
 
 <script>
-// import * as R from 'ramda';
+import * as R from 'ramda';
 import { mapState, mapActions } from 'vuex';
 import CustomerSingle from '@/components/CustomerSingle.vue';
 
@@ -401,6 +423,18 @@ export default {
           sortable: false,
         },
         {
+          text: '所属部门',
+          value: 'sectionName',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '负责员工',
+          value: 'sellMenName',
+          align: 'center',
+          sortable: false,
+        },
+        {
           text: '创建时间',
           value: 'createTime',
           align: 'center',
@@ -423,6 +457,7 @@ export default {
           value: '1',
         },
       ],
+      pageEnter: 1,
     };
   },
   computed: {
@@ -489,6 +524,18 @@ export default {
       'setCustomerGrade',
     ]),
     ...mapActions('authority', ['getDepartmentListAsync']),
+    changePaginationDirectly() {
+      if (R.is(Number, this.pageEnter)) {
+        if (this.pageEnter <= this.pageCount) {
+          this.page = this.pageEnter;
+        } else {
+          this.pageEnter = this.pageCount;
+        }
+        this.getCustomerList();
+      } else {
+        this.pageEnter = 1;
+      }
+    },
     // 获取客户列表
     getCustomerList(params) {
       this.loadingDataItems = true;

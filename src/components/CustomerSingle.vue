@@ -150,7 +150,7 @@
               cols="3"
               class="text-right"
             >
-              <span class="error--text">*</span>客户部门：
+              客户部门：
             </v-col>
             <v-col cols="6">
               <v-menu
@@ -168,7 +168,9 @@
                     readonly
                     append-icon="mdi-menu-down"
                     hide-details
+                    clearable
                     v-on="on"
+                    @click:clear="deleteDepartment"
                   />
                 </template>
                 <v-card>
@@ -341,6 +343,10 @@ export default {
       'checkCustomerMobileAsync',
     ]),
     ...mapActions('system', ['getEmployeeListAsync']),
+    deleteDepartment() {
+      this.$set(this.customer, 'sectionId', '');
+      this.$set(this.customer, 'sellMenId', '');
+    },
     getEmployeeList(id) {
       this.loadingEmployeeList = true;
       this.getEmployeeListAsync({ all: '1', sectionId: id }).then((res) => {

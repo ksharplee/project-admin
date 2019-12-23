@@ -489,10 +489,13 @@
                             single-line
                             outlined
                             dense
+                            rows="1"
+                            auto-grow
                             readonly
+                            append-icon="mdi-menu-down"
                             hide-details
+                            class="custom-text-area"
                             v-on="on"
-                            @focus="getDepartmentList"
                           >
                             <template v-slot:prepend-inner>
                               <v-chip
@@ -513,7 +516,7 @@
                             <v-treeview
                               v-if="departmentList && departmentList.length"
                               :items="departmentList"
-                              :active="employee.sectionId"
+                              :active="employee.sectionId ? employee.sectionId : []"
                               item-text="dnames"
                               item-key="id"
                               activatable
@@ -560,7 +563,8 @@
         </v-container>
       </v-card>
       <v-btn
-        :disabled="!valid || submitting"
+        :loading="submitting"
+        :disabled="!valid || submitting || !employee.sectionId || !employee.sectionId.length"
         color="primary"
         large
         class="px-12 body-1 my-4"
@@ -687,19 +691,17 @@ export default {
       } else {
         this.getEmployeeSingle({ id: this.id });
       }
-    } else {
+    } else if (!this.departmentList) {
       this.$store.commit('START_LOADING');
-      if (!this.departmentList) {
-        this.loadingDepartment = true;
-        this.getDepartmentListAsync()
-          .catch((err) => {
-            this.checkErr(err, 'getDepartmentList');
-          })
-          .finally(() => {
-            this.$store.commit('END_LOADING');
-            this.loadingDepartment = false;
-          });
-      }
+      this.loadingDepartment = true;
+      this.getDepartmentListAsync()
+        .catch((err) => {
+          this.checkErr(err, 'getDepartmentList');
+        })
+        .finally(() => {
+          this.$store.commit('END_LOADING');
+          this.loadingDepartment = false;
+        });
     }
   },
   methods: {
@@ -712,7 +714,7 @@ export default {
       this.$set(
         this.employee,
         'sectionId',
-        R.without([id], this.postDepartments)
+        R.without([id], this.employee.sectionId)
       );
       // this.postDepartments = R.without([id], this.postDepartments);
     },
@@ -720,11 +722,17 @@ export default {
       this.$set(this.employee, 'sectionId', v);
       // this.postDepartments = v;
     },
-    getDepartmentList() {},
     // 添加/编辑员工
     addOrEditEmployee() {
-      this.submitting = true;
       const postData = this.employee;
+      if (!postData.sectionId || !postData.sectionId.length) {
+        this.$store.commit('TOGGLE_SNACKBAR', {
+          type: 'error',
+          text: '请选择员工所属部门',
+        });
+        return;
+      }
+      this.submitting = true;
       if (postData.passwords) {
         postData.passwords = md5(this.employee.passwords);
       }

@@ -347,20 +347,34 @@
           </tbody>
         </template>
         <template v-slot:footer>
+          <v-divider />
           <div
             v-if="employeeList.data.items.length"
-            class="pa-4 grey lighten-5"
+            class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
           >
-            <div
-              v-if="employeeList.status && employeeList.data.items.length"
-              class="pa-4 grey lighten-5 d-flex align-center text-no-wrap"
-            >
-              <span>当前共有员工：<span class="error--text">{{ employeeList.data.totalItem }}</span></span>
-              <v-pagination
-                v-model="page"
-                :length="pageCount"
-                @input="changePagination"
-              />
+            <div class="mr-2">
+              共<span class="error--text">{{ employeeList.data.totalItem }}</span>员工
+            </div>
+            <v-pagination
+              v-model="page"
+              :length="pageCount"
+              :total-visible="7"
+              @input="changePagination"
+            />
+            <div class="mx-2">
+              跳至
+            </div>
+            <div style="width:50px">
+              <input
+                v-model="pageEnter"
+                type="text"
+                class="width-100 px-2 text-center"
+                style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+                @keyup.enter="changePaginationDirectly"
+              >
+            </div>
+            <div class="ml-2">
+              页
             </div>
           </div>
         </template>
@@ -401,13 +415,16 @@
         <v-card-title class="title grey lighten-3 pa-4">
           修改<span class="primary--text">{{ toChangePasswordEmployee.userNames }}</span>的登录密码
         </v-card-title>
-        <v-card-text class="pt-6">
+        <v-card-text class="pt-6 body-1">
           <v-form v-model="valid">
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text ">登录密码</span>
-              </div>
-              <div class="input-group-control">
+            <v-row align="center">
+              <v-col
+                cols="2"
+                class="text-right"
+              >
+                登录密码
+              </v-col>
+              <v-col cols="8">
                 <v-text-field
                   v-model="toChangePasswordEmployee.passwords"
                   :rules="passwordRules"
@@ -419,8 +436,8 @@
                   hide-details
                   dense
                 />
-              </div>
-            </div>
+              </v-col>
+            </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -741,6 +758,8 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import md5 from 'md5';
+import * as R from 'ramda';
 
 export default {
   name: 'SystemEmployeeList',
@@ -822,6 +841,7 @@ export default {
         },
       ],
       passwordRules: [v => !!v || '请填写登录密码'],
+      pageEnter: 1,
     };
   },
   computed: {
@@ -872,6 +892,18 @@ export default {
       'addOrEditEmployeeAsync',
       'getEmployeeSingleAsync',
     ]),
+    changePaginationDirectly() {
+      if (R.is(Number, this.pageEnter)) {
+        if (this.pageEnter <= this.pageCount) {
+          this.page = this.pageEnter;
+        } else {
+          this.pageEnter = this.pageCount;
+        }
+        this.getEmployeeList();
+      } else {
+        this.pageEnter = 1;
+      }
+    },
     changePagination() {
       this.getEmployeeList();
     },
@@ -926,9 +958,9 @@ export default {
     // 修改员工登陆密码
     changeEmployeePassword() {
       this.changingPassword = true;
-      this.getEmployeeSingleAsync({
+      this.addOrEditEmployeeAsync({
         id: this.toChangePasswordEmployee.id,
-        passwords: this.toChangePasswordEmployee.passwords,
+        passwords: md5(this.toChangePasswordEmployee.passwords),
       })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {

@@ -1,692 +1,407 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
-      商品列表
-      <v-btn
-        color="primary"
-        class="ml-auto"
-        depressed
-        :to="{ name: 'product_add' }"
+    <v-card>
+      <v-card-text
+        ref="advancedSearch"
+        class="advance-search"
       >
-        <v-icon left>
-          mdi-plus
-        </v-icon>添加商品
-      </v-btn>
-    </div>
-    <v-divider class="my-4" />
-    <v-form ref="form">
-      <v-row>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
+        <v-data-table
+          v-model="selectedProducts"
+          :items="productList.data.items"
+          :headers="headers"
+          class="text-center"
+          item-key="id"
+          no-data-text="暂无数据"
+          hide-default-footer
+          show-select
+          :items-per-page="20"
         >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">商品名称</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.dnames"
-                placeholder="请输入商品名称"
-                outlined
-                class="white"
-                single-line
-                clearable
-                hide-details
-                dense
-                @click:clear="clearSearchConditions('dnames')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">供应商名称</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.supplyer"
-                placeholder="请输入供应商名称"
-                outlined
-                class="white"
-                single-line
-                clearable
-                hide-details
-                dense
-                @click:clear="clearSearchConditions('supplyer')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">商品货号</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.dno"
-                placeholder="请输入商品准确货号"
-                outlined
-                single-line
-                clearable
-                class="white"
-                hide-details
-                dense
-                @click:clear="clearSearchConditions('dno')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <v-dialog
-            ref="dialog"
-            v-model="dialogCategory"
-            width="600px"
-          >
-            <template v-slot:activator="{ on }">
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">商品类别</span>
-                </div>
-                <div class="input-group-control">
-                  <v-text-field
-                    v-model="cateName"
-                    :loading="loadingCategory"
-                    :disabled="loadingCategory"
-                    class="white"
-                    placeholder="请选择商品类别"
-                    readonly
-                    outlined
-                    clearable
-                    required
-                    single-line
-                    dense
-                    hide-details
-                    append-icon="mdi-menu-down"
-                    v-on="on"
-                    @click:clear="clearSearchConditions('categoryId')"
-                  />
-                </div>
-              </div>
-            </template>
-            <v-card>
-              <v-card-title class="title grey lighten-3 pa-4">
-                选择商品分类
-              </v-card-title>
-              <v-card-text class="pt-4">
-                <v-treeview
-                  :items="productCategory.data.items"
-                  :active="categorySelected"
-                  dense
-                  item-text="dnames"
-                  item-key="id"
-                  item-children="son"
-                  open-on-click
-                  rounded
-                  activatable
-                  return-object
-                  @update:active="getActiveCategory"
+          <template v-slot:top>
+            <div
+              class="text-left d-flex align-center mb-3"
+              style="height: 36px"
+            >
+              <template
+                v-if="selectedProducts.length"
+              >
+                <v-btn
+                  color="secondary"
+                  icon
+                  text
+                  x-small
+                  class="mr-3"
+                  :ripple="false"
+                  @click="selectedProducts = []"
                 >
-                  <template v-slot:prepend="{ item,leaf, open }">
-                    <v-icon>
-                      {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
-                    </v-icon>
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                已选择&nbsp;<span class="primary--text">{{ selectedProducts.length }} </span>&nbsp;项
+                <v-divider
+                  vertical
+                  class="ml-8 mr-4"
+                />
+                <v-btn
+                  text
+                  class="mr-2 px-1 py-1"
+                  @click="getOperateProducts('上架')"
+                >
+                  <v-icon
+                    color="grey darken-1"
+                    class="mr-1"
+                  >
+                    mdi-inbox-arrow-up mdi-18px
+                  </v-icon> 上架
+                </v-btn>
+                <v-btn
+                  text
+                  class="mr-2 px-1 py-1"
+                  @click="getOperateProducts('下架')"
+                >
+                  <v-icon
+                    color="grey darken-1"
+                    class="mr-1"
+                  >
+                    mdi-inbox-arrow-down mdi-18px
+                  </v-icon> 下架
+                </v-btn>
+                <v-btn
+                  text
+                  class="mr-2 px-1 py-1"
+                  @click="getToDeleteProducts"
+                >
+                  <v-icon
+                    color="grey darken-1"
+                    class="mr-1"
+                  >
+                    mdi-delete mdi-18px
+                  </v-icon> 删除
+                </v-btn>
+                <v-btn
+                  text
+                  class="mr-2 px-1 py-1"
+                  @click="dialogLabel = true"
+                >
+                  <v-icon
+                    color="grey darken-1"
+                    class="mr-1"
+                  >
+                    mdi-bookmark mdi-18px
+                  </v-icon> 设置标签
+                </v-btn>
+              </template>
+              <template v-else-if="searchStatus">
+                搜索结果
+                <v-divider
+                  vertical
+                  class="ml-6 mr-3"
+                />
+                <v-btn
+                  text
+                  class="mr-2 px-1 py-1"
+                  @click="clearAdvancedSearch"
+                >
+                  <v-icon
+                    color="grey darken-1"
+                    class="mr-1"
+                  >
+                    mdi-eraser mdi-18px
+                  </v-icon> 清除搜索
+                </v-btn>
+                <v-btn
+                  text
+                  class="px-1 py-1"
+                  @click="dialogSearch = true"
+                >
+                  <v-icon
+                    color="grey darken-1"
+                    class="mr-1"
+                  >
+                    mdi-feature-search mdi-18px
+                  </v-icon> 继续搜索
+                </v-btn>
+              </template>
+              <template v-else>
+                <v-menu
+                  v-model="showCategory"
+                  offset-y
+                  :close-on-content-click="false"
+                >
+                  <template v-slot:activator="{ on, value }">
+                    <v-btn
+                      text
+                      class="px-1"
+                      v-on="on"
+                    >
+                      {{ categorySelected.length ? categorySelected[0].dnames : '全部分类' }} <v-icon
+                        :class="value ? 'rotate-180' : ''"
+                      >
+                        mdi-chevron-down mdi-18px
+                      </v-icon>
+                    </v-btn>
                   </template>
-                </v-treeview>
-              </v-card-text>
-              <v-card-actions>
+                  <v-card
+                    elevation="0"
+                    width="800"
+                  >
+                    <v-card-text>
+                      <v-treeview
+                        :items="productCategoryGetter"
+                        :active="categorySelected"
+                        dense
+                        item-text="dnames"
+                        item-key="id"
+                        item-children="son"
+                        activatable
+                        return-object
+                        class="custom-treeview-class"
+                        @update:active="getActiveCategory"
+                      >
+                        <template v-slot:prepend="{ item,leaf, open }">
+                          <v-icon>
+                            {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
+                          </v-icon>
+                        </template>
+                      </v-treeview>
+                    </v-card-text>
+                  </v-card>
+                </v-menu>
+                <v-menu
+                  offset-y
+                >
+                  <template v-slot:activator="{ on, value }">
+                    <v-btn
+                      text
+                      class="px-1 ml-2"
+                      v-on="on"
+                    >
+                      {{ currentStatus }} <v-icon
+                        :class="value ? 'rotate-180' : ''"
+                      >
+                        mdi-chevron-down mdi-18px
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      v-for="(item, index) in status"
+                      :key="index"
+                      @click="searchProductByStatus(item)"
+                    >
+                      <v-list-item-title class="body-2">
+                        {{ item.text }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <div
+                  class="input-group ml-4"
+                  style="width:300px"
+                >
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="dnames"
+                      placeholder="请输入商品名称"
+                      outlined
+                      class="white"
+                      single-line
+                      clearable
+                      hide-details
+                      dense
+                      @click:clear="dnames = '';getProductList()"
+                    />
+                  </div>
+                  <div class="input-group-append">
+                    <v-btn
+                      color="blue-grey lighten-4 px-0"
+                      depressed
+                      x-small
+                      @click="getProductList({ dnames })"
+                    >
+                      <v-icon
+                        color="blue-grey darken-2"
+                      >
+                        mdi-magnify mdi-18px
+                      </v-icon>
+                    </v-btn>
+                  </div>
+                </div>
+                <v-btn
+                  color="primary"
+                  text
+                  class="ml-2 px-1"
+                  @click="dialogSearch = true"
+                >
+                  高级搜索
+                </v-btn>
                 <v-spacer />
                 <v-btn
                   color="primary"
-                  @click="setProductCategory"
+                  depressed
+                  class="px-5"
+                  :to="{ name: 'product_add' }"
                 >
-                  确定
+                  <v-icon left>
+                    mdi-plus
+                  </v-icon> 新增
                 </v-btn>
-                <v-btn
-                  color="secondary"
-                  @click="dialogCategory = false;"
-                >
-                  取消
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">上架状态</span>
-            </div>
-            <div class="input-group-control">
-              <v-select
-                v-model="search.dStatus"
-                :items="status"
-                placeholder="请选择上架状态"
-                class="white"
-                single-line
-                dense
-                outlined
-                clearable
-                no-data-text="暂无数据"
-                hide-details
-                @click:clear="clearSearchConditions('dStatus')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="6"
-          lg="4"
-          xl="3"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">价格区间</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.minPrice"
-                outlined
-                class="white rounded-right-0"
-                single-line
-                dense
-                clearable
-                hide-details
-                @click:clear="clearSearchConditions('minPrice')"
-              />
-            </div>
-            <div class="input-group-innerpend">
-              <span class="input-group-text">到</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.maxPrice"
-                outlined
-                class="white rounded-0"
-                single-line
-                dense
-                clearable
-                hide-details
-                @click:clear="clearSearchConditions('maxPrice')"
-              />
-            </div>
-            <div class="input-group-append">
-              <span class="input-group-text">元</span>
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="8"
-          lg="6"
-          xl="4"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">上架时间</span>
-            </div>
-            <div class="input-group-control">
-              <v-menu
-                ref="menuStart"
-                v-model="menuStart"
-                :close-on-content-click="false"
-                :return-value.sync="search.startShelfTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="search.startShelfTime"
-                    class="white rounded-right-0"
-                    placeholder="请选择上架时间"
-                    outlined
-                    single-line
-                    dense
-                    clearable
-                    hide-details
-                    append-icon="mdi-calendar-import"
-                    readonly
-                    v-on="on"
-                    @click:clear="clearSearchConditions('startShelfTime')"
-                  />
-                </template>
-                <v-date-picker
-                  v-model="search.startShelfTime"
-                  color="primary"
-                  scrollable
-                >
-                  <div class="flex-grow-1" />
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="menuStart = false"
-                  >
-                    取消
-                  </v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.menuStart.save(search.startShelfTime)"
-                  >
-                    确定
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </div>
-            <div class="input-group-innerpend">
-              <span class="input-group-text">到</span>
-            </div>
-            <div class="input-group-control">
-              <v-menu
-                ref="menuEnd"
-                v-model="menuEnd"
-                :close-on-content-click="false"
-                :return-value.sync="search.endShelfTime"
-                transition="scale-transition"
-                offset-y
-                min-width="290px"
-              >
-                <template v-slot:activator="{ on }">
-                  <v-text-field
-                    v-model="search.endShelfTime"
-                    class="white rounded-left-0"
-                    placeholder="请选择上架截止时间"
-                    outlined
-                    single-line
-                    dense
-                    clearable
-                    hide-details
-                    append-icon="mdi-calendar-import"
-                    readonly
-                    v-on="on"
-                    @click:clear="clearSearchConditions('endShelfTime')"
-                  />
-                </template>
-                <v-date-picker
-                  v-model="search.endShelfTime"
-                  :min="search.startShelfTime"
-                  color="primary"
-                  scrollable
-                >
-                  <div class="flex-grow-1" />
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="menuEnd = false"
-                  >
-                    取消
-                  </v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.menuEnd.save(search.endShelfTime)"
-                  >
-                    确定
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </div>
-          </div>
-        </v-col>
-        <v-col align-self="center">
-          <v-btn
-            color="primary mr-2"
-            depressed
-            @click="searchProducts"
-          >
-            搜索
-          </v-btn>
-          <v-btn
-            color="secondary"
-            depressed
-            @click="resetSearchConditions"
-          >
-            重置
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-form>
-    <v-card class="mt-4">
-      <v-card-text class="py-2 d-flex align-center">
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          :to="{ name: 'product_add' }"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-plus-circle
-            </v-icon> 添加商品
-          </div>
-        </v-btn>
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          @click="selectedProducts = productList.data.items"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-check-circle
-            </v-icon> 全选
-          </div>
-        </v-btn>
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          @click="reverseSelectedProducts"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-arrow-left-circle
-            </v-icon> 反选
-          </div>
-        </v-btn>
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          @click="getOperateProducts('上架')"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-cloud-upload
-            </v-icon> 上架
-          </div>
-        </v-btn>
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          @click="getOperateProducts('下架')"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-cloud-download
-            </v-icon> 下架
-          </div>
-        </v-btn>
-        <v-btn
-          color="white"
-          depressed
-          class="height-auto py-2 mr-2"
-          @click="getToDeleteProducts"
-        >
-          <div class="d-flex flex-column">
-            <v-icon
-              color="grey darken-2"
-              class="mb-1"
-            >
-              mdi-delete
-            </v-icon> 删除
-          </div>
-        </v-btn>
-        <v-menu
-          offset-y
-          left
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn
-              color="primary"
-              dark
-              class="ml-auto"
-              depressed
-              v-on="on"
-            >
-              设置商品标签
-              <v-icon right>
-                mdi-menu-down
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="(label, i) in labels"
-              :key="i"
-              @click="setProductLabel(true,i)"
-            >
-              <v-list-item-title>设为{{ label.text }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-        <v-menu
-          offset-y
-          left
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn
-              color="secondary"
-              dark
-              class="ml-2"
-              depressed
-              v-on="on"
-            >
-              取消商品标签
-              <v-icon right>
-                mdi-menu-down
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="(label, i) in labels"
-              :key="i"
-              @click="setProductLabel(false,i)"
-            >
-              <v-list-item-title>取消{{ label.text }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-card-text>
-      <v-data-table
-        v-model="selectedProducts"
-        :headers="headers"
-        :items="productList.data.items"
-        class="text-center"
-        item-key="id"
-        show-select
-        no-data-text="暂无数据"
-        hide-default-footer
-        :items-per-page="20"
-      >
-        <!-- <template v-slot:top>
-          <v-divider />
-          <div class="grey lighten-4 pa-4 text-left">
-            当前共有商品：{{ productList.data.totalItem }}
-          </div>
-          <v-divider />
-        </template> -->
-        <template v-slot:item.dnames="{ item }">
-          <div class="text-left py-3">
-            <div>
-              <v-chip
-                v-if="item.isNew === '1'"
-                x-small
-                class="mr-1 px-2"
-                color="primary"
-              >
-                新
-              </v-chip>
-              <v-chip
-                v-if="item.isHot === '1'"
-                x-small
-                class="mr-1 px-2"
-                color="error"
-              >
-                热
-              </v-chip>
-              <v-chip
-                v-if="item.isOrder === '1'"
-                x-small
-                class="mr-1 white--text px-2"
-                color="teal"
-              >
-                订
-              </v-chip>
-              <v-chip
-                v-if="item.isPromotion === '1'"
-                x-small
-                class="mr-1 px-2"
-                color="warning"
-              >
-                促
-              </v-chip>
-              <v-chip
-                v-if="item.isRecommend === '1'"
-                x-small
-                class="mr-1 px-2"
-                color="success"
-              >
-                荐
-              </v-chip>
-              <v-chip
-                v-if="item.isSpot === '1'"
-                x-small
-                class="mr-1 px-2"
-                color="secondary"
-              >
-                现
-              </v-chip>
-            </div>{{ item.dnames }}
-          </div>
-        </template>
-        <template v-slot:item.price="{ item }">
-          {{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}
-        </template>
-        <template v-slot:item.image="{ item }">
-          <div class="py-3">
-            <v-img
-              :src="item.image ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
-              aspect-ratio="1"
-              class="grey lighten-1"
-            >
-              <template v-slot:placeholder>
-                <v-row
-                  class="fill-height ma-0"
-                  align="center"
-                  justify="center"
-                >
-                  <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                  />
-                </v-row>
               </template>
-            </v-img>
-          </div>
-        </template>
-        <template v-slot:item.dstatus="{ item }">
-          <span :class="item.dstatus === '4' ? 'success--text' : 'grey--text'">{{ item.dstatus === '4' ? '已上架' : item.dstatus === '0' ? '未上架' : '已下架' }}</span>
-        </template>
-        <template v-slot:item.shelfTime="{ item }">
-          <span :class="item.shelfTime ? '' : 'grey--text'">{{ item.shelfTime | dateTruncate(16) }}</span>
-        </template>
-        <template v-slot:item.action="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                icon
-                class="mx-1"
-                :to="{ name: 'product_detail', params: { id: item.id }}"
-                v-on="on"
+            </div>
+            <v-divider />
+          </template>
+          <template v-slot:item.dnames="{ item }">
+            <div class="text-left py-3">
+              {{ item.dnames }}
+              <div class="mt-1">
+                <v-chip
+                  v-if="item.isNew === '1'"
+                  x-small
+                  class="mr-1 px-2"
+                  color="primary"
+                >
+                  新
+                </v-chip>
+                <v-chip
+                  v-if="item.isHot === '1'"
+                  x-small
+                  class="mr-1 px-2"
+                  color="error"
+                >
+                  热
+                </v-chip>
+                <v-chip
+                  v-if="item.isOrder === '1'"
+                  x-small
+                  class="mr-1 white--text px-2"
+                  color="teal"
+                >
+                  订
+                </v-chip>
+                <v-chip
+                  v-if="item.isPromotion === '1'"
+                  x-small
+                  class="mr-1 px-2"
+                  color="warning"
+                >
+                  促
+                </v-chip>
+                <v-chip
+                  v-if="item.isRecommend === '1'"
+                  x-small
+                  class="mr-1 px-2"
+                  color="success"
+                >
+                  荐
+                </v-chip>
+                <v-chip
+                  v-if="item.isSpot === '1'"
+                  x-small
+                  class="mr-1 px-2"
+                  color="secondary"
+                >
+                  现
+                </v-chip>
+              </div>
+            </div>
+          </template>
+          <template v-slot:item.price="{ item }">
+            {{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}
+          </template>
+          <template v-slot:item.image="{ item }">
+            <div class="py-3">
+              <v-img
+                :src="item.image ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
+                aspect-ratio="1"
+                class="grey lighten-1"
               >
-                <v-icon color="primary">
-                  mdi-file-document-box-search
+                <template v-slot:placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    />
+                  </v-row>
+                </template>
+              </v-img>
+            </div>
+          </template>
+          <template v-slot:item.dstatus="{ item }">
+            <span :class="item.dstatus === '4' ? 'success--text' : 'grey--text'">{{ item.dstatus === '4' ? '已上架' : item.dstatus === '0' ? '未上架' : '已下架' }}</span>
+          </template>
+          <template v-slot:item.shelfTime="{ item }">
+            <span :class="item.shelfTime ? '' : 'grey--text'">{{ item.shelfTime | dateTruncate(16) }}</span>
+          </template>
+          <template v-slot:item.action="{ item }">
+            <v-menu
+              offset-y
+              left
+              open-on-hover
+            >
+              <template v-slot:activator="{ on }">
+                <v-icon
+                  color="secondary"
+                  v-on="on"
+                >
+                  mdi-dots-horizontal
                 </v-icon>
-              </v-btn>
-            </template>
-            <span>详情</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                icon
-                class="mx-1"
-                :to="{ name: 'product_edit', params: { id: item.id }}"
-                :disabled="item.dstatus === '4'"
-                v-on="on"
-              >
-                <v-icon color="teal">
-                  mdi-pencil-circle
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>编辑</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="item.dstatus === '4'"
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="dialogDelete = true;toDeleteProducts = [item.id]"
-              >
-                <v-icon color="secondary">
-                  mdi-delete-forever
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>删除</span>
-          </v-tooltip>
-        </template>
-        <template v-slot:footer>
-          <div
-            v-if="productList.status && productList.data.items.length"
-            class="pa-4 grey lighten-5 d-flex align-center text-no-wrap"
-          >
-            <span>当前共有商品：<span class="error--text">{{ productList.data.totalItem }}</span></span>
-            <v-pagination
-              v-model="page"
-              :length="pageCount"
-              @input="changePagination"
-            />
-          </div>
-        </template>
-      </v-data-table>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(config, i) in productConfig"
+                  :key="i"
+                  :disabled="i !== 0 && item.dstatus === '4'"
+                  @click="configProduct(i, item.id)"
+                >
+                  <v-list-item-title>
+                    <v-icon
+                      class="mr-1"
+                      small
+                      :color="i !== 0 && item.dstatus === '4' ? '#999' : ''"
+                      style="position:relative;top:-1px"
+                      v-text="config.icon"
+                    />{{ config.text }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
+          <template v-slot:footer>
+            <v-divider />
+            <div
+              v-if="productList.status && productList.data.items.length"
+              class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+            >
+              <div class="mr-2">
+                共<span class="error--text">{{ productList.data.totalItem }}</span>商品
+              </div>
+              <v-pagination
+                v-model="page"
+                :length="pageCount"
+                :total-visible="7"
+                @input="changePagination"
+              />
+              <div class="mx-2">
+                跳至
+              </div>
+              <div style="width:50px">
+                <input
+                  v-model="pageEnter"
+                  type="text"
+                  class="width-100 px-2 text-center"
+                  style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+                  @keyup.enter="changePaginationDirectly"
+                >
+              </div>
+              <div class="ml-2">
+                页
+              </div>
+            </div>
+          </template>
+        </v-data-table>
+      </v-card-text>
     </v-card>
     <v-dialog
       v-model="dialogDelete"
@@ -742,11 +457,618 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="dialogLabel"
+      :attach="$refs.advancedSearch"
+      content-class="ma-0"
+      hide-overlay
+    >
+      <v-card>
+        <v-card-title>
+          批量设置标签
+        </v-card-title>
+        <v-card-text>
+          <v-data-table
+            :items="selectedProducts"
+            :headers="headersLabel"
+            item-key="id"
+            no-data-text="暂无数据"
+            hide-default-footer
+            hide-default-header
+            :items-per-page="20"
+          >
+            <template v-slot:header="{ props: { headers } }">
+              <thead>
+                <tr>
+                  <th>
+                    商品货号
+                  </th>
+                  <th>商品名称</th>
+                  <th>
+                    <v-checkbox
+                      :value="isNew.length === selectedProducts.length"
+                      label="新品"
+                      class="ml-2 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="isNew.length > 0 && isNew.length < selectedProducts.length"
+                      @change="setSelectedProductsLabel($event, 'isNew')"
+                    />
+                  </th>
+                  <th>
+                    <v-checkbox
+                      :value="isHot.length === selectedProducts.length"
+                      label="热卖"
+                      class="ml-2 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="isHot.length > 0 && isHot.length < selectedProducts.length"
+                      @change="setSelectedProductsLabel($event,'isHot')"
+                    />
+                  </th>
+                  <th>
+                    <v-checkbox
+                      :value="isRecommend.length === selectedProducts.length"
+                      label="推荐"
+                      class="ml-2 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="isRecommend.length > 0 && isRecommend.length < selectedProducts.length"
+                      @change="setSelectedProductsLabel($event,'isRecommend')"
+                    />
+                  </th>
+                  <th>
+                    <v-checkbox
+                      :value="isPromotion.length === selectedProducts.length"
+                      label="促销"
+                      class="ml-2 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="isPromotion.length > 0 && isPromotion.length < selectedProducts.length"
+                      @change="setSelectedProductsLabel($event,'isPromotion')"
+                    />
+                  </th>
+                  <th>
+                    <v-checkbox
+                      :value="isSpot.length === selectedProducts.length"
+                      label="现货"
+                      class="ml-2 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="isSpot.length > 0 && isSpot.length < selectedProducts.length"
+                      @change="setSelectedProductsLabel($event,'isSpot')"
+                    />
+                  </th>
+                  <th>
+                    <v-checkbox
+                      :value="isOrder.length === selectedProducts.length"
+                      label="订单"
+                      class="ml-2 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="isOrder.length > 0 && isOrder.length < selectedProducts.length"
+                      @change="setSelectedProductsLabel($event,'isOrder')"
+                    />
+                  </th>
+                </tr>
+              </thead>
+            </template>
+            <template v-slot:body="{ items }">
+              <tbody>
+                <tr
+                  v-for="item in items"
+                  :key="item.id"
+                >
+                  <td>{{ item.dno }}</td>
+                  <td>{{ item.dnames }}</td>
+                  <td>
+                    <v-checkbox
+                      v-model="isNew"
+                      label=""
+                      class="ml-2 mt-0 pt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :value="item.id"
+                    />
+                  </td>
+                  <td>
+                    <v-checkbox
+                      v-model="isHot"
+                      label=""
+                      class="ml-2 mt-0 pt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :value="item.id"
+                    />
+                  </td>
+                  <td>
+                    <v-checkbox
+                      v-model="isRecommend"
+                      label=""
+                      class="ml-2 mt-0 pt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :value="item.id"
+                    />
+                  </td>
+                  <td>
+                    <v-checkbox
+                      v-model="isPromotion"
+                      label=""
+                      class="ml-2 mt-0 pt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :value="item.id"
+                    />
+                  </td>
+                  <td>
+                    <v-checkbox
+                      v-model="isSpot"
+                      label=""
+                      class="ml-2 mt-0 pt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :value="item.id"
+                    />
+                  </td>
+                  <td>
+                    <v-checkbox
+                      v-model="isOrder"
+                      label=""
+                      class="ml-2 mt-0 pt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :value="item.id"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </template>
+          </v-data-table>
+          <v-divider />
+        </v-card-text>
+        <v-card-actions class="pb-4">
+          <v-btn
+            color="secondary"
+            depressed
+            class="ml-4"
+            @click="dialogLabel = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="primary mr-2"
+            depressed
+            @click="setProductLabel"
+          >
+            确定
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="dialogSearch"
+      :attach="$refs.advancedSearch"
+      content-class="ma-0"
+      hide-overlay
+    >
+      <v-card>
+        <v-card-title>
+          高级搜索
+        </v-card-title>
+        <v-form ref="form">
+          <v-container fluid>
+            <v-row>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">商品名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="search.dnames"
+                      placeholder="请输入商品名称"
+                      outlined
+                      class="white"
+                      single-line
+                      clearable
+                      hide-details
+                      dense
+                      @click:clear="clearSearchConditions('dnames')"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">供应商名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="search.supplyer"
+                      placeholder="请输入供应商名称"
+                      outlined
+                      class="white"
+                      single-line
+                      clearable
+                      hide-details
+                      dense
+                      @click:clear="clearSearchConditions('supplyer')"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">商品货号</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="search.dno"
+                      placeholder="请输入商品准确货号"
+                      outlined
+                      single-line
+                      clearable
+                      class="white"
+                      hide-details
+                      dense
+                      @click:clear="clearSearchConditions('dno')"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">商品类别</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-menu
+                      v-model="showCategorySearch"
+                      offset-y
+                      :close-on-content-click="false"
+                    >
+                      <template v-slot:activator="{ on, value }">
+                        <v-text-field
+                          :value="categorySearchSelected.length ? categorySearchSelected[0].dnames : ''"
+                          :loading="loadingCategory"
+                          :disabled="loadingCategory"
+                          class="white"
+                          placeholder="请选择商品类别"
+                          readonly
+                          outlined
+                          clearable
+                          required
+                          single-line
+                          dense
+                          hide-details
+                          append-icon="mdi-menu-down"
+                          v-on="on"
+                          @click:clear="categorySearchSelected = []"
+                        />
+                      </template>
+                      <v-card
+                        elevation="0"
+                        width="800"
+                      >
+                        <v-card-text>
+                          <v-treeview
+                            :items="productCategoryGetter"
+                            :active="categorySearchSelected"
+                            dense
+                            item-text="dnames"
+                            item-key="id"
+                            item-children="son"
+                            activatable
+                            return-object
+                            class="custom-treeview-class"
+                            @update:active="getActiveCategorySearch"
+                          >
+                            <template v-slot:prepend="{ item,leaf, open }">
+                              <v-icon>
+                                {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
+                              </v-icon>
+                            </template>
+                          </v-treeview>
+                        </v-card-text>
+                      </v-card>
+                    </v-menu>
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+                xl="3"
+              >
+                <div class="input-group flex-nowrap">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">价格区间</span>
+                  </div>
+                  <div
+                    class="d-flex custom-text-field-wrap"
+                  >
+                    <div class="input-group-control">
+                      <v-text-field
+                        v-model="search.minPrice"
+                        placeholder="最低价格"
+                        solo
+                        flat
+                        class="white rounded-right-0"
+                        single-line
+                        dense
+                        clearable
+                        hide-details
+                        @click:clear="clearSearchConditions('minPrice')"
+                      />
+                    </div>
+                    <div class="input-group-innerpend">
+                      <span class="input-group-text">到</span>
+                    </div>
+                    <div class="input-group-control">
+                      <v-text-field
+                        v-model="search.maxPrice"
+                        placeholder="最高价格"
+                        solo
+                        flat
+                        class="white rounded-0"
+                        single-line
+                        dense
+                        clearable
+                        hide-details
+                        @click:clear="clearSearchConditions('maxPrice')"
+                      />
+                    </div>
+                    <div class="input-group-append">
+                      <span class="input-group-text">元</span>
+                    </div>
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+                xl="3"
+              >
+                <div class="input-group flex-nowrap">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">上架时间</span>
+                  </div>
+                  <div
+                    class="d-flex custom-text-field-wrap"
+                  >
+                    <div class="input-group-control">
+                      <v-menu
+                        ref="menuStart"
+                        v-model="menuStart"
+                        :close-on-content-click="false"
+                        :return-value.sync="search.startShelfTime"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="search.startShelfTime"
+                            class="white"
+                            placeholder="请选择上架时间"
+                            single-line
+                            dense
+                            solo
+                            flat
+                            hide-details
+                            clearable
+                            readonly
+                            v-on="on"
+                            @click:clear="clearSearchConditions('startShelfTime')"
+                          />
+                        </template>
+                        <v-date-picker
+                          v-model="search.startShelfTime"
+                          color="primary"
+                          scrollable
+                        >
+                          <div class="flex-grow-1" />
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="menuStart = false"
+                          >
+                            取消
+                          </v-btn>
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="$refs.menuStart.save(search.startShelfTime)"
+                          >
+                            确定
+                          </v-btn>
+                        </v-date-picker>
+                      </v-menu>
+                    </div>
+                    <div class="input-group-innerpend">
+                      <span class="input-group-text">到</span>
+                    </div>
+                    <div class="input-group-control">
+                      <v-menu
+                        ref="menuEnd"
+                        v-model="menuEnd"
+                        :close-on-content-click="false"
+                        :return-value.sync="search.endShelfTime"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="290px"
+                      >
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="search.endShelfTime"
+                            class="white"
+                            placeholder="请选择截止时间"
+                            single-line
+                            clearable
+                            dense
+                            solo
+                            flat
+                            hide-details
+                            readonly
+                            v-on="on"
+                            @click:clear="clearSearchConditions('endShelfTime')"
+                          />
+                        </template>
+                        <v-date-picker
+                          v-model="search.endShelfTime"
+                          :min="search.startShelfTime"
+                          color="primary"
+                          scrollable
+                        >
+                          <div class="flex-grow-1" />
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="menuEnd = false"
+                          >
+                            取消
+                          </v-btn>
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="$refs.menuEnd.save(search.endShelfTime)"
+                          >
+                            确定
+                          </v-btn>
+                        </v-date-picker>
+                      </v-menu>
+                    </div>
+                    <div class="input-group-append mr-2">
+                      <v-icon>mdi-calendar-import</v-icon>
+                    </div>
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">上架状态</span>
+                  </div>
+                  <div class="input-group-append">
+                    <v-radio-group
+                      v-model="search.dStatus"
+                      row
+                      dense
+                      class="mt-0"
+                      hide-details
+                    >
+                      <v-radio
+                        v-for="item in status"
+                        :key="item.value"
+                        :label="item.text"
+                        :value="item.value"
+                        color="primary"
+                      />
+                    </v-radio-group>
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">商品标签</span>
+                  </div>
+                  <div class="input-group-append">
+                    <v-checkbox
+                      :value="search.type.length === 6"
+                      label="全部"
+                      class="mr-4 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                      :indeterminate="search.type.length > 0 && search.type.length < 6"
+                      @change="selectProductType"
+                    />
+                    <v-checkbox
+                      v-for="label in labels"
+                      :key="label.value"
+                      v-model="search.type"
+                      :label="label.text"
+                      :value="label.value"
+                      class="mr-4 mt-0"
+                      dense
+                      color="primary"
+                      hide-details
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
+        <v-card-actions class="pb-4">
+          <v-btn
+            color="secondary"
+            class="ml-4"
+            text
+            @click="$refs.form.reset()"
+          >
+            清空
+          </v-btn>
+          <v-btn
+            color="secondary"
+            depressed
+            @click="dialogSearch = false"
+          >
+            取消
+          </v-btn>
+          <v-btn
+            color="primary mr-2"
+            depressed
+            @click="searchProducts"
+          >
+            搜索
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import * as R from 'ramda';
 
 export default {
@@ -755,18 +1077,30 @@ export default {
     return {
       loadingDataItems: false,
       loadingCategory: false,
-      dialogCategory: false,
       dialogDelete: false,
       dialogOperate: false,
+      dialogSearch: false,
+      dialogLabel: false,
       menuStart: false,
       menuEnd: false,
       deleting: false,
       operating: false,
-      cateName: '',
+      showCategory: false,
+      showCategorySearch: false,
+      dnames: '',
       categorySelected: [],
-      search: {},
+      categorySearchSelected: [],
+      search: {
+        dStatus: '0',
+        type: [],
+      },
+      searchStatus: false,
       operate: '上架',
       status: [
+        {
+          text: '全部状态',
+          value: '0',
+        },
         {
           text: '已上架',
           value: '5',
@@ -778,6 +1112,21 @@ export default {
         {
           text: '已下架',
           value: '2',
+        },
+      ],
+      currentStatus: '全部状态',
+      productConfig: [
+        {
+          text: '查看',
+          icon: 'mdi-file-document-box-search',
+        },
+        {
+          text: '编辑',
+          icon: 'mdi-pencil-circle',
+        },
+        {
+          text: '删除',
+          icon: 'mdi-delete-forever',
         },
       ],
       toDeleteProducts: [],
@@ -841,31 +1190,97 @@ export default {
           sortable: false,
         },
       ],
-      labels: [
+      headersLabel: [
+        {
+          text: '商品货号',
+          align: 'left',
+          sortable: false,
+          value: 'dno',
+          width: '200px',
+        },
+        {
+          text: '商品名称',
+          value: 'dnames',
+          align: 'left',
+          sortable: false,
+          width: '300px',
+        },
         {
           text: '新品',
+          value: 'new',
+          align: 'left',
+          sortable: false,
         },
         {
           text: '热卖',
+          value: 'hot',
+          align: 'left',
+          sortable: false,
         },
         {
           text: '推荐',
+          value: 'recommend',
+          align: 'left',
+          sortable: false,
         },
         {
           text: '促销',
+          value: 'promotion',
+          align: 'left',
+          sortable: false,
         },
         {
           text: '现货',
+          value: 'spot',
+          align: 'left',
+          sortable: false,
         },
         {
           text: '订货',
+          value: 'order',
+          align: 'left',
+          sortable: false,
         },
       ],
+      labels: [
+        {
+          text: '最新新品',
+          value: '2',
+        },
+        {
+          text: '热卖商品',
+          value: '3',
+        },
+        {
+          text: '推荐商品',
+          value: '4',
+        },
+        {
+          text: '促销商品',
+          value: '5',
+        },
+        {
+          text: '现货商品',
+          value: '6',
+        },
+        {
+          text: '订货商品',
+          value: '7',
+        },
+      ],
+      isNew: [],
+      isHot: [],
+      isRecommend: [],
+      isPromotion: [],
+      isSpot: [],
+      isOrder: [],
+      pageEnter: 1,
     };
   },
   computed: {
     ...mapState(['breadCrumbs']),
     ...mapState('product', ['productList', 'productCategory']),
+    ...mapGetters('product', ['productCategoryGetter']),
     page: {
       set(value) {
         this.productList.data.p = value;
@@ -919,6 +1334,51 @@ export default {
       'operateProductAsync',
       'setProductLabelAsync',
     ]),
+    changePaginationDirectly() {
+      if (R.is(Number, this.pageEnter)) {
+        if (this.pageEnter <= this.pageCount) {
+          this.page = this.pageEnter;
+        } else {
+          this.pageEnter = this.pageCount;
+        }
+        this.getProductList();
+      } else {
+        this.pageEnter = 1;
+      }
+    },
+    // 批量设置标签
+    setSelectedProductsLabel(v, target) {
+      if (v) {
+        this[target] = R.pluck('id', this.selectedProducts);
+      } else {
+        this[target] = [];
+      }
+    },
+    clearAdvancedSearch() {
+      this.searchStatus = false;
+      this.getProductList();
+    },
+    selectProductType(v) {
+      if (v) {
+        this.$set(this.search, 'type', ['2', '3', '4', '5', '6', '7']);
+      } else {
+        this.$set(this.search, 'type', []);
+      }
+    },
+    searchProductByStatus(item) {
+      this.currentStatus = item.text;
+      this.getProductList({ dStatus: item.value });
+    },
+    configProduct(i, id) {
+      if (i === 0) {
+        this.$router.push({ name: 'product_detail', params: { id } });
+      } else if (i === 1) {
+        this.$router.push({ name: 'product_edit', params: { id } });
+      } else {
+        this.dialogDelete = true;
+        this.toDeleteProducts = [];
+      }
+    },
     reverseSelectedProducts() {
       this.selectedProducts = R.without(
         this.selectedProducts,
@@ -927,11 +1387,13 @@ export default {
     },
     getActiveCategory(arr) {
       this.categorySelected = arr;
+      this.getProductList({ categoryId: R.prop('id', R.head(this.categorySelected)) });
+      this.showCategory = false;
     },
-    setProductCategory() {
-      this.search.categoryId = R.prop('id', R.head(this.categorySelected));
-      this.cateName = R.prop('dnames', R.head(this.categorySelected));
-      this.dialogCategory = false;
+    getActiveCategorySearch(arr) {
+      this.categorySearchSelected = arr;
+      this.$set(this.search, 'categoryId', R.prop('id', R.head(this.categorySearchSelected)));
+      this.showCategorySearch = false;
     },
     changePagination() {
       this.getProductList(this.search);
@@ -948,19 +1410,12 @@ export default {
         });
     },
     searchProducts() {
+      this.dialogSearch = false;
+      this.searchStatus = true;
       this.getProductList(this.search);
     },
     clearSearchConditions(target) {
-      if (target === 'categoryId') {
-        this.cateName = '';
-      }
       this.search[target] = '';
-      this.getProductList(this.search);
-    },
-    resetSearchConditions() {
-      this.$refs.form.reset();
-      this.cateName = '';
-      this.getProductList();
     },
     // 删除商品
     getToDeleteProducts() {

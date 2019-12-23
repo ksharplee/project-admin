@@ -315,9 +315,10 @@ export default new Router({
           },
         },
         {
-          path: 'order/list/active=:active',
+          // path: 'order/list/active=:active',
+          path: 'order/list',
           name: 'order_list',
-          props: true,
+          // props: true,
           component: () => import(/* webpackChunkName: "group-finance" */ './views/OrderList.vue'),
           meta: {
             required: true,

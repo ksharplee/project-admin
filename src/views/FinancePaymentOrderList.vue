@@ -255,15 +255,35 @@
           </v-tooltip>
         </template>
         <template v-slot:footer>
+          <v-divider />
           <div
             v-if="paymentOrderList.status && paymentOrderList.data.items.length"
-            class="pa-4 grey lighten-5"
+            class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
           >
+            <div class="mr-2">
+              共<span class="error--text">{{ paymentOrderList.data.totalItem }}</span>收款单
+            </div>
             <v-pagination
               v-model="page"
               :length="pageCount"
+              :total-visible="7"
               @input="changePagination"
             />
+            <div class="mx-2">
+              跳至
+            </div>
+            <div style="width:50px">
+              <input
+                v-model="pageEnter"
+                type="text"
+                class="width-100 px-2 text-center"
+                style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+                @keyup.enter="changePaginationDirectly"
+              >
+            </div>
+            <div class="ml-2">
+              页
+            </div>
           </div>
         </template>
       </v-data-table>
@@ -399,7 +419,7 @@
 </template>
 
 <script>
-// import * as R from 'ramda';
+import * as R from 'ramda';
 import { mapState, mapActions } from 'vuex';
 
 export default {
@@ -466,6 +486,7 @@ export default {
           sortable: false,
         },
       ],
+      pageEnter: 1,
     };
   },
   computed: {
@@ -517,6 +538,18 @@ export default {
       'nullifyPaymentOrderAsync',
       'confirmPaymentOrderAsync',
     ]),
+    changePaginationDirectly() {
+      if (R.is(Number, this.pageEnter)) {
+        if (this.pageEnter <= this.pageCount) {
+          this.page = this.pageEnter;
+        } else {
+          this.pageEnter = this.pageCount;
+        }
+        this.getPaymentOrderList();
+      } else {
+        this.pageEnter = 1;
+      }
+    },
     getPaymentOrderDetail(id) {
       this.dialogDetail = true;
       this.loadingPaymentDetail = true;

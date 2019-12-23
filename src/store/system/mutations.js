@@ -4,9 +4,13 @@ import {
   SET_BASIC_INFO,
   SET_AREA_INFO,
   SET_ORDER_SEQUENCE,
+  CLEAR_BASIC_INFO,
 } from '../mutation-types';
 
 export default {
+  [CLEAR_BASIC_INFO](state) {
+    state.basicInfo.status = 0;
+  },
   [SET_EMPLOYEE_LIST](state, payload) {
     state.employeeList = payload;
   },
