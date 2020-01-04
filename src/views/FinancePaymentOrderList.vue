@@ -1,20 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
-      收款单列表
-      <v-btn
-        color="primary"
-        class="ml-auto"
-        depressed
-        :to="{ name: 'finance_payment_add'}"
-      >
-        <v-icon left>
-          mdi-plus
-        </v-icon>新增收款单
-      </v-btn>
-    </div>
-
-    <v-form ref="form">
+    <!-- <v-form ref="form">
       <v-row>
         <v-col
           cols="12"
@@ -172,121 +158,252 @@
           </v-btn>
         </v-col>
       </v-row>
-    </v-form>
-    <v-card class="mt-4">
-      <v-data-table
-        :headers="headers"
-        :items="paymentOrderList.data.items"
-        class="text-center"
-        item-key="id"
-        no-data-text="暂无数据"
-        hide-default-footer
-        fixed-header
-        :items-per-page="20"
-      >
-        <template v-slot:item.dStatus="{ item }">
-          <div :class="item.dStatus | paymentOrderStatusClass">
-            {{ item.dStatus | paymentOrderStatusText }}
-          </div>
-        </template>
-        <template v-slot:item.action="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="getPaymentOrderDetail(item.id)"
-              >
-                <v-icon color="primary">
-                  mdi-file-document-box-search
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>详情</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="item.dStatus !== '2'"
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="dialogConfirm = true;toConfirmOrder = item.id"
-              >
-                <v-icon color="amber">
-                  mdi-check-decagram
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>审核</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="item.dStatus !== '2'"
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="dialogReject = true;toRejectOrder = item.id"
-              >
-                <v-icon color="secondary">
-                  mdi-minus-circle
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>驳回</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                :disabled="item.dStatus !== '3'"
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="dialogNullify = true;toNullifyOrder = item.id"
-              >
-                <v-icon color="error lighten-2">
-                  mdi-close-circle
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>作废</span>
-          </v-tooltip>
-        </template>
-        <template v-slot:footer>
-          <v-divider />
+    </v-form> -->
+    <v-data-table
+      :headers="headers"
+      :items="paymentOrderList.data.items"
+      class="text-center"
+      item-key="id"
+      no-data-text="暂无数据"
+      hide-default-footer
+      fixed-header
+      :items-per-page="20"
+    >
+      <template v-slot:top>
+        <div
+          class="text-left d-flex align-center mb-3"
+          style="height: 36px"
+        >
           <div
-            v-if="paymentOrderList.status && paymentOrderList.data.items.length"
-            class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+            class="input-group flex-nowrap"
+            style="width:400px"
           >
-            <div class="mr-2">
-              共<span class="error--text">{{ paymentOrderList.data.totalItem }}</span>收款单
-            </div>
-            <v-pagination
-              v-model="page"
-              :length="pageCount"
-              @input="changePagination"
-            />
-            <div class="mx-2">
-              跳至
-            </div>
-            <div style="width:50px">
-              <input
-                v-model="pageEnter"
-                type="text"
-                class="width-100 px-2 text-center"
-                style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
-                @keyup.enter="changePaginationDirectly"
-              >
-            </div>
-            <div class="ml-2">
-              页
+            <div
+              class="d-flex custom-text-field-wrap"
+            >
+              <div class="input-group-control">
+                <v-menu
+                  v-model="menuStart"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-model="search.beginDate"
+                      class="white"
+                      placeholder="请选择上架时间"
+                      single-line
+                      dense
+                      solo
+                      flat
+                      hide-details
+                      clearable
+                      readonly
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="search.beginDate"
+                    color="primary"
+                    :max="search.endDate ? search.endDate : null"
+                    scrollable
+                    @input="menuStart = false"
+                  />
+                </v-menu>
+              </div>
+              <div class="input-group-innerpend">
+                <span class="input-group-text">到</span>
+              </div>
+              <div class="input-group-control">
+                <v-menu
+                  v-model="menuEnd"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-model="search.endDate"
+                      :disabled="!search.beginDate"
+                      class="white"
+                      placeholder="请选择下架时间"
+                      single-line
+                      clearable
+                      dense
+                      solo
+                      flat
+                      hide-details
+                      readonly
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="search.endDate"
+                    :min="search.beginDate"
+                    color="primary"
+                    scrollable
+                    @input="menuEnd = false"
+                  />
+                </v-menu>
+              </div>
             </div>
           </div>
-        </template>
-      </v-data-table>
-    </v-card>
+          <div
+            class="input-group ml-4"
+            style="width:300px"
+          >
+            <div class="input-group-control">
+              <v-text-field
+                v-model="search.buyerName"
+                placeholder="请输入客户名称"
+                outlined
+                class="white"
+                single-line
+                clearable
+                hide-details
+                dense
+              />
+            </div>
+            <div class="input-group-append">
+              <v-btn
+                color="blue-grey lighten-4 px-0"
+                depressed
+                x-small
+                @click="searchPaymentOrderList"
+              >
+                <v-icon
+                  color="blue-grey darken-2"
+                >
+                  mdi-magnify mdi-18px
+                </v-icon>
+              </v-btn>
+            </div>
+          </div>
+          <v-btn
+            color="secondary"
+            text
+            class="ml-2"
+            @click="resetSearchConditions"
+          >
+            重置
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            depressed
+            :to="{ name: 'finance_payment_add'}"
+          >
+            <v-icon left>
+              mdi-plus
+            </v-icon>新增收款单
+          </v-btn>
+        </div>
+      </template>
+      <template v-slot:item.dStatus="{ item }">
+        <div :class="item.dStatus | paymentOrderStatusClass">
+          {{ item.dStatus | paymentOrderStatusText }}
+        </div>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="getPaymentOrderDetail(item.id)"
+            >
+              <v-icon color="primary">
+                mdi-file-document-box-search
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>详情</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              :disabled="item.dStatus !== '2'"
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="dialogConfirm = true;toConfirmOrder = item.id"
+            >
+              <v-icon color="amber">
+                mdi-check-decagram
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>审核</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              :disabled="item.dStatus !== '2'"
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="dialogReject = true;toRejectOrder = item.id"
+            >
+              <v-icon color="secondary">
+                mdi-minus-circle
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>驳回</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              :disabled="item.dStatus !== '3'"
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="dialogNullify = true;toNullifyOrder = item.id"
+            >
+              <v-icon color="error lighten-2">
+                mdi-close-circle
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>作废</span>
+        </v-tooltip>
+      </template>
+      <template v-slot:footer>
+        <v-divider />
+        <div
+          v-if="paymentOrderList.status && paymentOrderList.data.items.length"
+          class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+        >
+          <div class="mr-2">
+            共<span class="error--text">{{ paymentOrderList.data.totalItem }}</span>收款单
+          </div>
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            @input="changePagination"
+          />
+          <div class="mx-2">
+            跳至
+          </div>
+          <div style="width:50px">
+            <input
+              v-model="pageEnter"
+              type="text"
+              class="width-100 px-2 text-center"
+              style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+              @keyup.enter="changePaginationDirectly"
+            >
+          </div>
+          <div class="ml-2">
+            页
+          </div>
+        </div>
+      </template>
+    </v-data-table>
     <v-dialog
       v-model="dialogNullify"
       max-width="350"
@@ -571,14 +688,14 @@ export default {
         });
     },
     searchPaymentOrderList() {
-      this.getPaymentOrderList();
+      this.getPaymentOrderList(this.search);
     },
     clearSearchConditions(target) {
       this.search[target] = '';
       this.getPaymentOrderList();
     },
     resetSearchConditions() {
-      this.$refs.form.reset();
+      this.search = {};
       this.getPaymentOrderList();
     },
     changePagination() {

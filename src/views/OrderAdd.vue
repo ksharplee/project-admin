@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
-      代客下单
-    </div>
-
     <v-form
       ref="form"
       v-model="valid"

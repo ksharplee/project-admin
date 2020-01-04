@@ -1,10 +1,10 @@
 <template>
-  <div class="pa-4">
+  <div class="pt-4">
     <v-expansion-panels
       v-model="panels"
       focusable
       multiple
-      accordion
+      flat
     >
       <v-expansion-panel>
         <v-expansion-panel-header>订单基本信息</v-expansion-panel-header>

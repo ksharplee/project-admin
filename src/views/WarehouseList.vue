@@ -1,74 +1,70 @@
 <template>
   <div>
-    <v-card>
-      <v-card-title>
-        仓库列表
-        <v-btn
-          color="primary"
-          class="ml-auto"
-          depressed
-          @click="dialogSingle = true;edit = false"
+    <div class="title d-flex flex-wrap align-center pb-3">
+      仓库列表
+      <v-btn
+        color="primary"
+        class="ml-auto"
+        depressed
+        @click="dialogSingle = true;edit = false"
+      >
+        <v-icon left>
+          mdi-plus
+        </v-icon>添加仓库
+      </v-btn>
+    </div>
+    <v-data-table
+      :headers="headers"
+      :items="warehouseList.data.items"
+      :no-data-text="$store.state.loading ? '加载中...' : '暂无数据'"
+      hide-default-footer
+      fixed-header
+    >
+      <template v-slot:item.dnames="{ item }">
+        {{ item.dnames }}
+        <v-chip
+          v-if="item.isDefault === '1'"
+          color="error"
+          class="ml-2"
+          x-small
         >
-          <v-icon left>
-            mdi-plus
-          </v-icon>添加仓库
-        </v-btn>
-      </v-card-title>
-      <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="warehouseList.data.items"
-          :no-data-text="$store.state.loading ? '加载中...' : '暂无数据'"
-          hide-default-footer
-          fixed-header
-        >
-          <template v-slot:item.dnames="{ item }">
-            {{ item.dnames }}
-            <v-chip
-              v-if="item.isDefault === '1'"
-              color="error"
-              class="ml-2"
-              x-small
+          默认
+        </v-chip>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="target = item;edit = true;dialogSingle = true"
             >
-              默认
-            </v-chip>
+              <v-icon color="teal">
+                mdi-pencil-circle
+              </v-icon>
+            </v-btn>
           </template>
-          <template v-slot:item.action="{ item }">
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  class="mx-1"
-                  v-on="on"
-                  @click="target = item;edit = true;dialogSingle = true"
-                >
-                  <v-icon color="teal">
-                    mdi-pencil-circle
-                  </v-icon>
-                </v-btn>
-              </template>
-              <span>编辑</span>
-            </v-tooltip>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  icon
-                  class="mx-1"
-                  v-on="on"
-                  @click="dialogDelete = true;toDeleteWarehouse = item.id"
-                >
-                  <v-icon color="secondary">
-                    mdi-delete-forever
-                  </v-icon>
-                </v-btn>
-              </template>
-              <span>删除</span>
-            </v-tooltip>
+          <span>编辑</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="dialogDelete = true;toDeleteWarehouse = item.id"
+            >
+              <v-icon color="secondary">
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
           </template>
-        </v-data-table>
-        <v-divider />
-      </v-card-text>
-    </v-card>
+          <span>删除</span>
+        </v-tooltip>
+      </template>
+    </v-data-table>
+    <v-divider />
     <warehouse-single
       :edit="edit"
       :target="target"

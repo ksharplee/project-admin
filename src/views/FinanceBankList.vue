@@ -14,10 +14,7 @@
       </v-btn>
     </div>
 
-    <v-card
-      outlined
-      elevation="0"
-    >
+    <v-card>
       <v-data-table
         :headers="headers"
         :items="bankList.data"

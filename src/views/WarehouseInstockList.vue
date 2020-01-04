@@ -1,360 +1,356 @@
 <template>
   <div>
-    <v-card>
-      <v-card-text>
-        <v-data-table
-          :headers="headers"
-          :items="warehouseInstockList.data.items"
-          :loading="loadingDataItems"
-          loading-text="加载中..."
-          no-data-text="暂无数据"
-          hide-default-footer
-          :items-per-page="20"
+    <v-data-table
+      :headers="headers"
+      :items="warehouseInstockList.data.items"
+      :loading="loadingDataItems"
+      loading-text="加载中..."
+      no-data-text="暂无数据"
+      hide-default-footer
+      :items-per-page="20"
+    >
+      <template v-slot:top>
+        <div
+          class="text-left d-flex align-center mb-3"
+          style="height: 36px"
         >
-          <template v-slot:top>
-            <div
-              class="text-left d-flex align-center mb-3"
-              style="height: 36px"
-            >
-              <v-menu
-                offset-y
-              >
-                <template v-slot:activator="{ on, value }">
-                  <v-btn
-                    text
-                    class="px-1 ml-2"
-                    v-on="on"
-                  >
-                    {{ currentStatus }} <v-icon
-                      :class="value ? 'rotate-180' : ''"
-                    >
-                      mdi-chevron-down mdi-18px
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="(item, index) in status"
-                    :key="index"
-                    @click="searchOrderByStatus(item)"
-                  >
-                    <v-list-item-title class="body-2">
-                      {{ item.text }}
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <v-menu
-                offset-y
-              >
-                <template v-slot:activator="{ on, value }">
-                  <v-btn
-                    text
-                    class="px-1 ml-2"
-                    v-on="on"
-                  >
-                    {{ currentType }} <v-icon
-                      :class="value ? 'rotate-180' : ''"
-                    >
-                      mdi-chevron-down mdi-18px
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="(item, index) in warehouseInstockTypeListLocal"
-                    :key="index"
-                    @click="searchOrderByType(item)"
-                  >
-                    <v-list-item-title class="body-2">
-                      {{ item.dnames }}
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <v-menu
-                offset-y
-              >
-                <template v-slot:activator="{ on, value }">
-                  <v-btn
-                    text
-                    class="px-1 ml-2"
-                    v-on="on"
-                  >
-                    {{ currentWarehouse }} <v-icon
-                      :class="value ? 'rotate-180' : ''"
-                    >
-                      mdi-chevron-down mdi-18px
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                    v-for="(item, index) in warehouseListLocal"
-                    :key="index"
-                    @click="searchOrderByWarehouse(item)"
-                  >
-                    <v-list-item-title class="body-2">
-                      {{ item.dnames }}
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <div
-                class="input-group flex-nowrap ml-2"
-                style="width:400px"
-              >
-                <div
-                  class="d-flex custom-text-field-wrap"
-                >
-                  <div class="input-group-control">
-                    <v-menu
-                      v-model="menuStart"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="290px"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="search.startTime"
-                          class="white"
-                          placeholder="请选择入库时间"
-                          single-line
-                          dense
-                          solo
-                          flat
-                          hide-details
-                          clearable
-                          readonly
-                          v-on="on"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="search.startTime"
-                        color="primary"
-                        :max="search.endTime ? search.endTime : null"
-                        scrollable
-                        @input="menuStart = false"
-                      />
-                    </v-menu>
-                  </div>
-                  <div class="input-group-innerpend">
-                    <span class="input-group-text">到</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-menu
-                      v-model="menuEnd"
-                      :close-on-content-click="false"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="290px"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="search.endTime"
-                          :disabled="!search.startTime"
-                          class="white"
-                          placeholder="请选择截止时间"
-                          single-line
-                          clearable
-                          dense
-                          solo
-                          flat
-                          hide-details
-                          readonly
-                          v-on="on"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="search.endTime"
-                        :min="search.startTime"
-                        color="primary"
-                        scrollable
-                        @input="menuEnd = false"
-                      />
-                    </v-menu>
-                  </div>
-                  <div class="input-group-append mr-2">
-                    <v-icon>mdi-calendar-import</v-icon>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="input-group ml-4"
-                style="width:300px"
-              >
-                <div class="input-group-control">
-                  <v-text-field
-                    v-model="search.searchStr"
-                    placeholder="请输入入库单号"
-                    outlined
-                    class="white"
-                    single-line
-                    clearable
-                    hide-details
-                    dense
-                    @click:clear="clearSearchConditions"
-                  />
-                </div>
-                <div class="input-group-append">
-                  <v-btn
-                    color="blue-grey lighten-4 px-0"
-                    depressed
-                    x-small
-                    @click="getWarehouseIntockList({ search })"
-                  >
-                    <v-icon
-                      color="blue-grey darken-2"
-                    >
-                      mdi-magnify mdi-18px
-                    </v-icon>
-                  </v-btn>
-                </div>
-              </div>
-              <v-spacer />
+          <v-menu
+            offset-y
+          >
+            <template v-slot:activator="{ on, value }">
               <v-btn
-                color="primary"
-                class="ml-auto"
-                depressed
-                :to="{ name: 'warehouse_instock_list_add' }"
+                text
+                class="px-1 ml-2"
+                v-on="on"
               >
-                <v-icon left>
-                  mdi-plus
-                </v-icon>新增入库单
+                {{ currentStatus }} <v-icon
+                  :class="value ? 'rotate-180' : ''"
+                >
+                  mdi-chevron-down mdi-18px
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in status"
+                :key="index"
+                @click="searchOrderByStatus(item)"
+              >
+                <v-list-item-title class="body-2">
+                  {{ item.text }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <v-menu
+            offset-y
+          >
+            <template v-slot:activator="{ on, value }">
+              <v-btn
+                text
+                class="px-1 ml-2"
+                v-on="on"
+              >
+                {{ currentType }} <v-icon
+                  :class="value ? 'rotate-180' : ''"
+                >
+                  mdi-chevron-down mdi-18px
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in warehouseInstockTypeListLocal"
+                :key="index"
+                @click="searchOrderByType(item)"
+              >
+                <v-list-item-title class="body-2">
+                  {{ item.dnames }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <v-menu
+            offset-y
+          >
+            <template v-slot:activator="{ on, value }">
+              <v-btn
+                text
+                class="px-1 ml-2"
+                v-on="on"
+              >
+                {{ currentWarehouse }} <v-icon
+                  :class="value ? 'rotate-180' : ''"
+                >
+                  mdi-chevron-down mdi-18px
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in warehouseListLocal"
+                :key="index"
+                @click="searchOrderByWarehouse(item)"
+              >
+                <v-list-item-title class="body-2">
+                  {{ item.dnames }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <div
+            class="input-group flex-nowrap ml-2"
+            style="width:400px"
+          >
+            <div
+              class="d-flex custom-text-field-wrap"
+            >
+              <div class="input-group-control">
+                <v-menu
+                  v-model="menuStart"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-model="search.startTime"
+                      class="white"
+                      placeholder="请选择入库时间"
+                      single-line
+                      dense
+                      solo
+                      flat
+                      hide-details
+                      clearable
+                      readonly
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="search.startTime"
+                    color="primary"
+                    :max="search.endTime ? search.endTime : null"
+                    scrollable
+                    @input="menuStart = false"
+                  />
+                </v-menu>
+              </div>
+              <div class="input-group-innerpend">
+                <span class="input-group-text">到</span>
+              </div>
+              <div class="input-group-control">
+                <v-menu
+                  v-model="menuEnd"
+                  :close-on-content-click="false"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="290px"
+                >
+                  <template v-slot:activator="{ on }">
+                    <v-text-field
+                      v-model="search.endTime"
+                      :disabled="!search.startTime"
+                      class="white"
+                      placeholder="请选择截止时间"
+                      single-line
+                      clearable
+                      dense
+                      solo
+                      flat
+                      hide-details
+                      readonly
+                      v-on="on"
+                    />
+                  </template>
+                  <v-date-picker
+                    v-model="search.endTime"
+                    :min="search.startTime"
+                    color="primary"
+                    scrollable
+                    @input="menuEnd = false"
+                  />
+                </v-menu>
+              </div>
+              <div class="input-group-append mr-2">
+                <v-icon>mdi-calendar-import</v-icon>
+              </div>
+            </div>
+          </div>
+          <div
+            class="input-group ml-4"
+            style="width:300px"
+          >
+            <div class="input-group-control">
+              <v-text-field
+                v-model="search.searchStr"
+                placeholder="请输入入库单号"
+                outlined
+                class="white"
+                single-line
+                clearable
+                hide-details
+                dense
+                @click:clear="clearSearchConditions"
+              />
+            </div>
+            <div class="input-group-append">
+              <v-btn
+                color="blue-grey lighten-4 px-0"
+                depressed
+                x-small
+                @click="getWarehouseIntockList({ search })"
+              >
+                <v-icon
+                  color="blue-grey darken-2"
+                >
+                  mdi-magnify mdi-18px
+                </v-icon>
               </v-btn>
             </div>
-          </template>
-          <template v-slot:item.deliveryTime="{ item }">
-            <span v-if="item.deliveryTime">{{ item.deliveryTime | dateTruncate(10) }}</span>
-            <span
-              v-else
-              class="grey--text"
-            >无</span>
-          </template>
-          <template v-slot:item.dStatus="{ item }">
-            <span :class="item.dStatus === '0' ? 'error--text' : item.dStatus === '1' ?'success--text' : 'grey--text'">{{ item.dStatus === '0' ? '待审核' : item.dStatus === '1' ? '已审核' : '已作废' }}</span>
-          </template>
-          <template v-slot:item.action="{ item }">
-            <v-menu
-              offset-y
-              left
+          </div>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            class="ml-auto"
+            depressed
+            :to="{ name: 'warehouse_instock_list_add' }"
+          >
+            <v-icon left>
+              mdi-plus
+            </v-icon>新增入库单
+          </v-btn>
+        </div>
+      </template>
+      <template v-slot:item.deliveryTime="{ item }">
+        <span v-if="item.deliveryTime">{{ item.deliveryTime | dateTruncate(10) }}</span>
+        <span
+          v-else
+          class="grey--text"
+        >无</span>
+      </template>
+      <template v-slot:item.dStatus="{ item }">
+        <span :class="item.dStatus === '0' ? 'error--text' : item.dStatus === '1' ?'success--text' : 'grey--text'">{{ item.dStatus === '0' ? '待审核' : item.dStatus === '1' ? '已审核' : '已作废' }}</span>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-menu
+          offset-y
+          left
+        >
+          <template v-slot:activator="{ on }">
+            <v-icon
+              color="secondary"
+              v-on="on"
             >
-              <template v-slot:activator="{ on }">
+              mdi-dots-horizontal
+            </v-icon>
+          </template>
+          <v-list>
+            <v-list-item
+              :to="{ name: 'warehouse_instock_list_detail', params: { id: item.id }}"
+            >
+              <v-list-item-title>
                 <v-icon
-                  color="secondary"
-                  v-on="on"
+                  class="mr-1"
+                  small
+                  style="position:relative;top:-1px"
                 >
-                  mdi-dots-horizontal
-                </v-icon>
-              </template>
-              <v-list>
-                <v-list-item
-                  :to="{ name: 'warehouse_instock_list_detail', params: { id: item.id }}"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-file-document-box-search
-                    </v-icon>详情
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                  :disabled="item.dStatus !== '0'"
-                  :to="{ name: 'warehouse_instock_list_edit', params: { id: item.id }}"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-pencil-circle
-                    </v-icon>编辑
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                  :disabled="item.dStatus !== '0'"
-                  @click="dialog = true;operate = 'check';operateText='审核';toOperateInstockOrder = item.id"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-clipboard-check
-                    </v-icon>审核
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                  :disabled="item.dStatus !== '1'"
-                  @click="dialog = true;operate = 'nullify';operateText='作废';toOperateInstockOrder = item.id"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-close-circle
-                    </v-icon>作废
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                  :disabled="item.dStatus !== '0'"
-                  @click="dialog = true; operate = 'delete';operateText='删除'; toOperateInstockOrder = item.id"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-delete-forever
-                    </v-icon>删除
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </template>
-          <template v-slot:footer>
-            <v-divider />
-            <div
-              v-if="warehouseInstockList.status && warehouseInstockList.data.items.length"
-              class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+                  mdi-file-document-box-search
+                </v-icon>详情
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              :disabled="item.dStatus !== '0'"
+              :to="{ name: 'warehouse_instock_list_edit', params: { id: item.id }}"
             >
-              <div class="mr-2">
-                共<span class="error--text">{{ warehouseInstockList.data.totalItem }}</span>入库单
-              </div>
-              <v-pagination
-                v-model="page"
-                :length="pageCount"
-                @input="changePagination"
-              />
-              <div class="mx-2">
-                跳至
-              </div>
-              <div style="width:50px">
-                <input
-                  v-model="pageEnter"
-                  type="text"
-                  class="width-100 px-2 text-center"
-                  style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
-                  @keyup.enter="changePaginationDirectly"
+              <v-list-item-title>
+                <v-icon
+                  class="mr-1"
+                  small
+                  style="position:relative;top:-1px"
                 >
-              </div>
-              <div class="ml-2">
-                页
-              </div>
-            </div>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
+                  mdi-pencil-circle
+                </v-icon>编辑
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              :disabled="item.dStatus !== '0'"
+              @click="dialog = true;operate = 'check';operateText='审核';toOperateInstockOrder = item.id"
+            >
+              <v-list-item-title>
+                <v-icon
+                  class="mr-1"
+                  small
+                  style="position:relative;top:-1px"
+                >
+                  mdi-clipboard-check
+                </v-icon>审核
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              :disabled="item.dStatus !== '1'"
+              @click="dialog = true;operate = 'nullify';operateText='作废';toOperateInstockOrder = item.id"
+            >
+              <v-list-item-title>
+                <v-icon
+                  class="mr-1"
+                  small
+                  style="position:relative;top:-1px"
+                >
+                  mdi-close-circle
+                </v-icon>作废
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              :disabled="item.dStatus !== '0'"
+              @click="dialog = true; operate = 'delete';operateText='删除'; toOperateInstockOrder = item.id"
+            >
+              <v-list-item-title>
+                <v-icon
+                  class="mr-1"
+                  small
+                  style="position:relative;top:-1px"
+                >
+                  mdi-delete-forever
+                </v-icon>删除
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+      <template v-slot:footer>
+        <v-divider />
+        <div
+          v-if="warehouseInstockList.status && warehouseInstockList.data.items.length"
+          class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+        >
+          <div class="mr-2">
+            共<span class="error--text">{{ warehouseInstockList.data.totalItem }}</span>入库单
+          </div>
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            @input="changePagination"
+          />
+          <div class="mx-2">
+            跳至
+          </div>
+          <div style="width:50px">
+            <input
+              v-model="pageEnter"
+              type="text"
+              class="width-100 px-2 text-center"
+              style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+              @keyup.enter="changePaginationDirectly"
+            >
+          </div>
+          <div class="ml-2">
+            页
+          </div>
+        </div>
+      </template>
+    </v-data-table>
     <v-dialog
       v-model="dialog"
       max-width="350"
@@ -528,7 +524,7 @@ export default {
         exact: true,
       },
       {
-        text: '客户列表',
+        text: '商品入库',
         disabled: true,
         exact: true,
       },

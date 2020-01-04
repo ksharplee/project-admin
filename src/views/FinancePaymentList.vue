@@ -13,78 +13,72 @@
         </v-icon>添加收款账户
       </v-btn>
     </div>
-
-    <v-card
-      outlined
-      elevation="0"
+    <v-data-table
+      :headers="headers"
+      :items="paymentList.data"
+      class="text-center"
+      no-data-text="暂无数据"
+      hide-default-footer
+      fixed-header
+      :items-per-page="20"
     >
-      <v-data-table
-        :headers="headers"
-        :items="paymentList.data"
-        class="text-center"
-        no-data-text="暂无数据"
-        hide-default-footer
-        fixed-header
-        :items-per-page="20"
-      >
-        <template v-slot:item.logo="{ item }">
-          <div class="py-3">
-            <v-img
-              :src="item.logo ? item.logo : require('@/assets/imgWaiting.png')"
-              aspect-ratio="1"
-              class="grey lighten-2 mx-auto"
-              max-width="65"
-              max-height="65"
+      <template v-slot:item.logo="{ item }">
+        <div class="py-3">
+          <v-img
+            :src="item.logo ? item.logo : require('@/assets/imgWaiting.png')"
+            aspect-ratio="1"
+            class="grey lighten-2 mx-auto"
+            max-width="65"
+            max-height="65"
+          >
+            <template v-slot:placeholder>
+              <v-row
+                class="fill-height ma-0"
+                align="center"
+                justify="center"
+              >
+                <v-progress-circular
+                  indeterminate
+                  color="grey lighten-5"
+                />
+              </v-row>
+            </template>
+          </v-img>
+        </div>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="target = item;edit = true;dialogSingle = true"
             >
-              <template v-slot:placeholder>
-                <v-row
-                  class="fill-height ma-0"
-                  align="center"
-                  justify="center"
-                >
-                  <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                  />
-                </v-row>
-              </template>
-            </v-img>
-          </div>
-        </template>
-        <template v-slot:item.action="{ item }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="target = item;edit = true;dialogSingle = true"
-              >
-                <v-icon color="teal">
-                  mdi-pencil-circle
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>编辑</span>
-          </v-tooltip>
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                icon
-                class="mx-1"
-                v-on="on"
-                @click="dialogDelete = true;toDeleteInvoice = item.id"
-              >
-                <v-icon color="secondary">
-                  mdi-delete-forever
-                </v-icon>
-              </v-btn>
-            </template>
-            <span>删除</span>
-          </v-tooltip>
-        </template>
-      </v-data-table>
-    </v-card>
+              <v-icon color="teal">
+                mdi-pencil-circle
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>编辑</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              icon
+              class="mx-1"
+              v-on="on"
+              @click="dialogDelete = true;toDeleteInvoice = item.id"
+            >
+              <v-icon color="secondary">
+                mdi-delete-forever
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>删除</span>
+        </v-tooltip>
+      </template>
+    </v-data-table>
     <finance-payment-single
       :edit="edit"
       :target="target"

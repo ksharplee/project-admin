@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-4">
+  <div class="pt-4">
     <v-card>
       <v-alert
         color="primary"

@@ -1,275 +1,201 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
-      客户列表
-      <v-btn
-        color="primary"
-        class="ml-auto"
-        depressed
-        @click="dialogSingle = true;edit = false"
-      >
-        <v-icon left>
-          mdi-plus
-        </v-icon>添加客户
-      </v-btn>
-    </div>
-    <v-card>
-      <v-card-text>
-        <v-form ref="form">
-          <v-row class="mb-3">
-            <v-col
-              cols="12"
-              md="4"
-              lg="3"
-              xl="2"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">客户账号</span>
-                </div>
-                <div class="input-group-control">
-                  <v-text-field
-                    v-model="search.account"
-                    placeholder="请输入客户账号"
-                    dense
-                    outlined
-                    class="white"
-                    single-line
-                    clearable
-                    hide-details
-                    @click:clear="clearSearchByConditions('account')"
-                  />
-                </div>
-              </div>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-              lg="3"
-              xl="2"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">客户姓名</span>
-                </div>
-                <div class="input-group-control">
-                  <v-text-field
-                    v-model="search.dnames"
-                    placeholder="请输入客户姓名"
-                    dense
-                    outlined
-                    class="white"
-                    single-line
-                    clearable
-                    hide-details
-                    @click:clear="clearSearchByConditions('dnames')"
-                  />
-                </div>
-              </div>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-              lg="3"
-              xl="2"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">手机号码</span>
-                </div>
-                <div class="input-group-control">
-                  <v-text-field
-                    v-model="search.mobile"
-                    placeholder="请输入手机号码"
-                    dense
-                    outlined
-                    class="white"
-                    single-line
-                    clearable
-                    hide-details
-                    @click:clear="clearSearchByConditions('mobile')"
-                  />
-                </div>
-              </div>
-            </v-col>
-            <v-col
-              cols="12"
-              md="4"
-              lg="3"
-              xl="2"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">客户等级</span>
-                </div>
-                <div class="input-group-control">
-                  <v-select
-                    v-model="search.gradeId"
-                    :items="customerGradeList.data"
-                    :loading="loadingCustomerGrade"
-                    :disabled="loadingCustomerGrade"
-                    placeholder="请选择客户等级"
-                    dense
-                    item-text="dnames"
-                    item-value="id"
-                    class="white"
-                    single-line
-                    outlined
-                    clearable
-                    no-data-text="暂无数据"
-                    hide-details
-                    @click:clear="clearSearchByConditions('gradeId')"
-                  />
-                </div>
-              </div>
-            </v-col>
-            <v-col align-self="center">
+    <v-data-table
+      :headers="headers"
+      :items="customerList.data.items"
+      class="text-center"
+      no-data-text="暂无数据"
+      hide-default-footer
+      fixed-header
+      :items-per-page="20"
+    >
+      <template v-slot:top>
+        <div
+          class="text-left d-flex align-center mb-3"
+          style="height: 36px"
+        >
+          <v-menu
+            offset-y
+          >
+            <template v-slot:activator="{ on, value }">
               <v-btn
-                color="primary mr-2"
+                text
+                class="px-1 ml-2"
+                v-on="on"
+              >
+                {{ currentGrade }} <v-icon
+                  :class="value ? 'rotate-180' : ''"
+                >
+                  mdi-chevron-down mdi-18px
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in customerGradeLocal"
+                :key="index"
+                @click="searchCustomerByGradeId(item)"
+              >
+                <v-list-item-title class="body-2">
+                  {{ item.dnames }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <div
+            class="input-group ml-4"
+            style="width:300px"
+          >
+            <div class="input-group-control">
+              <v-text-field
+                v-model="search.dnames"
+                placeholder="请输入客户姓名"
+                outlined
+                class="white"
+                single-line
+                clearable
+                hide-details
+                dense
+                @click:clear="clearSearchByConditions('dnames')"
+              />
+            </div>
+            <div class="input-group-append">
+              <v-btn
+                color="blue-grey lighten-4 px-0"
                 depressed
+                x-small
                 @click="searchByConditions"
               >
-                搜索
-              </v-btn>
-              <v-btn
-                color="secondary"
-                depressed
-                @click="clearSearchAllConditions"
-              >
-                重置
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
-        <v-data-table
-          :headers="headers"
-          :items="customerList.data.items"
-          class="text-center"
-          no-data-text="暂无数据"
-          hide-default-footer
-          fixed-header
-          :items-per-page="20"
-        >
-          <template v-slot:body="{ items }">
-            <tbody>
-              <tr
-                v-for="item in items"
-                :key="item.id"
-              >
-                <td>{{ item.defaulte === '1' ? '默认客户' : item.account }}</td>
-                <td>{{ item.defaulte === '1' ? '默认客户' : item.dnames }}</td>
-                <td>{{ item.defaulte === '1' ? '默认客户' : item.mobile }}</td>
-                <td :class="item.gradeName ? '' : 'grey--text'">
-                  {{ item.gradeName ? item.gradeName : '无' }}
-                </td>
-                <td>{{ item.sectionName ? item.sectionName : '无' }}</td>
-                <td>{{ item.sellMenName ? item.sellMenName : '无' }}</td>
-                <td>{{ item.createTime | dateTruncate(16) }}</td>
-                <td>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        :disabled="item.defaulte === '1'"
-                        :to="{ name: 'customer_shippig_list', params: { id: item.buyerId, uid: item.buyerUid }}"
-                        v-on="on"
-                      >
-                        <v-icon
-                          color="primary"
-                          style="margin-top:2px"
-                        >
-                          mdi-truck
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>收货地址</span>
-                  </v-tooltip>
-                  <!-- <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="dialogSetGrade = true;toSetGradeItem = item"
-                    >
-                      <v-icon color="orange">
-                        mdi-star-circle
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>设置等级</span>
-                </v-tooltip> -->
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        :disabled="item.defaulte === '1'"
-                        v-on="on"
-                        @click="target = item;edit = true;dialogSingle = true"
-                      >
-                        <v-icon color="teal">
-                          mdi-pencil-circle
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>编辑</span>
-                  </v-tooltip>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        :disabled="item.defaulte === '1'"
-                        v-on="on"
-                        @click="dialogDelete = true;toDeleteCustomer = item.id"
-                      >
-                        <v-icon color="secondary">
-                          mdi-delete-forever
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>删除</span>
-                  </v-tooltip>
-                </td>
-              </tr>
-            </tbody>
-          </template>
-          <template v-slot:footer>
-            <v-divider />
-            <div
-              v-if="customerList.status && customerList.data.items.length"
-              class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
-            >
-              <div class="mr-2">
-                共<span class="error--text">{{ customerList.data.totalItem }}</span>客户
-              </div>
-              <v-pagination
-                v-model="page"
-                :length="pageCount"
-                @input="changePagination"
-              />
-              <div class="mx-2">
-                跳至
-              </div>
-              <div style="width:50px">
-                <input
-                  v-model="pageEnter"
-                  type="text"
-                  class="width-100 px-2 text-center"
-                  style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
-                  @keyup.enter="changePaginationDirectly"
+                <v-icon
+                  color="blue-grey darken-2"
                 >
-              </div>
-              <div class="ml-2">
-                页
-              </div>
+                  mdi-magnify mdi-18px
+                </v-icon>
+              </v-btn>
             </div>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
+          </div>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            class="ml-auto"
+            depressed
+            @click="dialogSingle = true;edit = false"
+          >
+            <v-icon left>
+              mdi-plus
+            </v-icon>添加客户
+          </v-btn>
+        </div>
+      </template>
+      <template v-slot:body="{ items }">
+        <tbody>
+          <tr
+            v-for="item in items"
+            :key="item.id"
+          >
+            <td>{{ item.defaulte === '1' ? '默认客户' : item.account }}</td>
+            <td>{{ item.defaulte === '1' ? '默认客户' : item.dnames }}</td>
+            <td>{{ item.defaulte === '1' ? '默认客户' : item.mobile }}</td>
+            <td :class="item.gradeName ? '' : 'grey--text'">
+              {{ item.gradeName ? item.gradeName : '无' }}
+            </td>
+            <td>{{ item.sectionName ? item.sectionName : '无' }}</td>
+            <td>{{ item.sellMenName ? item.sellMenName : '无' }}</td>
+            <td>{{ item.createTime | dateTruncate(16) }}</td>
+            <td>
+              <v-menu
+                offset-y
+                left
+              >
+                <template v-slot:activator="{ on }">
+                  <v-icon
+                    color="secondary"
+                    v-on="on"
+                  >
+                    mdi-dots-horizontal
+                  </v-icon>
+                </template>
+                <v-list>
+                  <v-list-item
+                    :disabled="item.defaulte === '1'"
+                    :to="{ name: 'customer_shippig_list', params: { id: item.buyerId, uid: item.buyerUid }}"
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        :color="item.defaulte === '1' ? '#999' : ''"
+                        small
+                      >
+                        mdi-truck
+                      </v-icon>收货地址
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    :disabled="item.defaulte === '1'"
+                    @click="target = item;edit = true;dialogSingle = true"
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        :color="item.defaulte === '1' ? '#999' : ''"
+                        small
+                      >
+                        mdi-pencil-circle
+                      </v-icon>编辑
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    :disabled="item.defaulte === '1'"
+                    @click="dialogDelete = true;toDeleteCustomer = item.id"
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        :color="item.defaulte === '1' ? '#999' : ''"
+                        small
+                      >
+                        mdi-delete-forever
+                      </v-icon>删除
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </td>
+          </tr>
+        </tbody>
+      </template>
+      <template v-slot:footer>
+        <v-divider />
+        <div
+          v-if="customerList.status && customerList.data.items.length"
+          class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+        >
+          <div class="mr-2">
+            共<span class="error--text">{{ customerList.data.totalItem }}</span>客户
+          </div>
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            @input="changePagination"
+          />
+          <div class="mx-2">
+            跳至
+          </div>
+          <div style="width:50px">
+            <input
+              v-model="pageEnter"
+              type="text"
+              class="width-100 px-2 text-center"
+              style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+              @keyup.enter="changePaginationDirectly"
+            >
+          </div>
+          <div class="ml-2">
+            页
+          </div>
+        </div>
+      </template>
+    </v-data-table>
     <customer-single
       :edit="edit"
       :target="target"
@@ -447,16 +373,7 @@ export default {
           sortable: false,
         },
       ],
-      useOptions: [
-        {
-          text: '启用',
-          value: '0',
-        },
-        {
-          text: '停用',
-          value: '1',
-        },
-      ],
+      currentGrade: '全部等级',
       pageEnter: 1,
     };
   },
@@ -480,6 +397,12 @@ export default {
       return Math.ceil(
         this.customerList.data.totalItem / process.env.VUE_APP_ITEMPERPAGE
       );
+    },
+    customerGradeLocal() {
+      return R.prepend({
+        id: '',
+        dnames: '全部等级',
+      }, this.customerGradeList.data);
     },
   },
   created() {
@@ -524,6 +447,11 @@ export default {
       'setCustomerGrade',
     ]),
     ...mapActions('authority', ['getDepartmentListAsync']),
+    searchCustomerByGradeId(item) {
+      this.currentGrade = item.dnames;
+      this.$set(this.search, 'gradeId', item.id);
+      this.searchByConditions();
+    },
     changePaginationDirectly() {
       if (R.is(Number, this.pageEnter)) {
         if (this.pageEnter <= this.pageCount) {

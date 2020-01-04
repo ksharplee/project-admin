@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
+    <!-- <div class="title d-flex flex-wrap align-center pb-3">
       品牌列表
       <v-btn
         color="primary"
@@ -84,11 +84,8 @@
           </v-btn>
         </v-col>
       </v-row>
-    </v-form>
-    <v-card
-      outlined
-      elevation="0"
-    >
+    </v-form> -->
+    <v-card>
       <v-data-table
         :headers="headers"
         :items="productBrand.data.items"
@@ -98,6 +95,84 @@
         fixed-header
         :items-per-page="20"
       >
+        <template v-slot:top>
+          <div
+            class="text-left d-flex align-center mb-3"
+            style="height: 36px"
+          >
+            <v-menu
+              offset-y
+            >
+              <template v-slot:activator="{ on, value }">
+                <v-btn
+                  text
+                  class="px-1 ml-2"
+                  v-on="on"
+                >
+                  {{ currentStatus }} <v-icon
+                    :class="value ? 'rotate-180' : ''"
+                  >
+                    mdi-chevron-down mdi-18px
+                  </v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(item, index) in status"
+                  :key="index"
+                  @click="searchBrandByStatus(item)"
+                >
+                  <v-list-item-title class="body-2">
+                    {{ item.text }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <div
+              class="input-group ml-4"
+              style="width:300px"
+            >
+              <div class="input-group-control">
+                <v-text-field
+                  v-model="search.dnames"
+                  placeholder="请输入品牌名称"
+                  outlined
+                  class="white"
+                  single-line
+                  clearable
+                  hide-details
+                  dense
+                  @click:clear="clearSearchConditions('dnames')"
+                />
+              </div>
+              <div class="input-group-append">
+                <v-btn
+                  color="blue-grey lighten-4 px-0"
+                  depressed
+                  x-small
+                  @click="searchBrand"
+                >
+                  <v-icon
+                    color="blue-grey darken-2"
+                  >
+                    mdi-magnify mdi-18px
+                  </v-icon>
+                </v-btn>
+              </div>
+            </div>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              class="ml-auto"
+              depressed
+              @click="dialogSingle = true;edit = false"
+            >
+              <v-icon left>
+                mdi-plus
+              </v-icon>添加品牌
+            </v-btn>
+          </div>
+        </template>
         <template v-slot:body="{ items }">
           <tbody>
             <tr
@@ -261,7 +336,12 @@ export default {
           sortable: false,
         },
       ],
-      useOptions: [
+      currentStatus: '全部状态',
+      status: [
+        {
+          text: '全部状态',
+          value: '',
+        },
         {
           text: '启用',
           value: '1',
@@ -297,6 +377,11 @@ export default {
   },
   methods: {
     ...mapActions('product', ['getBrandListAsync', 'deleteBrandAsync']),
+    searchBrandByStatus(item) {
+      this.currentStatus = item.text;
+      this.$set(this.search, 'isUse', item.value);
+      this.searchBrand();
+    },
     // 获取品牌列表
     getBrandList(params) {
       this.loadingDataItems = true;

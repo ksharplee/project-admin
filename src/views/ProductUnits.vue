@@ -13,11 +13,7 @@
         </v-icon>添加单位
       </v-btn>
     </div>
-
-    <v-card
-      outlined
-      elevation="0"
-    >
+    <v-card>
       <v-data-table
         :headers="headers"
         :items="productUnits.data"

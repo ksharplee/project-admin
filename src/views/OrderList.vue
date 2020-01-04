@@ -19,7 +19,7 @@
           <!-- show-select -->
           <template v-slot:top>
             <div
-              class="text-left d-flex align-center mb-2"
+              class="text-left d-flex align-center mb-3"
               style="height: 36px"
             >
               <template

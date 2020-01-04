@@ -1,238 +1,206 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
-      供应商列表
-      <v-btn
-        color="primary"
-        class="ml-auto"
-        depressed
-        @click="dialogSingle = true;edit = false"
-      >
-        <v-icon left>
-          mdi-plus
-        </v-icon>添加供应商
-      </v-btn>
-    </div>
-    <!--  -->
-    <v-card>
-      <v-card-text>
-        <v-row class="mb-3">
-          <v-col
-            cols="12"
-            md="4"
-            lg="3"
-            xl="2"
-          >
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">供应商名称</span>
-              </div>
-              <div class="input-group-control">
-                <v-text-field
-                  v-model="search.dnames"
-                  placeholder="请输入供应商名称"
-                  outlined
-                  class="white"
-                  single-line
-                  dense
-                  clearable
-                  hide-details
-                  @click:clear="clearSearchByConditions('dnames')"
-                />
-              </div>
-            </div>
-          </v-col>
-          <v-col
-            cols="12"
-            md="4"
-            lg="3"
-            xl="2"
-          >
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">手机号码</span>
-              </div>
-              <div class="input-group-control">
-                <v-text-field
-                  v-model="search.mobile"
-                  placeholder="请输入手机号码"
-                  outlined
-                  class="white"
-                  single-line
-                  dense
-                  clearable
-                  hide-details
-                  @click:clear="clearSearchByConditions('mobile')"
-                />
-              </div>
-            </div>
-          </v-col>
-          <v-col
-            cols="12"
-            md="4"
-            lg="3"
-            xl="2"
-          >
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">状态</span>
-              </div>
-              <div class="input-group-control">
-                <v-select
-                  v-model="search.locked"
-                  :items="lockedOptions"
-                  placeholder="请选择供应商状态"
-                  class="white"
-                  single-line
-                  dense
-                  outlined
-                  clearable
-                  no-data-text="暂无数据"
-                  hide-details
-                  @click:clear="clearSearchByConditions('locked')"
-                />
-              </div>
-            </div>
-          </v-col>
-          <v-col align-self="center">
-            <v-btn
-              color="primary mr-2"
-              depressed
-              @click="searchByConditions"
-            >
-              搜索
-            </v-btn>
-            <v-btn
-              color="secondary"
-              depressed
-              @click="clearSearchAllConditions"
-            >
-              重置
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-data-table
-          :headers="headers"
-          :items="supplierList.data.items"
-          class="text-center"
-          no-data-text="暂无数据"
-          hide-default-footer
-          fixed-header
-          :items-per-page="20"
+    <v-data-table
+      :headers="headers"
+      :items="supplierList.data.items"
+      class="text-center"
+      no-data-text="暂无数据"
+      hide-default-footer
+      fixed-header
+      :items-per-page="20"
+    >
+      <template v-slot:top>
+        <div
+          class="text-left d-flex align-center mb-3"
+          style="height: 36px"
         >
-          <template v-slot:body="{ items }">
-            <tbody>
-              <tr
-                v-for="item in items"
-                :key="item.id"
+          <v-menu
+            offset-y
+          >
+            <template v-slot:activator="{ on, value }">
+              <v-btn
+                text
+                class="px-1 ml-2"
+                v-on="on"
               >
-                <td>{{ item.dnames }}</td>
-                <td>{{ item.contacter }}</td>
-                <td>{{ item.mobile }}</td>
-                <td>{{ item.account }}</td>
-                <td :class="item.locked === '0' ? 'success--text' : 'grey--text'">
-                  {{ item.locked | locked }}
-                </td>
-                <td>{{ item.createTime | dateTruncate(16) }}</td>
-                <td>
-                  <!-- TODO: 分配供应商账号，输入账号密码 -->
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        v-on="on"
-                        @click="toViewSupplier = item;dialogView = true"
-                      >
-                        <v-icon color="primary">
-                          mdi-cloud-search
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>查看详情</span>
-                  </v-tooltip>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        v-on="on"
-                      >
-                        <v-icon color="orange">
-                          mdi-file-document-box-search
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>查看订单</span>
-                  </v-tooltip>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        v-on="on"
-                        @click="target = item;edit = true;dialogSingle = true"
-                      >
-                        <v-icon color="teal">
-                          mdi-pencil-circle
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>编辑</span>
-                  </v-tooltip>
-                  <v-tooltip bottom>
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        class="mx-1"
-                        v-on="on"
-                        @click="dialogDelete = true;toDeleteSupplier = item.id"
-                      >
-                        <v-icon color="secondary">
-                          mdi-delete-forever
-                        </v-icon>
-                      </v-btn>
-                    </template>
-                    <span>删除</span>
-                  </v-tooltip>
-                </td>
-              </tr>
-            </tbody>
-          </template>
-          <template v-slot:footer>
-            <v-divider />
-            <div
-              v-if="supplierList.status && supplierList.data.items.length"
-              class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
-            >
-              <div class="mr-2">
-                共<span class="error--text">{{ supplierList.data.totalItem }}</span>供应商
-              </div>
-              <v-pagination
-                v-model="page"
-                :length="pageCount"
-                @input="changePagination"
-              />
-              <div class="mx-2">
-                跳至
-              </div>
-              <div style="width:50px">
-                <input
-                  v-model="pageEnter"
-                  type="text"
-                  class="width-100 px-2 text-center"
-                  style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
-                  @keyup.enter="changePaginationDirectly"
+                {{ currentStatus }} <v-icon
+                  :class="value ? 'rotate-180' : ''"
                 >
-              </div>
-              <div class="ml-2">
-                页
-              </div>
+                  mdi-chevron-down mdi-18px
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in status"
+                :key="index"
+                @click="searchSupplierByStatus(item)"
+              >
+                <v-list-item-title class="body-2">
+                  {{ item.text }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <div
+            class="input-group ml-4"
+            style="width:300px"
+          >
+            <div class="input-group-control">
+              <v-text-field
+                v-model="search.dnames"
+                placeholder="请输入供应商名称"
+                outlined
+                class="white"
+                single-line
+                clearable
+                hide-details
+                dense
+                @click:clear="clearSearchByConditions('dnames')"
+              />
             </div>
-          </template>
-        </v-data-table>
-      </v-card-text>
-    </v-card>
+            <div class="input-group-append">
+              <v-btn
+                color="blue-grey lighten-4 px-0"
+                depressed
+                x-small
+                @click="searchByConditions"
+              >
+                <v-icon
+                  color="blue-grey darken-2"
+                >
+                  mdi-magnify mdi-18px
+                </v-icon>
+              </v-btn>
+            </div>
+          </div>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            class="ml-auto"
+            depressed
+            @click="dialogSingle = true;edit = false"
+          >
+            <v-icon left>
+              mdi-plus
+            </v-icon>添加客户
+          </v-btn>
+        </div>
+      </template>
+      <template v-slot:body="{ items }">
+        <tbody>
+          <tr
+            v-for="item in items"
+            :key="item.id"
+          >
+            <td>{{ item.dnames }}</td>
+            <td>{{ item.contacter }}</td>
+            <td>{{ item.mobile }}</td>
+            <td>{{ item.account }}</td>
+            <td :class="item.locked === '0' ? 'success--text' : 'grey--text'">
+              {{ item.locked | locked }}
+            </td>
+            <td>{{ item.createTime | dateTruncate(16) }}</td>
+            <td>
+              <!-- TODO: 分配供应商账号，输入账号密码 -->
+              <v-menu
+                offset-y
+                left
+              >
+                <template v-slot:activator="{ on }">
+                  <v-icon
+                    color="secondary"
+                    v-on="on"
+                  >
+                    mdi-dots-horizontal
+                  </v-icon>
+                </template>
+                <v-list>
+                  <v-list-item
+                    @click="toViewSupplier = item;dialogView = true"
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        small
+                      >
+                        mdi-cloud-search
+                      </v-icon>查看详情
+                    </v-list-item-title>
+                  </v-list-item>
+                  <!-- <v-list-item
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        small
+                      >
+                        mdi-file-document-box-search
+                      </v-icon>查看订单
+                    </v-list-item-title>
+                  </v-list-item> -->
+                  <v-list-item
+                    @click="target = item;edit = true;dialogSingle = true"
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        small
+                      >
+                        mdi-pencil-circle
+                      </v-icon>编辑
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item
+                    @click="dialogDelete = true;toDeleteSupplier = item.id"
+                  >
+                    <v-list-item-title>
+                      <v-icon
+                        class="mr-1"
+                        small
+                      >
+                        mdi-delete-forever
+                      </v-icon>删除
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </td>
+          </tr>
+        </tbody>
+      </template>
+      <template v-slot:footer>
+        <v-divider />
+        <div
+          v-if="supplierList.status && supplierList.data.items.length"
+          class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+        >
+          <div class="mr-2">
+            共<span class="error--text">{{ supplierList.data.totalItem }}</span>供应商
+          </div>
+          <v-pagination
+            v-model="page"
+            :length="pageCount"
+            @input="changePagination"
+          />
+          <div class="mx-2">
+            跳至
+          </div>
+          <div style="width:50px">
+            <input
+              v-model="pageEnter"
+              type="text"
+              class="width-100 px-2 text-center"
+              style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+              @keyup.enter="changePaginationDirectly"
+            >
+          </div>
+          <div class="ml-2">
+            页
+          </div>
+        </div>
+      </template>
+    </v-data-table>
     <supplier-single
       :edit="edit"
       :target="target"
@@ -491,7 +459,11 @@ export default {
           sortable: false,
         },
       ],
-      lockedOptions: [
+      status: [
+        {
+          text: '全部状态',
+          value: '',
+        },
         {
           text: '启用',
           value: '0',
@@ -502,6 +474,7 @@ export default {
         },
       ],
       pageEnter: 1,
+      currentStatus: '全部状态',
     };
   },
   computed: {
@@ -547,6 +520,11 @@ export default {
   },
   methods: {
     ...mapActions('supplier', ['getSupplierListAsync', 'deleteSupplierAsync']),
+    searchSupplierByStatus(item) {
+      this.currentStatus = item.text;
+      this.$set(this.search, 'locked', item.value);
+      this.searchByConditions();
+    },
     changePaginationDirectly() {
       if (R.is(Number, this.pageEnter)) {
         if (this.pageEnter <= this.pageCount) {

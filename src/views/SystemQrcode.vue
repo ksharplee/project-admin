@@ -1,8 +1,5 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
-      小程序二维码
-    </div>
     <v-card elevation="0">
       <v-row class="pt-5">
         <v-col

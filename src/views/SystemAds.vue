@@ -1,21 +1,17 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center pb-3">
-      广告图设置
-    </div>
-
     <v-expansion-panels
       v-if="!this.$store.state.loading"
       v-model="panels"
       focusable
-      accordion
+      flat
     >
       <v-expansion-panel>
         <v-expansion-panel-header class="body-1">
           首页横幅
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-card elevation="0">
+          <v-card>
             <v-container fluid>
               <v-row>
                 <v-col
@@ -147,7 +143,7 @@
           {{ position.position_name }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-card elevation="0">
+          <v-card>
             <v-container fluid>
               <v-row>
                 <v-col
