@@ -38,7 +38,7 @@
               />
             </v-col>
           </v-row>
-          <v-row
+          <!-- <v-row
             align="center"
             class="mb-3"
           >
@@ -97,7 +97,7 @@
                 {{ disallowChangePassword ? '修改密码' : '放弃修改' }}
               </v-btn>
             </v-col>
-          </v-row>
+          </v-row> -->
           <v-row
             align="center"
             class="mb-3"
@@ -106,12 +106,11 @@
               cols="3"
               class="text-right"
             >
-              <span class="error--text">*</span>联系人：
+              联系人：
             </v-col>
             <v-col cols="6">
               <v-text-field
                 v-model="supplier.contacter"
-                :rules="contacterRules"
                 placeholder="请输入联系人"
                 dense
                 outlined
@@ -130,12 +129,11 @@
               cols="3"
               class="text-right"
             >
-              <span class="error--text">*</span>联系电话：
+              联系电话：
             </v-col>
             <v-col cols="6">
               <v-text-field
                 v-model="supplier.mobile"
-                :rules="phoneRules"
                 type="number"
                 placeholder="请输入联系电话"
                 dense
@@ -155,12 +153,11 @@
               cols="3"
               class="text-right"
             >
-              <span class="error--text">*</span>详细地址：
+              详细地址：
             </v-col>
             <v-col cols="6">
               <v-text-field
                 v-model="supplier.addressPart"
-                :rules="addressRules"
                 placeholder="请输入详细地址"
                 dense
                 outlined
@@ -313,14 +310,14 @@ export default {
         locked: '0',
       },
       nameRules: [v => !!v || '请填写供应商名称'],
-      accountRules: [v => !!v || '请填写登陆账号'],
-      passwordRules: [v => !!v || '请填写登录密码'],
-      contacterRules: [v => !!v || '请填写联系人'],
-      addressRules: [v => !!v || '请填写详细地址'],
-      phoneRules: [
-        v => !!v || '请输入联系电话...',
-        v => /^1[3456789]\d{9}$/.test(v) || '手机号码格式有误',
-      ],
+      // accountRules: [v => !!v || '请填写登陆账号'],
+      // passwordRules: [v => !!v || '请填写登录密码'],
+      // contacterRules: [v => !!v || '请填写联系人'],
+      // addressRules: [v => !!v || '请填写详细地址'],
+      // phoneRules: [
+      //   v => !!v || '请输入联系电话...',
+      //   v => /^1[3456789]\d{9}$/.test(v) || '手机号码格式有误',
+      // ],
       locked: [
         {
           text: '启用',

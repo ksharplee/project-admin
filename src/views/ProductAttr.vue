@@ -13,7 +13,7 @@
         </v-icon>添加属性
       </v-btn>
     </div>
-    <v-divider class="my-4" />
+
     <v-card>
       <v-data-table
         :headers="headers"
@@ -140,7 +140,7 @@
               </v-col>
             </v-row>
             <template v-if="attrToAdd.genre !== '1'">
-              <v-divider class="my-4" />
+
               <v-row>
                 <v-col
                   md="3"
@@ -282,7 +282,7 @@
               </v-col>
             </v-row>
             <template v-if="attrToEdit.genre !== '1'">
-              <v-divider class="my-4" />
+
               <v-row>
                 <v-col
                   md="3"

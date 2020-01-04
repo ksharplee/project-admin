@@ -335,6 +335,136 @@ export default new Router({
             id: '1053',
           },
         },
+        // 仓库
+        {
+          path: 'warehouse/list',
+          name: 'warehouse_list',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseList.vue'),
+          meta: {
+            required: true,
+            id: '363',
+          },
+        },
+        // 入库单列表
+        {
+          path: 'warehouse/instock-list',
+          name: 'warehouse_instock_list',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockList.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 新增入库单
+        {
+          path: 'warehouse/instock-list/add',
+          name: 'warehouse_instock_list_add',
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockAdd.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 编辑入库单
+        {
+          path: 'warehouse/instock-list/edit/id=:id',
+          name: 'warehouse_instock_list_edit',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockEdit.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 入库单详情
+        {
+          path: 'warehouse/instock-list/detail/id=:id',
+          name: 'warehouse_instock_list_detail',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockDetail.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 出库单列表
+        {
+          path: 'warehouse/outstock-list',
+          name: 'warehouse_outstock_list',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockList.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 新增出库单
+        {
+          path: 'warehouse/outstock-list/add',
+          name: 'warehouse_outstock_list_add',
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockAdd.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 编辑出库单
+        {
+          path: 'warehouse/outstock-list/edit/id=:id',
+          name: 'warehouse_outstock_list_edit',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockEdit.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 出库单详情
+        {
+          path: 'warehouse/outstock-list/detail/id=:id',
+          name: 'warehouse_outstock_list_detail',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockDetail.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '364',
+          // },
+        },
+        // 入库类型列表
+        {
+          path: 'warehouse/instock-type-list',
+          name: 'warehouse_instock_type_list',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockTypeList.vue'),
+          meta: {
+            required: true,
+            id: '364',
+          },
+        },
+        // 出库类型列表
+        {
+          path: 'warehouse/outstock-type-list',
+          name: 'warehouse_outstock_type_list',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockTypeList.vue'),
+          meta: {
+            required: true,
+            id: '368',
+          },
+        },
+        // 商品库存
+        {
+          path: 'warehouse/product-stock',
+          name: 'warehouse_product_stock',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseProductStock.vue'),
+          // meta: {
+          //   required: true,
+          //   id: '368',
+          // },
+        },
       ],
     },
   ],

@@ -3,7 +3,7 @@
     <div class="title">
       订单处理流程
     </div>
-    <v-divider class="my-4" />
+
     <v-form
       ref="form"
       v-model="valid"

@@ -1,16 +1,12 @@
 <template>
   <v-card>
-    <div class="title">
-      编辑商品
-    </div>
-    <v-divider class="my-4" />
     <v-form
       ref="form"
       v-model="valid"
     >
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -71,7 +67,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -567,7 +563,7 @@
       <v-slide-y-transition>
         <v-card
           outlined
-          elevation="1"
+          elevation="0"
           class="mb-4"
         >
           <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -639,7 +635,7 @@
         <v-card
           v-if="product.containSpec === '1'"
           outlined
-          elevation="1"
+          elevation="0"
           class="mb-4"
         >
           <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -753,7 +749,7 @@
       </v-slide-y-transition>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -809,7 +805,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -823,7 +819,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -1130,12 +1126,12 @@ export default {
           ),
           attr: () => R.filter(R.has('attrValue'), this.product.attr),
           units: arr => R.map(
-              item => ({
-                unitId: item.id,
-                packeNum: item.packeNum,
-              }),
-              arr
-            ),
+            item => ({
+              unitId: item.id,
+              packeNum: item.packeNum,
+            }),
+            arr
+          ),
         },
         this.product
       );

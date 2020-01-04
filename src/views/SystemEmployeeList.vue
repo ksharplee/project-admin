@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <div class="title d-flex flex-wrap align-center">
-      员工列表
+  <v-card>
+    <v-card-text>
+      <!-- <div class="title d-flex flex-wrap align-center pb-3">
       <v-btn
         color="primary"
         class="ml-auto"
@@ -13,7 +13,6 @@
         </v-icon>添加员工
       </v-btn>
     </div>
-    <v-divider class="my-4" />
     <v-form ref="form">
       <v-row class="mb-3">
         <v-col
@@ -220,8 +219,7 @@
           </v-btn>
         </v-col>
       </v-row>
-    </v-form>
-    <v-card class="mt-4">
+    </v-form> -->
       <v-data-table
         :headers="headers"
         :items="employeeList.data.items"
@@ -231,6 +229,163 @@
         fixed-header
         :items-per-page="20"
       >
+        <template v-slot:top>
+          <div
+            class="text-left d-flex align-center mb-2"
+            style="height: 36px"
+          >
+            <v-menu
+              offset-y
+            >
+              <template v-slot:activator="{ on, value }">
+                <v-btn
+                  text
+                  class="px-1 ml-2"
+                  v-on="on"
+                >
+                  {{ currentStatus }} <v-icon
+                    :class="value ? 'rotate-180' : ''"
+                  >
+                    mdi-chevron-down mdi-18px
+                  </v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="(item, index) in status"
+                  :key="index"
+                  @click="searchOrderByStatus(item)"
+                >
+                  <v-list-item-title class="body-2">
+                    {{ item.text }}
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <div
+              class="input-group flex-nowrap ml-2"
+              style="width:400px"
+            >
+              <div
+                class="d-flex custom-text-field-wrap"
+              >
+                <div class="input-group-control">
+                  <v-menu
+                    v-model="menuStart"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="search.startDate"
+                        class="white"
+                        placeholder="请选择出库时间"
+                        single-line
+                        dense
+                        solo
+                        flat
+                        hide-details
+                        clearable
+                        readonly
+                        v-on="on"
+                      />
+                    </template>
+                    <v-date-picker
+                      v-model="search.startDate"
+                      color="primary"
+                      :max="search.endDate ? search.endDate : null"
+                      scrollable
+                      @input="menuStart = false"
+                    />
+                  </v-menu>
+                </div>
+                <div class="input-group-innerpend">
+                  <span class="input-group-text">到</span>
+                </div>
+                <div class="input-group-control">
+                  <v-menu
+                    v-model="menuEnd"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="290px"
+                  >
+                    <template v-slot:activator="{ on }">
+                      <v-text-field
+                        v-model="search.endDate"
+                        :disabled="!search.startDate"
+                        class="white"
+                        placeholder="请选择截止时间"
+                        single-line
+                        clearable
+                        dense
+                        solo
+                        flat
+                        hide-details
+                        readonly
+                        v-on="on"
+                      />
+                    </template>
+                    <v-date-picker
+                      v-model="search.endDate"
+                      :min="search.startDate"
+                      color="primary"
+                      scrollable
+                      @input="menuEnd = false"
+                    />
+                  </v-menu>
+                </div>
+                <div class="input-group-append mr-2">
+                  <v-icon>mdi-calendar-import</v-icon>
+                </div>
+              </div>
+            </div>
+            <div
+              class="input-group ml-4"
+              style="width:300px"
+            >
+              <div class="input-group-control">
+                <v-text-field
+                  v-model="search.userNames"
+                  placeholder="请输入员工姓名"
+                  outlined
+                  class="white"
+                  single-line
+                  clearable
+                  hide-details
+                  dense
+                />
+              </div>
+              <div class="input-group-append">
+                <v-btn
+                  color="blue-grey lighten-4 px-0"
+                  depressed
+                  x-small
+                  @click="searchByConditions"
+                >
+                  <v-icon
+                    color="blue-grey darken-2"
+                  >
+                    mdi-magnify mdi-18px
+                  </v-icon>
+                </v-btn>
+              </div>
+            </div>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              class="ml-auto"
+              depressed
+              :to="{ name: 'employee_add' }"
+            >
+              <v-icon left>
+                mdi-plus
+              </v-icon>添加员工
+            </v-btn>
+          </div>
+        </template>
         <template v-slot:body="{ items }">
           <tbody>
             <tr
@@ -267,81 +422,71 @@
               </td>
               <td>{{ item.entryTime | dateTruncate(16) }}</td>
               <td>
-                <v-tooltip bottom>
+                <v-menu
+                  offset-y
+                  left
+                >
                   <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="getEmployeeSingle({id:item.id})"
-                    >
-                      <v-icon color="primary">
-                        mdi-cloud-search
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>查看详情</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      :to="{ name: 'authority_employee_right', params: { id: item.id, name: item.userName, mobile: item.mobile }}"
+                    <v-icon
+                      color="secondary"
                       v-on="on"
                     >
-                      <v-icon color="amber">
-                        mdi-shield-key
-                      </v-icon>
-                    </v-btn>
+                      mdi-dots-horizontal
+                    </v-icon>
                   </template>
-                  <span>设置权限</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      :to="{ name: 'employee_edit', params: { id: item.id }}"
-                      v-on="on"
-                    >
-                      <v-icon color="teal">
-                        mdi-pencil-circle
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>编辑</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="dialogPassword = true;toChangePasswordEmployee = item"
-                    >
-                      <v-icon color="warning">
-                        mdi-lock-reset
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>修改密码</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="dialogDelete = true;toDeleteEmployee = item"
-                    >
-                      <v-icon color="secondary">
-                        {{ item.locked === '0' ? 'mdi-radiobox-blank' : 'mdi-radiobox-marked' }}
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>{{ item.locked === '0' ? '停用' : '启用' }}</span>
-                </v-tooltip>
+                  <v-list>
+                    <v-list-item @click="getEmployeeSingle({id:item.id})">
+                      <v-list-item-title>
+                        <v-icon
+                          class="mr-2"
+                          small
+                        >
+                          mdi-cloud-search
+                        </v-icon>查看详情
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item :to="{ name: 'authority_employee_right', params: { id: item.id, name: item.userName, mobile: item.mobile }}">
+                      <v-list-item-title>
+                        <v-icon
+                          class="mr-2"
+                          small
+                        >
+                          mdi-shield-key
+                        </v-icon>设置权限
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item :to="{ name: 'employee_edit', params: { id: item.id }}">
+                      <v-list-item-title>
+                        <v-icon
+                          class="mr-2"
+                          small
+                        >
+                          mdi-pencil-circle
+                        </v-icon>编辑
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="dialogPassword = true;toChangePasswordEmployee = item">
+                      <v-list-item-title>
+                        <v-icon
+                          class="mr-2"
+                          small
+                        >
+                          mdi-lock-reset
+                        </v-icon>修改密码
+                      </v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="dialogDelete = true;toDeleteEmployee = item">
+                      <v-list-item-title>
+                        <v-icon
+                          class="mr-2"
+                          small
+                        >
+                          {{ item.locked === '0' ? 'mdi-radiobox-blank' : 'mdi-radiobox-marked' }}
+                        </v-icon>{{ item.locked === '0' ? '停用' : '启用' }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
               </td>
             </tr>
           </tbody>
@@ -358,7 +503,6 @@
             <v-pagination
               v-model="page"
               :length="pageCount"
-              :total-visible="7"
               @input="changePagination"
             />
             <div class="mx-2">
@@ -379,7 +523,7 @@
           </div>
         </template>
       </v-data-table>
-    </v-card>
+    </v-card-text>
     <v-dialog
       v-model="dialogDelete"
       max-width="350"
@@ -503,6 +647,19 @@
                       </v-row>
                     </template>
                   </v-img>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="12">
+              <v-row>
+                <v-col
+                  cols="2"
+                  class="grey--text text-right"
+                >
+                  所属部门：
+                </v-col>
+                <v-col cols="10">
+                  {{ employee.sectionName }}
                 </v-col>
               </v-row>
             </v-col>
@@ -753,7 +910,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -785,7 +942,12 @@ export default {
           value: '1',
         },
       ],
-      lockedOptions: [
+      currentStatus: '全部状态',
+      status: [
+        {
+          text: '全部状态',
+          value: '',
+        },
         {
           text: '停用',
           value: '1',
@@ -892,6 +1054,11 @@ export default {
       'addOrEditEmployeeAsync',
       'getEmployeeSingleAsync',
     ]),
+    searchOrderByStatus(item) {
+      this.currentStatus = item.text;
+      this.$set(this.search, 'locked', item.value);
+      this.searchByConditions();
+    },
     changePaginationDirectly() {
       if (R.is(Number, this.pageEnter)) {
         if (this.pageEnter <= this.pageCount) {

@@ -1,61 +1,55 @@
 <template>
-  <div>
-    <div class="title d-flex flex-wrap align-center">
-      订单详情
-    </div>
-    <v-divider class="my-4" />
-    <v-tabs
-      v-model="activeTab"
-      background-color="secondary accent-4"
-      dark
+  <v-tabs
+    v-model="activeTab"
+    background-color="secondary accent-4"
+    dark
+  >
+    <v-tabs-slider color="yellow accent-4" />
+    <v-tab
+      v-for="(tab,i) in tabs"
+      :key="i"
+      :value="i"
     >
-      <v-tabs-slider color="yellow accent-4" />
-      <v-tab
-        v-for="(tab,i) in tabs"
-        :key="i"
-        :value="i"
+      {{ tab }}
+    </v-tab>
+    <v-tab-item :value="0">
+      <v-card
+        flat
+        tile
       >
-        {{ tab }}
-      </v-tab>
-      <v-tab-item :value="0">
-        <v-card
-          flat
-          tile
-        >
-          <component
-            :is="orderDetailTab"
-            :order="order"
-            @update:changeTab="activeTab = $event"
-            @update:refresh="getOrderDetail"
-          />
-        </v-card>
-      </v-tab-item>
-      <v-tab-item :value="1">
-        <v-card
-          flat
-          tile
-        >
-          <component
-            :is="orderShippingTab"
-            :order="order"
-            @update:refresh="getOrderDetail"
-          />
-        </v-card>
-      </v-tab-item>
-      <v-tab-item :value="2">
-        <v-card
-          flat
-          tile
-        >
-          <component
-            :is="orderPaymentTab"
-            :order="order"
-            @update:refresh="getOrderDetail"
-          />
-        </v-card>
-      </v-tab-item>
-    </v-tabs>
-  </div>
+        <component
+          :is="orderDetailTab"
+          :order="order"
+          @update:changeTab="activeTab = $event"
+          @update:refresh="getOrderDetail"
+        />
+      </v-card>
+    </v-tab-item>
+    <v-tab-item :value="1">
+      <v-card
+        flat
+        tile
+      >
+        <component
+          :is="orderShippingTab"
+          :order="order"
+          @update:refresh="getOrderDetail"
+        />
+      </v-card>
+    </v-tab-item>
+    <v-tab-item :value="2">
+      <v-card
+        flat
+        tile
+      >
+        <component
+          :is="orderPaymentTab"
+          :order="order"
+          @update:refresh="getOrderDetail"
+        />
+      </v-card>
+    </v-tab-item>
+  </v-tabs>
 </template>
 
 <script>

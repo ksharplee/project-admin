@@ -401,7 +401,7 @@ export default {
       try {
         const res = await axios.post('/g/setLabel.html', payload);
         if (res.data.status === 1) {
-          await context.dispatch('getProductListAsync');
+          // await context.dispatch('getProductListAsync');
           return Promise.resolve(res.data.status);
         }
         return Promise.reject(new Error(res.data.info));

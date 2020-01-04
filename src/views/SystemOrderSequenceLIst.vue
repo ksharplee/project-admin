@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       订单流程
       <v-btn
         color="primary"
@@ -13,10 +13,10 @@
         </v-icon>添加订单流程
       </v-btn>
     </div>
-    <v-divider class="my-4" />
+
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
     >
       <v-data-table
         :headers="headers"

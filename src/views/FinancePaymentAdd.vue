@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!-- <div class="title d-flex flex-wrap align-center">
+    <!-- <div class="title d-flex flex-wrap align-center pb-3">
       新增收款单
     </div>
-    <v-divider class="my-4" /> -->
+     -->
     <v-form
       ref="form"
       v-model="valid"
@@ -215,6 +215,7 @@
                       class="white"
                       hide-details
                       dense
+                      @blur="setShareAmount"
                     />
                   </div>
                 </div>

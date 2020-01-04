@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       客户列表
       <v-btn
         color="primary"
@@ -13,181 +13,179 @@
         </v-icon>添加客户
       </v-btn>
     </div>
-    <v-divider class="my-4" />
-    <v-form ref="form">
-      <v-row class="mb-3">
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">客户账号</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.account"
-                placeholder="请输入客户账号"
-                dense
-                outlined
-                class="white"
-                single-line
-                clearable
-                hide-details
-                @click:clear="clearSearchByConditions('account')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">客户姓名</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.dnames"
-                placeholder="请输入客户姓名"
-                dense
-                outlined
-                class="white"
-                single-line
-                clearable
-                hide-details
-                @click:clear="clearSearchByConditions('dnames')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">手机号码</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.mobile"
-                placeholder="请输入手机号码"
-                dense
-                outlined
-                class="white"
-                single-line
-                clearable
-                hide-details
-                @click:clear="clearSearchByConditions('mobile')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">客户等级</span>
-            </div>
-            <div class="input-group-control">
-              <v-select
-                v-model="search.gradeId"
-                :items="customerGradeList.data"
-                :loading="loadingCustomerGrade"
-                :disabled="loadingCustomerGrade"
-                placeholder="请选择客户等级"
-                dense
-                item-text="dnames"
-                item-value="id"
-                class="white"
-                single-line
-                outlined
-                clearable
-                no-data-text="暂无数据"
-                hide-details
-                @click:clear="clearSearchByConditions('gradeId')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col align-self="center">
-          <v-btn
-            color="primary mr-2"
-            depressed
-            @click="searchByConditions"
-          >
-            搜索
-          </v-btn>
-          <v-btn
-            color="secondary"
-            depressed
-            @click="clearSearchAllConditions"
-          >
-            重置
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-form>
-    <v-card
-      outlined
-      elevation="1"
-    >
-      <v-data-table
-        :headers="headers"
-        :items="customerList.data.items"
-        class="text-center"
-        no-data-text="暂无数据"
-        hide-default-footer
-        fixed-header
-        :items-per-page="20"
-      >
-        <template v-slot:body="{ items }">
-          <tbody>
-            <tr
-              v-for="item in items"
-              :key="item.id"
+    <v-card>
+      <v-card-text>
+        <v-form ref="form">
+          <v-row class="mb-3">
+            <v-col
+              cols="12"
+              md="4"
+              lg="3"
+              xl="2"
             >
-              <td>{{ item.account }}</td>
-              <td>{{ item.dnames }}</td>
-              <td>{{ item.mobile }}</td>
-              <td :class="item.gradeName ? '' : 'grey--text'">
-                {{ item.gradeName ? item.gradeName : '无' }}
-              </td>
-              <td>{{ item.sectionName ? item.sectionName : '无' }}</td>
-              <td>{{ item.sellMenName ? item.sellMenName : '无' }}</td>
-              <td>{{ item.createTime | dateTruncate(16) }}</td>
-              <td>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      :to="{ name: 'customer_shippig_list', params: { id: item.buyerId, uid: item.buyerUid }}"
-                      v-on="on"
-                    >
-                      <v-icon
-                        color="primary"
-                        style="margin-top:2px"
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">客户账号</span>
+                </div>
+                <div class="input-group-control">
+                  <v-text-field
+                    v-model="search.account"
+                    placeholder="请输入客户账号"
+                    dense
+                    outlined
+                    class="white"
+                    single-line
+                    clearable
+                    hide-details
+                    @click:clear="clearSearchByConditions('account')"
+                  />
+                </div>
+              </div>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+              lg="3"
+              xl="2"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">客户姓名</span>
+                </div>
+                <div class="input-group-control">
+                  <v-text-field
+                    v-model="search.dnames"
+                    placeholder="请输入客户姓名"
+                    dense
+                    outlined
+                    class="white"
+                    single-line
+                    clearable
+                    hide-details
+                    @click:clear="clearSearchByConditions('dnames')"
+                  />
+                </div>
+              </div>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+              lg="3"
+              xl="2"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">手机号码</span>
+                </div>
+                <div class="input-group-control">
+                  <v-text-field
+                    v-model="search.mobile"
+                    placeholder="请输入手机号码"
+                    dense
+                    outlined
+                    class="white"
+                    single-line
+                    clearable
+                    hide-details
+                    @click:clear="clearSearchByConditions('mobile')"
+                  />
+                </div>
+              </div>
+            </v-col>
+            <v-col
+              cols="12"
+              md="4"
+              lg="3"
+              xl="2"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">客户等级</span>
+                </div>
+                <div class="input-group-control">
+                  <v-select
+                    v-model="search.gradeId"
+                    :items="customerGradeList.data"
+                    :loading="loadingCustomerGrade"
+                    :disabled="loadingCustomerGrade"
+                    placeholder="请选择客户等级"
+                    dense
+                    item-text="dnames"
+                    item-value="id"
+                    class="white"
+                    single-line
+                    outlined
+                    clearable
+                    no-data-text="暂无数据"
+                    hide-details
+                    @click:clear="clearSearchByConditions('gradeId')"
+                  />
+                </div>
+              </div>
+            </v-col>
+            <v-col align-self="center">
+              <v-btn
+                color="primary mr-2"
+                depressed
+                @click="searchByConditions"
+              >
+                搜索
+              </v-btn>
+              <v-btn
+                color="secondary"
+                depressed
+                @click="clearSearchAllConditions"
+              >
+                重置
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+        <v-data-table
+          :headers="headers"
+          :items="customerList.data.items"
+          class="text-center"
+          no-data-text="暂无数据"
+          hide-default-footer
+          fixed-header
+          :items-per-page="20"
+        >
+          <template v-slot:body="{ items }">
+            <tbody>
+              <tr
+                v-for="item in items"
+                :key="item.id"
+              >
+                <td>{{ item.defaulte === '1' ? '默认客户' : item.account }}</td>
+                <td>{{ item.defaulte === '1' ? '默认客户' : item.dnames }}</td>
+                <td>{{ item.defaulte === '1' ? '默认客户' : item.mobile }}</td>
+                <td :class="item.gradeName ? '' : 'grey--text'">
+                  {{ item.gradeName ? item.gradeName : '无' }}
+                </td>
+                <td>{{ item.sectionName ? item.sectionName : '无' }}</td>
+                <td>{{ item.sellMenName ? item.sellMenName : '无' }}</td>
+                <td>{{ item.createTime | dateTruncate(16) }}</td>
+                <td>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        icon
+                        class="mx-1"
+                        :disabled="item.defaulte === '1'"
+                        :to="{ name: 'customer_shippig_list', params: { id: item.buyerId, uid: item.buyerUid }}"
+                        v-on="on"
                       >
-                        mdi-truck
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>收货地址</span>
-                </v-tooltip>
-                <!-- <v-tooltip bottom>
+                        <v-icon
+                          color="primary"
+                          style="margin-top:2px"
+                        >
+                          mdi-truck
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>收货地址</span>
+                  </v-tooltip>
+                  <!-- <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
                       icon
@@ -202,73 +200,75 @@
                   </template>
                   <span>设置等级</span>
                 </v-tooltip> -->
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="target = item;edit = true;dialogSingle = true"
-                    >
-                      <v-icon color="teal">
-                        mdi-pencil-circle
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>编辑</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="dialogDelete = true;toDeleteSupplier = item.id"
-                    >
-                      <v-icon color="secondary">
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>删除</span>
-                </v-tooltip>
-              </td>
-            </tr>
-          </tbody>
-        </template>
-        <template v-slot:footer>
-          <v-divider />
-          <div
-            v-if="customerList.status && customerList.data.items.length"
-            class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
-          >
-            <div class="mr-2">
-              共<span class="error--text">{{ customerList.data.totalItem }}</span>客户
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        icon
+                        class="mx-1"
+                        :disabled="item.defaulte === '1'"
+                        v-on="on"
+                        @click="target = item;edit = true;dialogSingle = true"
+                      >
+                        <v-icon color="teal">
+                          mdi-pencil-circle
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>编辑</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        icon
+                        class="mx-1"
+                        :disabled="item.defaulte === '1'"
+                        v-on="on"
+                        @click="dialogDelete = true;toDeleteCustomer = item.id"
+                      >
+                        <v-icon color="secondary">
+                          mdi-delete-forever
+                        </v-icon>
+                      </v-btn>
+                    </template>
+                    <span>删除</span>
+                  </v-tooltip>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+          <template v-slot:footer>
+            <v-divider />
+            <div
+              v-if="customerList.status && customerList.data.items.length"
+              class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
+            >
+              <div class="mr-2">
+                共<span class="error--text">{{ customerList.data.totalItem }}</span>客户
+              </div>
+              <v-pagination
+                v-model="page"
+                :length="pageCount"
+                @input="changePagination"
+              />
+              <div class="mx-2">
+                跳至
+              </div>
+              <div style="width:50px">
+                <input
+                  v-model="pageEnter"
+                  type="text"
+                  class="width-100 px-2 text-center"
+                  style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+                  @keyup.enter="changePaginationDirectly"
+                >
+              </div>
+              <div class="ml-2">
+                页
+              </div>
             </div>
-            <v-pagination
-              v-model="page"
-              :length="pageCount"
-              :total-visible="7"
-              @input="changePagination"
-            />
-            <div class="mx-2">
-              跳至
-            </div>
-            <div style="width:50px">
-              <input
-                v-model="pageEnter"
-                type="text"
-                class="width-100 px-2 text-center"
-                style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
-                @keyup.enter="changePaginationDirectly"
-              >
-            </div>
-            <div class="ml-2">
-              页
-            </div>
-          </div>
-        </template>
-      </v-data-table>
+          </template>
+        </v-data-table>
+      </v-card-text>
     </v-card>
     <customer-single
       :edit="edit"
@@ -391,7 +391,7 @@ export default {
       dialogSetGrade: false,
       deleting: false,
       settingGrade: false,
-      toDeleteSupplier: '',
+      toDeleteCustomer: '',
       edit: true,
       valid: true,
       target: {},
@@ -555,7 +555,7 @@ export default {
     // 删除客户
     deleteCustomer() {
       this.deleting = true;
-      this.deleteCustomerAsync({ id: this.toDeleteSupplier })
+      this.deleteCustomerAsync({ id: this.toDeleteCustomer })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

@@ -1,6 +1,8 @@
 html,
 body {
   background-color: #f6fbfd;
+  overflow-y: hidden !important;
+  height:100%;
 }
 
 .disabled-readonly .v-input--is-readonly .v-label,
@@ -26,9 +28,12 @@ body {
 
 .child-view {
   position: absolute;
+  top: 38px;
   right: 0;
+  bottom: 0;
   left: 0;
   padding-bottom: 51px;
+  overflow: auto;
   transition: all .5s cubic-bezier(.55, 0, .1, 1)
 }
 
@@ -139,9 +144,14 @@ body {
   }
 }
 
-// .theme--light.v-text-field--outlined fieldset {
-//   border-color: #ddd !important;
-// }
+// 缩小datatables里的checkbox
+.v-data-table__wrapper .v-icon.mdi-checkbox-blank-outline,
+.v-data-table__wrapper .v-icon.mdi-checkbox-marked,
+.v-data-table__wrapper .v-icon.mdi-minus-box {
+  font-size: 20px;
+  width: 24px;
+  height: 24px;
+}
 
 .v-input--radio-group.v-input--radio-group--column {
   .v-input__control {
@@ -327,7 +337,7 @@ body {
   top: 64px;
   right: 0;
   left: 220px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+  // box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
   transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

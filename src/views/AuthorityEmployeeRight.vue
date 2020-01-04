@@ -206,7 +206,7 @@
     <v-btn
       :disabled="!valid || submitting"
       :loading="submitting"
-      color="primary"
+      color="primary ml-4"
       large
       class="px-12 body-1 my-4"
       @click="setAuthorityEmployeeRight"
@@ -245,7 +245,7 @@ export default {
       postDepartments: [],
       baseData: {},
       postIds: [],
-      rangeType: '1',
+      rangeType: '2',
       rangeTypes: [
         {
           text: '全部',

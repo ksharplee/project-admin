@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pa-4">
     <v-expansion-panels
       v-model="panels"
       focusable
@@ -91,7 +91,10 @@
                   <div class="pt-4 text-right d-flex">
                     <div class="text-left">
                       <div class="mb-1">
-                        <span class="grey--text">发货日期：</span>{{ shippingOrder.deliveryTime }}
+                        <span class="grey--text">发货日期：</span>{{ shippingOrder.deliveryTime | dateTruncate(10) }}
+                      </div>
+                      <div class="mb-1">
+                        <span class="grey--text">发货仓库：</span>{{ shippingOrder.warehouseName }}
                       </div>
                       <div><span class="grey--text">备注：</span> {{ shippingOrder.memo ? shippingOrder.memo : '无' }}</div>
                     </div>
@@ -104,7 +107,7 @@
                         color="primary"
                         text
                         class="body-1"
-                        @click="toEditShippingOrder = shippingOrder;dialogEdit = true;"
+                        @click="openDialogEdit(shippingOrder)"
                       >
                         <v-icon left>
                           mdi-pencil
@@ -182,14 +185,13 @@
     </v-expansion-panels>
     <div
       class="py-4"
-      style="background-color: #fafafa"
     >
       <v-btn
         v-if="order.dStatus === '5' || order.dStatus === '7'"
         color="primary"
         large
         class="px-12 body-1 mr-4"
-        @click="dialogShipping = true;need = !need;"
+        @click="openDialogShipping"
       >
         马上发货
       </v-btn>
@@ -198,14 +200,14 @@
       v-model="dialogShipping"
       max-width="650"
     >
-      <v-card>
-        <v-card-title class="title grey lighten-3 pa-4">
-          填写发货单
-        </v-card-title>
-        <v-form
-          ref="form"
-          v-model="valid"
-        >
+      <v-form
+        ref="form"
+        v-model="valid"
+      >
+        <v-card>
+          <v-card-title class="title grey lighten-3 pa-4">
+            填写发货单
+          </v-card-title>
           <v-container fluid>
             <v-row
               align="center"
@@ -273,6 +275,34 @@
                 cols="3"
                 class="text-right"
               >
+                <span class="error--text required">*</span>发货仓库：
+              </v-col>
+              <v-col cols="5">
+                <v-select
+                  v-model="shipping.warehouseId"
+                  :loading="loadingWarehouse"
+                  :items="warehouseList.data.items"
+                  :rules="warehouseRules"
+                  item-text="dnames"
+                  item-value="id"
+                  placeholder="请选择仓库"
+                  clearable
+                  outlined
+                  dense
+                  single-line
+                  hide-details
+                  no-data-text="暂无数据"
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
                 备注：
               </v-col>
               <v-col cols="8">
@@ -287,25 +317,25 @@
               </v-col>
             </v-row>
           </v-container>
-        </v-form>
-        <v-card-actions>
-          <div class="flex-grow-1" />
-          <v-btn
-            color="primary"
-            :loading="adding"
-            :disabled="adding"
-            @click="addShippingOrder"
-          >
-            提交
-          </v-btn>
-          <v-btn
-            color="secondary"
-            @click="dialogShipping = false"
-          >
-            取消
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+          <v-card-actions>
+            <div class="flex-grow-1" />
+            <v-btn
+              color="primary"
+              :loading="adding"
+              :disabled="adding || !valid"
+              @click="addShippingOrder"
+            >
+              提交
+            </v-btn>
+            <v-btn
+              color="secondary"
+              @click="dialogShipping = false"
+            >
+              取消
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
     <v-dialog
       v-model="dialogNullify"
@@ -419,128 +449,162 @@
       v-model="dialogEdit"
       max-width="1200"
     >
-      <v-card>
-        <v-card-title class="title grey lighten-3 pa-4">
-          编辑发货单
-        </v-card-title>
-        <v-container>
-          <v-card outlined>
-            <order-shipping-tab-products
-              :products="toEditShippingOrder.detail"
-              :need="needShippingOrder"
-              :edit="true"
-              :selected-products-units="selectedProductsUnits"
-              @update:detail="detailToShippingOrder = $event"
-            />
-            <v-divider />
-            <v-card-text class="body-1">
-              <v-container fluid>
-                <v-row
-                  align="center"
-                  class="mb-3"
-                >
-                  <v-col
-                    cols="3"
-                    class="text-right"
+      <v-form
+        ref="form"
+        v-model="valid"
+      >
+        <v-card>
+          <v-card-title class="title grey lighten-3 pa-4">
+            编辑发货单
+          </v-card-title>
+          <v-container>
+            <v-card outlined>
+              <order-shipping-tab-products
+                :products="toEditShippingOrder.detail"
+                :need="needShippingOrder"
+                :edit="true"
+                :selected-products-units="selectedProductsUnits"
+                @update:detail="detailToShippingOrder = $event"
+              />
+              <v-divider />
+              <v-card-text class="body-1">
+                <v-container fluid>
+                  <v-row
+                    align="center"
+                    class="mb-3"
                   >
-                    发货时间：
-                  </v-col>
-                  <v-col cols="5">
-                    <v-menu
-                      ref="menuDate"
-                      v-model="menuDate"
-                      :close-on-content-click="false"
-                      :return-value.sync="toEditShippingOrder.deliveryTime"
-                      transition="scale-transition"
-                      offset-y
-                      min-width="290px"
+                    <v-col
+                      cols="3"
+                      class="text-right"
                     >
-                      <template v-slot:activator="{ on }">
-                        <v-text-field
-                          v-model="toEditShippingOrder.deliveryTime"
-                          class="white rounded-left-0"
-                          placeholder="请选择发货日期"
-                          outlined
-                          single-line
-                          dense
-                          hide-details
-                          append-icon="mdi-calendar-import"
-                          readonly
-                          v-on="on"
-                        />
-                      </template>
-                      <v-date-picker
-                        v-model="toEditShippingOrder.deliveryTime"
-                        color="primary"
-                        scrollable
+                      发货时间：
+                    </v-col>
+                    <v-col cols="5">
+                      <v-menu
+                        ref="menuDate"
+                        v-model="menuDate"
+                        :close-on-content-click="false"
+                        :return-value.sync="toEditShippingOrder.deliveryTime"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="290px"
                       >
-                        <div class="flex-grow-1" />
-                        <v-btn
-                          text
+                        <template v-slot:activator="{ on }">
+                          <v-text-field
+                            v-model="toEditShippingOrder.deliveryTime"
+                            class="white rounded-left-0"
+                            placeholder="请选择发货日期"
+                            outlined
+                            single-line
+                            dense
+                            hide-details
+                            append-icon="mdi-calendar-import"
+                            readonly
+                            v-on="on"
+                          />
+                        </template>
+                        <v-date-picker
+                          v-model="toEditShippingOrder.deliveryTime"
                           color="primary"
-                          @click="menuDate = false"
+                          scrollable
                         >
-                          取消
-                        </v-btn>
-                        <v-btn
-                          text
-                          color="primary"
-                          @click="$refs.menuDate.save(toEditShippingOrder.deliveryTime)"
-                        >
-                          确定
-                        </v-btn>
-                      </v-date-picker>
-                    </v-menu>
-                  </v-col>
-                </v-row>
-                <v-row
-                  align="center"
-                  class="mb-3"
-                >
-                  <v-col
-                    cols="3"
-                    class="text-right"
+                          <div class="flex-grow-1" />
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="menuDate = false"
+                          >
+                            取消
+                          </v-btn>
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="$refs.menuDate.save(toEditShippingOrder.deliveryTime)"
+                          >
+                            确定
+                          </v-btn>
+                        </v-date-picker>
+                      </v-menu>
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    align="center"
+                    class="mb-3"
                   >
-                    备注：
-                  </v-col>
-                  <v-col cols="8">
-                    <v-textarea
-                      v-model="toEditShippingOrder.memo"
-                      outlined
-                      value=""
-                      dense
-                      placeholder="请输入发货单备注"
-                      hide-details
-                    />
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-          </v-card>
-        </v-container>
-        <v-card-actions class="grey lighten-4 py-3">
-          <div class="flex-grow-1" />
-          <v-btn
-            color="primary"
-            @click="dialogEditConfirm = true;needShippingOrder = !needShippingOrder;"
-          >
-            提交
-          </v-btn>
-          <v-btn
-            color="secondary"
-            @click="dialogEdit = false;"
-          >
-            取消
-          </v-btn>
-        </v-card-actions>
-      </v-card>
+                    <v-col
+                      cols="3"
+                      class="text-right"
+                    >
+                      <span class="error--text required">*</span>发货仓库：
+                    </v-col>
+                    <v-col cols="5">
+                      <v-select
+                        v-model="toEditShippingOrder.warehouseId"
+                        :loading="loadingWarehouse"
+                        :items="warehouseList.data.items"
+                        :rules="warehouseRules"
+                        item-text="dnames"
+                        item-value="id"
+                        placeholder="请选择仓库"
+                        clearable
+                        outlined
+                        dense
+                        single-line
+                        hide-details
+                        no-data-text="暂无数据"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    align="center"
+                    class="mb-3"
+                  >
+                    <v-col
+                      cols="3"
+                      class="text-right"
+                    >
+                      备注：
+                    </v-col>
+                    <v-col cols="8">
+                      <v-textarea
+                        v-model="toEditShippingOrder.memo"
+                        outlined
+                        value=""
+                        dense
+                        placeholder="请输入发货单备注"
+                        hide-details
+                      />
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+            </v-card>
+          </v-container>
+          <v-card-actions class="grey lighten-4 py-3">
+            <div class="flex-grow-1" />
+            <v-btn
+              :disabled="!valid"
+              color="primary"
+              @click="dialogEditConfirm = true;needShippingOrder = !needShippingOrder;"
+            >
+              提交
+            </v-btn>
+            <v-btn
+              color="secondary"
+              @click="dialogEdit = false;"
+            >
+              取消
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-form>
     </v-dialog>
   </div>
 </template>
 
 <script>
 import * as R from 'ramda';
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import OrderShippingTabProducts from '@/components/OrderShippingTabProducts.vue';
 
 export default {
@@ -556,6 +620,7 @@ export default {
   },
   data() {
     return {
+      loadingWarehouse: false,
       dialogNullify: false,
       nullifying: false,
       toNullifyShippingOrder: '',
@@ -578,6 +643,7 @@ export default {
       shipping: {
         deliveryTime: new Date().toISOString().substr(0, 10),
       },
+      warehouseRules: [v => !!v || '请选择发货仓库'],
       adding: false,
       need: false,
       needShippingOrder: false,
@@ -587,6 +653,7 @@ export default {
     };
   },
   computed: {
+    ...mapState('warehouse', ['warehouseList']),
     params() {
       return R.mergeRight(
         {
@@ -617,6 +684,27 @@ export default {
       'confirmShippingOrderAsync',
       'editShippingOrderAsync',
     ]),
+    ...mapActions('warehouse', ['getWarehouseListAsync']),
+    openDialogEdit(shippingOrder) {
+      this.toEditShippingOrder = shippingOrder; this.dialogEdit = true;
+      if (!this.warehouseList.status) {
+        this.getWarehouseList();
+      }
+    },
+    openDialogShipping() {
+      this.dialogShipping = true; this.need = !this.need;
+      if (!this.warehouseList.status) {
+        this.getWarehouseList();
+      }
+    },
+    getWarehouseList() {
+      this.loadingWarehouse = true;
+      this.getWarehouseListAsync().catch((err) => {
+        this.checkErr(err, 'openDialogShipping');
+      }).finally(() => {
+        this.loadingWarehouse = false;
+      });
+    },
     async getProductUnits(params) {
       const res = await this.getProductUnitsAsync(params);
       return {

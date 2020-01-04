@@ -1,12 +1,8 @@
 <template>
   <div>
-    <div class="title">
-      商品详情
-    </div>
-    <v-divider class="my-4" />
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
       class="mb-4"
     >
       <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -53,7 +49,7 @@
     </v-card>
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
       class="mb-4"
     >
       <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -296,7 +292,7 @@
       <v-card
         v-if="product.attr"
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -409,7 +405,7 @@
     </v-slide-y-transition>
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
       class="mb-4"
     >
       <v-card-title class="pa-3 grey lighten-3 title">
@@ -449,7 +445,7 @@
     </v-card>
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
       class="mb-4"
     >
       <v-card-title class="pa-3 grey lighten-3 title">
@@ -463,7 +459,7 @@
     </v-card>
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
       class="mb-4"
     >
       <v-card-title class="pa-3 grey lighten-3 title">

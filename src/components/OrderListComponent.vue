@@ -40,6 +40,11 @@
       hide-default-footer
       :items-per-page="20"
     >
+      <template v-slot:item.orderNo="{ item }">
+        {{ item.orderNo }}<v-chip small>
+          {{ item.orderType | orderType }}
+        </v-chip>
+      </template>
       <template v-slot:item.shipping="{ item }">
         {{ item.dStatus | shippingStatus }}
       </template>
@@ -62,11 +67,6 @@
             (含运费：{{ item.freight }} 税费：{{ item.invoiceAmount }})
           </div>
         </div>
-      </template>
-      <template v-slot:item.orderType="{ item }">
-        <v-chip small>
-          {{ item.orderType | orderType }}
-        </v-chip>
       </template>
       <template v-slot:footer>
         <v-divider />
@@ -449,12 +449,6 @@ export default {
         {
           text: '发货状态',
           value: 'shipping',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '订单来源',
-          value: 'orderType',
           align: 'center',
           sortable: false,
         },

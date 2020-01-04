@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <v-container
+    fill-height
+    fluid
+    align-start
+    class="pb-0"
+  >
     <v-navigation-drawer
       v-model="drawer"
       clipped
@@ -82,27 +87,29 @@
         </v-icon>退出登录
       </v-btn>
     </v-app-bar>
-    <v-breadcrumbs
-      :items="breadCrumbs"
-      class="py-3 white pl-4"
-    />
-    <v-content>
+    <v-content class="height-100">
+      <div style="background-color: #f6fbfd">
+        <v-breadcrumbs
+          :style="{ left: drawer ? '220px' : '0' }"
+          :items="breadCrumbs"
+          class="py-2 pl-4 pt-4"
+        />
+      </div>
       <transition :name="transitionName">
         <router-view
-          class="child-view mb-4 px-4 pt-4"
-          style="margin-top:48px"
+          class="child-view mx-2 white pa-4"
         />
       </transition>
     </v-content>
-    <v-footer
+    <!-- <v-footer
       app
       inset
       class="body-2 grey--text justify-center align-center py-3"
       elevation="2"
     >
       Copyright © 九域科技, All Rights Reserved
-    </v-footer>
-  </div>
+    </v-footer> -->
+  </v-container>
 </template>
 
 <script>
@@ -160,6 +167,20 @@ export default {
         children: [
           { text: '部门设置', url: { name: 'authority_department' } },
           { text: '角色管理', url: { name: 'authority_role' } },
+          { text: '员工设置', url: { name: 'employee_list' } },
+        ],
+      },
+      {
+        icon: 'mdi-warehouse',
+        text: '出库入库',
+        model: false,
+        children: [
+          { text: '商品入库', url: { name: 'warehouse_instock_list' } },
+          { text: '入库类型', url: { name: 'warehouse_instock_type_list' } },
+          { text: '商品出库', url: { name: 'warehouse_outstock_list' } },
+          { text: '出库类型', url: { name: 'warehouse_outstock_type_list' } },
+          { text: '仓库管理', url: { name: 'warehouse_list' } },
+          { text: '商品库存', url: { name: 'warehouse_product_stock' } },
         ],
       },
       {
@@ -167,7 +188,6 @@ export default {
         text: '系统',
         model: false,
         children: [
-          { text: '员工设置', url: { name: 'employee_list' } },
           { text: '基本信息设置', url: { name: 'basic_info' } },
           { text: '订单处理流程', url: { name: 'order_sequence' } },
           { text: '小程序二维码', url: { name: 'qrcode' } },

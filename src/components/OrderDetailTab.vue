@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pa-4">
     <v-expansion-panels
       v-model="panels"
       focusable
@@ -332,7 +332,6 @@
         <v-expansion-panel-header>商品信息</v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-card
-            outlined
             class="mt-4"
             flat
           >
@@ -435,7 +434,6 @@
     </v-expansion-panels>
     <div
       class="py-4"
-      style="background-color: #fafafa"
     >
       <template v-if="order.dStatus === '1'">
         <v-btn

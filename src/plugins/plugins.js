@@ -48,18 +48,18 @@ export default {
       return '无';
     });
     // 订单类型字符串, 1:正常采购 2:小样采购 3:立即购买 4:代客下单
-    Vue.filter('orderType', (v) => {
-      if (v === '1') {
-        return '正常采购';
-      }
-      if (v === '2') {
-        return '小样采购';
-      }
-      if (v === '3') {
-        return '立即购买';
-      }
-      return '代客下单';
-    });
+    // Vue.filter('orderType', (v) => {
+    //   if (v === '1') {
+    //     return '正常采购';
+    //   }
+    //   if (v === '2') {
+    //     return '小样采购';
+    //   }
+    //   if (v === '3') {
+    //     return '立即购买';
+    //   }
+    //   return '代客下单';
+    // });
     // 订单发货状态字符串, 1:提交 2:已取消(采) 3:已取消(供) 4:已确(供) 5:财务审核 6:作废(供) 7:部分发货 8:完成发货 9:确认收货(采) 10:完成(供)
     Vue.filter('shippingStatus', (v) => {
       if (v === '7') {

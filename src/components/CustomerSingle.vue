@@ -317,6 +317,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['user']),
     ...mapState('customer', ['customerGradeList']),
     ...mapState('authority', ['departmentList', 'departmentAll']),
     ...mapGetters('authority', ['postDepartmentsFilter']),
@@ -327,8 +328,17 @@ export default {
         this.customer = R.clone(this.target);
         this.disallowChangePassword = true;
       } else {
-        this.customer = {};
+        this.customer = {
+          // 添加客户设置默认部门，默认客户等级，默认部门员工
+          sectionId: this.user.sectionId,
+          sectionName: this.user.sectionName,
+          gradeId: R.prop('id', R.find(R.propEq('default', '1'), this.customerGradeList.data)),
+        };
+        this.getEmployeeList(this.target.sectionId);
         this.disallowChangePassword = false;
+      }
+      if (this.target.sectionId && this.target.sectionId !== '0' && this.show) {
+        this.getEmployeeList(this.target.sectionId);
       }
     },
     showMenu() {
@@ -351,6 +361,8 @@ export default {
       this.loadingEmployeeList = true;
       this.getEmployeeListAsync({ all: '1', sectionId: id }).then((res) => {
         this.employeeList = res;
+        this.$set(this.customer, 'sellMenId', this.user.id);
+        this.$set(this.customer, 'sellMenName', this.user.userName);
       })
         .catch((err) => {
           this.checkErr(err);

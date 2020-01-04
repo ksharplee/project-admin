@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       广告图设置
     </div>
-    <v-divider class="my-4" />
+
     <v-expansion-panels
       v-if="!this.$store.state.loading"
       v-model="panels"

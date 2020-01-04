@@ -1,16 +1,16 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       代客下单
     </div>
-    <v-divider class="my-4" />
+
     <v-form
       ref="form"
       v-model="valid"
     >
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -98,7 +98,7 @@
       />
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -322,7 +322,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -506,7 +506,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">

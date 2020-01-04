@@ -46,6 +46,7 @@
       >
         <v-card
           height="100%"
+          outlined
           :class="index === 3 ? 'd-flex flex-column' : ''"
         >
           <v-card-title class="grey lighten-4">
@@ -548,6 +549,11 @@ export default {
         text: '首页',
         disabled: true,
         to: { name: 'home' },
+        exact: true,
+      },
+      {
+        text: '控制台',
+        disabled: true,
         exact: true,
       },
     ]);

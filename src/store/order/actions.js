@@ -14,7 +14,7 @@ export default {
         }, payload));
         if (res.data.status === 1) {
           context.commit('SET_PRODUCT_LIST_FOR_SELECT', res.data.data);
-          return Promise.resolve(res.data.status);
+          return Promise.resolve(res.data);
         }
         return Promise.reject(new Error(res.data.info));
       } catch (error) {

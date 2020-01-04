@@ -1,16 +1,17 @@
 <template>
   <div>
-    <div class="title">
+    <!-- <div class="title">
       添加商品
-    </div>
-    <v-divider class="my-4" />
+    </div> -->
+
     <v-form
       ref="form"
       v-model="valid"
+      class="pa-4"
     >
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -125,10 +126,12 @@
             </v-col>
           </v-row>
         </v-card-text>
+
+        </v-container>
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -624,7 +627,7 @@
       <v-slide-y-transition>
         <v-card
           outlined
-          elevation="1"
+          elevation="0"
           class="mb-4"
         >
           <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -696,7 +699,7 @@
         <v-card
           v-if="product.containSpec === '1'"
           outlined
-          elevation="1"
+          elevation="0"
           class="mb-4"
         >
           <v-card-title class="pa-3 grey lighten-3 title d-flex">
@@ -886,7 +889,7 @@
       </v-slide-y-transition>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -942,7 +945,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -952,7 +955,7 @@
       </v-card>
       <v-card
         outlined
-        elevation="1"
+        elevation="0"
         class="mb-4"
       >
         <v-card-title class="pa-3 grey lighten-3 title">
@@ -1380,12 +1383,12 @@ export default {
           ),
           attr: () => R.filter(R.has('attrValue'), this.attrTransed),
           units: arr => R.map(
-              item => ({
-                unitId: item.id,
-                packeNum: item.packeNum,
-              }),
-              arr
-            ),
+            item => ({
+              unitId: item.id,
+              packeNum: item.packeNum,
+            }),
+            arr
+          ),
         },
         this.product
       );

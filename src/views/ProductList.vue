@@ -3,7 +3,7 @@
     <v-card>
       <v-card-text
         ref="advancedSearch"
-        class="advance-search"
+        class="advance-search pa-0"
       >
         <v-data-table
           v-model="selectedProducts"
@@ -21,9 +21,7 @@
               class="text-left d-flex align-center mb-3"
               style="height: 36px"
             >
-              <template
-                v-if="selectedProducts.length"
-              >
+              <template v-if="selectedProducts.length">
                 <v-btn
                   color="secondary"
                   icon
@@ -79,7 +77,7 @@
                 <v-btn
                   text
                   class="mr-2 px-1 py-1"
-                  @click="dialogLabel = true"
+                  @click="openDialogLabel"
                 >
                   <v-icon
                     color="grey darken-1"
@@ -132,9 +130,7 @@
                       class="px-1"
                       v-on="on"
                     >
-                      {{ categorySelected.length ? categorySelected[0].dnames : '全部分类' }} <v-icon
-                        :class="value ? 'rotate-180' : ''"
-                      >
+                      {{ categorySelected.length ? categorySelected[0].dnames : '全部分类' }} <v-icon :class="value ? 'rotate-180' : ''">
                         mdi-chevron-down mdi-18px
                       </v-icon>
                     </v-btn>
@@ -165,18 +161,14 @@
                     </v-card-text>
                   </v-card>
                 </v-menu>
-                <v-menu
-                  offset-y
-                >
+                <v-menu offset-y>
                   <template v-slot:activator="{ on, value }">
                     <v-btn
                       text
                       class="px-1 ml-2"
                       v-on="on"
                     >
-                      {{ currentStatus }} <v-icon
-                        :class="value ? 'rotate-180' : ''"
-                      >
+                      {{ currentStatus }} <v-icon :class="value ? 'rotate-180' : ''">
                         mdi-chevron-down mdi-18px
                       </v-icon>
                     </v-btn>
@@ -217,9 +209,7 @@
                       x-small
                       @click="getProductList({ dnames })"
                     >
-                      <v-icon
-                        color="blue-grey darken-2"
-                      >
+                      <v-icon color="blue-grey darken-2">
                         mdi-magnify mdi-18px
                       </v-icon>
                     </v-btn>
@@ -338,7 +328,6 @@
             <v-menu
               offset-y
               left
-              open-on-hover
             >
               <template v-slot:activator="{ on }">
                 <v-icon
@@ -380,7 +369,6 @@
               <v-pagination
                 v-model="page"
                 :length="pageCount"
-                :total-visible="7"
                 @input="changePagination"
               />
               <div class="mx-2">
@@ -649,6 +637,7 @@
             取消
           </v-btn>
           <v-btn
+            :loading="setttingLabel"
             color="primary mr-2"
             depressed
             @click="setProductLabel"
@@ -816,9 +805,7 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">价格区间</span>
                   </div>
-                  <div
-                    class="d-flex custom-text-field-wrap"
-                  >
+                  <div class="d-flex custom-text-field-wrap">
                     <div class="input-group-control">
                       <v-text-field
                         v-model="search.minPrice"
@@ -866,9 +853,7 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text">上架时间</span>
                   </div>
-                  <div
-                    class="d-flex custom-text-field-wrap"
-                  >
+                  <div class="d-flex custom-text-field-wrap">
                     <div class="input-group-control">
                       <v-menu
                         ref="menuStart"
@@ -977,9 +962,7 @@
                   </div>
                 </div>
               </v-col>
-              <v-col
-                cols="12"
-              >
+              <v-col cols="12">
                 <div class="input-group">
                   <div class="input-group-prepend">
                     <span class="input-group-text">上架状态</span>
@@ -1003,15 +986,13 @@
                   </div>
                 </div>
               </v-col>
-              <v-col
-                cols="12"
-              >
+              <v-col cols="12">
                 <div class="input-group">
                   <div class="input-group-prepend">
                     <span class="input-group-text">商品标签</span>
                   </div>
                   <div class="input-group-append">
-                    <v-checkbox
+                    <!-- <v-checkbox
                       :value="search.type.length === 6"
                       label="全部"
                       class="mr-4 mt-0"
@@ -1031,7 +1012,27 @@
                       dense
                       color="primary"
                       hide-details
-                    />
+                    /> -->
+                    <v-radio-group
+                      v-model="search.type"
+                      row
+                      dense
+                      class="mt-0"
+                      hide-details
+                    >
+                      <v-radio
+                        label="全部"
+                        value="0"
+                        color="primary"
+                      />
+                      <v-radio
+                        v-for="label in labels"
+                        :key="label.value"
+                        :label="label.text"
+                        :value="label.value"
+                        color="primary"
+                      />
+                    </v-radio-group>
                   </div>
                 </div>
               </v-col>
@@ -1092,7 +1093,7 @@ export default {
       categorySearchSelected: [],
       search: {
         dStatus: '0',
-        type: [],
+        type: '0',
       },
       searchStatus: false,
       operate: '上架',
@@ -1275,6 +1276,7 @@ export default {
       isSpot: [],
       isOrder: [],
       pageEnter: 1,
+      setttingLabel: false,
     };
   },
   computed: {
@@ -1299,6 +1301,30 @@ export default {
       return Math.ceil(
         this.productList.data.totalItem / process.env.VUE_APP_ITEMPERPAGE
       );
+    },
+    // selectedProductsForLabel() {
+    //   return R.any(item => !!item.length, [this.isNew, this.isHot, this.isRecommend, this.isPromotion, this.isSpot, this.isOrder]);
+    // },
+    selectedProductsIds() {
+      return R.pluck('id', this.selectedProducts);
+    },
+    notNew() {
+      return R.without(this.isNew, this.selectedProductsIds);
+    },
+    notHot() {
+      return R.without(this.isHot, this.selectedProductsIds);
+    },
+    notRecommend() {
+      return R.without(this.isRecommend, this.selectedProductsIds);
+    },
+    notPromotion() {
+      return R.without(this.isPromotion, this.selectedProductsIds);
+    },
+    notSpot() {
+      return R.without(this.isSpot, this.selectedProductsIds);
+    },
+    notOrder() {
+      return R.without(this.isOrder, this.selectedProductsIds);
     },
   },
   created() {
@@ -1334,6 +1360,15 @@ export default {
       'operateProductAsync',
       'setProductLabelAsync',
     ]),
+    openDialogLabel() {
+      this.isNew = R.pluck('id', R.filter(R.propEq('isNew', '1'), this.selectedProducts));
+      this.isPromotion = R.pluck('id', R.filter(R.propEq('isPromotion', '1'), this.selectedProducts));
+      this.isRecommend = R.pluck('id', R.filter(R.propEq('isRecommend', '1'), this.selectedProducts));
+      this.isHot = R.pluck('id', R.filter(R.propEq('isHot', '1'), this.selectedProducts));
+      this.isSpot = R.pluck('id', R.filter(R.propEq('isSpot', '1'), this.selectedProducts));
+      this.isOrder = R.pluck('id', R.filter(R.propEq('isOrder', '1'), this.selectedProducts));
+      this.dialogLabel = true;
+    },
     changePaginationDirectly() {
       if (R.is(Number, this.pageEnter)) {
         if (this.pageEnter <= this.pageCount) {
@@ -1387,12 +1422,18 @@ export default {
     },
     getActiveCategory(arr) {
       this.categorySelected = arr;
-      this.getProductList({ categoryId: R.prop('id', R.head(this.categorySelected)) });
+      this.getProductList({
+        categoryId: R.prop('id', R.head(this.categorySelected)),
+      });
       this.showCategory = false;
     },
     getActiveCategorySearch(arr) {
       this.categorySearchSelected = arr;
-      this.$set(this.search, 'categoryId', R.prop('id', R.head(this.categorySearchSelected)));
+      this.$set(
+        this.search,
+        'categoryId',
+        R.prop('id', R.head(this.categorySearchSelected))
+      );
       this.showCategorySearch = false;
     },
     changePagination() {
@@ -1489,30 +1530,161 @@ export default {
         });
     },
     // 商品取消/设置标签
-    setProductLabel(isSet, i) {
-      if (!this.selectedProducts.length) {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'error',
-          text: '请先选择商品',
-        });
-        return;
+    setProductLabel() {
+      this.setttingLabel = true;
+      const tempIds = JSON.parse(JSON.stringify(this.selectedProductsIds));
+      const promises = [];
+      if (this.isNew.length) {
+        promises.push(this.setLabelToNew());
       }
-      this.$store.commit('START_LOADING');
-      const params = {
-        index: i + 1,
-        operate: isSet ? '1' : '2',
-        id: R.pluck('id', this.selectedProducts),
-      };
-      this.setProductLabelAsync(params)
-        .then(() => {
-          this.$store.commit('TOGGLE_SNACKBAR', {
-            type: 'success',
-            text: `恭喜，${isSet ? '设置' : '取消'}标签成功!`,
-          });
-          this.selectedProducts = [];
-        })
-        .catch(err => this.checkErr(err))
-        .finally(() => this.$store.commit('END_LOADING'));
+      if (this.notNew.length) {
+        promises.push(this.cancelLabelFromNew());
+      }
+      if (this.isHot.length) {
+        promises.push(this.setLabelToHot());
+      }
+      if (this.notHot.length) {
+        promises.push(this.cancelLabelFromHot());
+      }
+      if (this.isRecommend.length) {
+        promises.push(this.setLabelToRecommend());
+      }
+      if (this.notRecommend.length) {
+        promises.push(this.cancelLabelFromRecommend());
+      }
+      if (this.isPromotion.length) {
+        promises.push(this.setLabelToPromotion());
+      }
+      if (this.notPromotion.length) {
+        promises.push(this.cancelLabelFromPromotion());
+      }
+      if (this.isSpot.length) {
+        promises.push(this.setLabelToSpot());
+      }
+      if (this.notSpot.length) {
+        promises.push(this.cancelLabelFromSpot());
+      }
+      if (this.isOrder.length) {
+        promises.push(this.setLabelToOrder());
+      }
+      if (this.notOrder.length) {
+        promises.push(this.cancelLabelFromOrder());
+      }
+      Promise.all(promises).then(() => {
+        this.$store.commit('TOGGLE_SNACKBAR', {
+          type: 'success',
+          text: '恭喜，设置标签成功!',
+        });
+        this.getProductListAsync(this.search).then(() => {
+          this.dialogLabel = false;
+          this.selectedProducts = R.filter(item => R.includes(item.id, tempIds), this.productList.data.items);
+        }).catch((err) => {
+          this.checkErr(err, 'setProductLabel');
+        }).finally(() => {
+          this.setttingLabel = false;
+        });
+      }).catch((err) => {
+        this.checkErr(err, 'setProductLabel');
+      });
+      // const params = {
+      //   index: i + 1,
+      //   operate: isSet ? '1' : '2',
+      //   id: R.pluck('id', this.selectedProducts),
+      // };
+      // this.setProductLabelAsync(params)
+      //   .then(() => {
+      //     this.$store.commit('TOGGLE_SNACKBAR', {
+      //       type: 'success',
+      //       text: `恭喜，${isSet ? '设置' : '取消'}标签成功!`,
+      //     });
+      //     this.selectedProducts = [];
+      //   })
+      //   .catch(err => this.checkErr(err))
+      //   .finally(() => this.$store.commit('END_LOADING'));
+    },
+    async setLabelToNew() {
+      return this.setProductLabelAsync({
+        index: 1,
+        operate: '1',
+        id: this.isNew,
+      });
+    },
+    async cancelLabelFromNew() {
+      return this.setProductLabelAsync({
+        index: 1,
+        operate: '2',
+        id: this.notNew,
+      });
+    },
+    async setLabelToHot() {
+      return this.setProductLabelAsync({
+        index: 2,
+        operate: '1',
+        id: this.isHot,
+      });
+    },
+    async cancelLabelFromHot() {
+      return this.setProductLabelAsync({
+        index: 2,
+        operate: '2',
+        id: this.notHot,
+      });
+    },
+    async setLabelToRecommend() {
+      return this.setProductLabelAsync({
+        index: 3,
+        operate: '1',
+        id: this.isRecommend,
+      });
+    },
+    async cancelLabelFromRecommend() {
+      return this.setProductLabelAsync({
+        index: 3,
+        operate: '2',
+        id: this.notRecommend,
+      });
+    },
+    async setLabelToPromotion() {
+      return this.setProductLabelAsync({
+        index: 4,
+        operate: '1',
+        id: this.isPromotion,
+      });
+    },
+    async cancelLabelFromPromotion() {
+      return this.setProductLabelAsync({
+        index: 4,
+        operate: '2',
+        id: this.notPromotion,
+      });
+    },
+    async setLabelToSpot() {
+      return this.setProductLabelAsync({
+        index: 5,
+        operate: '1',
+        id: this.isSpot,
+      });
+    },
+    async cancelLabelFromSpot() {
+      return this.setProductLabelAsync({
+        index: 5,
+        operate: '2',
+        id: this.notSpot,
+      });
+    },
+    async setLabelToOrder() {
+      return this.setProductLabelAsync({
+        index: 6,
+        operate: '1',
+        id: this.isOrder,
+      });
+    },
+    async cancelLabelFromOrder() {
+      return this.setProductLabelAsync({
+        index: 6,
+        operate: '2',
+        id: this.notOrder,
+      });
     },
   },
 };

@@ -3,7 +3,7 @@
     <div class="title">
       {{ id ? '编辑角色' : '添加角色' }}
     </div>
-    <v-divider class="my-4" />
+
     <v-form
       ref="form"
       v-model="valid"

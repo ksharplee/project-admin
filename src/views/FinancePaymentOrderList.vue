@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       收款单列表
       <v-btn
         color="primary"
@@ -13,7 +13,7 @@
         </v-icon>新增收款单
       </v-btn>
     </div>
-    <v-divider class="my-4" />
+
     <v-form ref="form">
       <v-row>
         <v-col
@@ -266,7 +266,6 @@
             <v-pagination
               v-model="page"
               :length="pageCount"
-              :total-visible="7"
               @input="changePagination"
             />
             <div class="mx-2">

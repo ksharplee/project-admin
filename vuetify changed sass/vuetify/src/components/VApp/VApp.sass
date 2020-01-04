@@ -18,8 +18,14 @@
 .v-application
   display: flex
 
-  a
+    a
     cursor: pointer
+    // changed none ->
+    text-decoration: none
+
+    // changed none ->
+    &:hover
+      color: darken(#42A5F5, 15%)
 
   &--is-rtl
     direction: rtl

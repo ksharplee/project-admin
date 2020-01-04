@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       类别列表
       <v-btn
         color="primary"
@@ -13,148 +13,145 @@
         </v-icon>添加类别
       </v-btn>
     </div>
-    <v-divider class="my-4" />
     <v-card>
-      <div class="pa-4">
-        <div class="d-flex grey lighten-3 py-4 text-center px-2 font-weight-bold">
-          <div class="flex-grow-1">
-            分类名称
-          </div>
-          <div style="width:150px">
-            排序
-          </div>
-          <div style="width:150px">
-            前台显示
-          </div>
-          <div
-            style="width:300px"
-            class="text-right pr-6"
-          >
-            操作
-          </div>
+      <div class="d-flex grey lighten-3 py-4 text-center px-2 font-weight-bold">
+        <div class="flex-grow-1">
+          分类名称
         </div>
-        <v-treeview
-          v-if="productCategory.data.items.length"
-          :items="productCategory.data.items"
-          item-text="dnames"
-          item-key="id"
-          item-children="son"
-          hoverable
-        >
-          <template v-slot:prepend="{ item,leaf, open }">
-            <v-icon>
-              {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
-            </v-icon>
-          </template>
-          <template v-slot:append="{ item,leaf }">
-            <div class="d-flex text-center align-center">
-              <div style="width:150px">
-                {{ item.sort }}
-              </div>
-              <div style="width:150px">
-                {{ item.isPublish === '1' ? '显示' : '不显示' }}
-              </div>
-              <div
-                style="width:300px"
-                class="text-right"
-              >
-                <v-tooltip
-                  v-if="item.isEnd === '0'"
-                  bottom
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="openDialogAdd({parentId: item.id, item})"
-                    >
-                      <v-icon color="primary">
-                        mdi-bell-plus
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>增加子类</span>
-                </v-tooltip>
-                <v-tooltip
-                  v-if="item.isEnd === '1'"
-                  bottom
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :to="{ name: 'product_attr', params: { id: item.id, cate: item.dnames }}"
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                    >
-                      <v-icon color="warning">
-                        mdi-spa
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>属性管理</span>
-                </v-tooltip>
-                <v-tooltip
-                  v-if="item.isEnd === '1'"
-                  bottom
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      :to="{ name: 'product_spec', params: { id: item.id, cate: item.dnames }}"
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                    >
-                      <v-icon color="amber accent-3">
-                        mdi-file-document-box
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>规格管理</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="openDialogEdit(item)"
-                    >
-                      <v-icon color="teal">
-                        mdi-pencil-circle
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>编辑</span>
-                </v-tooltip>
-                <v-tooltip
-                  v-if="item.isEnd === '1' || !item.son"
-                  bottom
-                >
-                  <template v-slot:activator="{ on }">
-                    <v-btn
-                      icon
-                      class="mx-1"
-                      v-on="on"
-                      @click="openDialogDelete(item.id)"
-                    >
-                      <v-icon color="secondary">
-                        mdi-delete-forever
-                      </v-icon>
-                    </v-btn>
-                  </template>
-                  <span>删除</span>
-                </v-tooltip>
-              </div>
-            </div>
-          </template>
-        </v-treeview>
+        <div style="width:150px">
+          排序
+        </div>
+        <div style="width:150px">
+          前台显示
+        </div>
         <div
-          v-else
-          class="py-4 grey--text text-center"
+          style="width:300px"
+          class="text-right pr-6"
         >
-          暂无商品分类
+          操作
         </div>
+      </div>
+      <v-treeview
+        v-if="productCategory.data.items.length"
+        :items="productCategory.data.items"
+        item-text="dnames"
+        item-key="id"
+        item-children="son"
+        hoverable
+      >
+        <template v-slot:prepend="{ item,leaf, open }">
+          <v-icon>
+            {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
+          </v-icon>
+        </template>
+        <template v-slot:append="{ item,leaf }">
+          <div class="d-flex text-center align-center">
+            <div style="width:150px">
+              {{ item.sort }}
+            </div>
+            <div style="width:150px">
+              {{ item.isPublish === '1' ? '显示' : '不显示' }}
+            </div>
+            <div
+              style="width:300px"
+              class="text-right"
+            >
+              <v-tooltip
+                v-if="item.isEnd === '0'"
+                bottom
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    class="mx-1"
+                    v-on="on"
+                    @click="openDialogAdd({parentId: item.id, item})"
+                  >
+                    <v-icon color="primary">
+                      mdi-bell-plus
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>增加子类</span>
+              </v-tooltip>
+              <v-tooltip
+                v-if="item.isEnd === '1'"
+                bottom
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :to="{ name: 'product_attr', params: { id: item.id, cate: item.dnames }}"
+                    icon
+                    class="mx-1"
+                    v-on="on"
+                  >
+                    <v-icon color="warning">
+                      mdi-spa
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>属性管理</span>
+              </v-tooltip>
+              <v-tooltip
+                v-if="item.isEnd === '1'"
+                bottom
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    :to="{ name: 'product_spec', params: { id: item.id, cate: item.dnames }}"
+                    icon
+                    class="mx-1"
+                    v-on="on"
+                  >
+                    <v-icon color="amber accent-3">
+                      mdi-file-document-box
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>规格管理</span>
+              </v-tooltip>
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    class="mx-1"
+                    v-on="on"
+                    @click="openDialogEdit(item)"
+                  >
+                    <v-icon color="teal">
+                      mdi-pencil-circle
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>编辑</span>
+              </v-tooltip>
+              <v-tooltip
+                v-if="item.isEnd === '1' || !item.son"
+                bottom
+              >
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    icon
+                    class="mx-1"
+                    v-on="on"
+                    @click="openDialogDelete(item.id)"
+                  >
+                    <v-icon color="secondary">
+                      mdi-delete-forever
+                    </v-icon>
+                  </v-btn>
+                </template>
+                <span>删除</span>
+              </v-tooltip>
+            </div>
+          </div>
+        </template>
+      </v-treeview>
+      <div
+        v-else
+        class="py-4 grey--text text-center"
+      >
+        暂无商品分类
       </div>
     </v-card>
     <v-dialog

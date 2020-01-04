@@ -1,91 +1,85 @@
 <template>
-  <div>
+  <div class="pa-4">
     <v-card>
-      <v-container
-        fluid
-        class="px-4"
+      <v-alert
+        color="primary"
+        dark
+        dense
+        tile
+        text
+        class="body-1"
       >
-        <v-alert
-          color="primary"
-          dark
-          dense
-          tile
-          text
-          class="body-1"
+        <v-container
+          fluid
         >
-          <v-container
-            fluid
-            class="px-4"
-          >
-            <v-row no-gutters>
-              <v-col cols="12">
-                订单号：{{ order.orderNo }}<span class="ml-4">客户名称：</span>{{ order.buyerName }}
-              </v-col>
-              <v-col cols="12">
-                <v-divider
-                  class="my-4"
-                  style="background-color: #dedede"
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                class="headline warning--text mb-2"
+          <v-row no-gutters>
+            <v-col cols="12">
+              订单号：{{ order.orderNo }}<span class="ml-4">客户名称：</span>{{ order.buyerName }}
+            </v-col>
+            <v-col cols="12">
+              <v-divider
+                class="my-4"
+                style="background-color: #dedede"
+              />
+            </v-col>
+            <v-col
+              cols="12"
+              class="headline warning--text mb-2"
+            >
+              待支付：{{ +order.actualAmount - +order.receivedAmount | toFixed }} 元
+            </v-col>
+            <v-col cols="12">
+              <span>订单金额：</span>{{ order.amount }}<span class="ml-4">应付金额：</span>{{ order.actualAmount }} <span class="ml-4">免收金额：</span>{{ order.freeAmount }} <span class="ml-4">已付款：</span>{{ order.receivedAmount }} <span class="ml-4">运费：</span>{{ order.freight }}
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-alert>
+      <v-data-table
+        :headers="headers"
+        :items="paymentOrderList"
+        :loading="loadingDatItems"
+        class="text-center"
+        loading-text="加载中..."
+        item-key="id"
+        no-data-text="暂无付款记录"
+        hide-default-footer
+        :items-per-page="20"
+      >
+        <template v-slot:item.amount="{ item }">
+          <div class="error--text">
+            {{ item.amount }}
+          </div>
+        </template>
+        <template v-slot:item.actualAmount="{ item }">
+          <div class="error--text">
+            {{ item.actualAmount }}
+          </div>
+        </template>
+        <template v-slot:item.dStatus="{ item }">
+          <div :class="item.dStatus | paymentOrderStatusClass">
+            {{ item.dStatus | paymentOrderStatusText }}
+          </div>
+        </template>
+        <template v-slot:item.receiptTime="{ item }">
+          {{ item.receiptTime | dateTruncate(16) }}
+        </template>
+        <template v-slot:item.action="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                icon
+                class="mx-1"
+                v-on="on"
+                @click="dialogDetailItem = item; dialogDetail = true;"
               >
-                待支付：{{ +order.actualAmount - +order.receivedAmount | toFixed }} 元
-              </v-col>
-              <v-col cols="12">
-                <span>订单金额：</span>{{ order.amount }}<span class="ml-4">应付金额：</span>{{ order.actualAmount }} <span class="ml-4">免收金额：</span>{{ order.freeAmount }} <span class="ml-4">已付款：</span>{{ order.receivedAmount }} <span class="ml-4">运费：</span>{{ order.freight }}
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-alert>
-        <v-card outlined>
-          <v-data-table
-            :headers="headers"
-            :items="paymentOrderList"
-            :loading="loadingDatItems"
-            class="text-center"
-            loading-text="加载中..."
-            item-key="id"
-            no-data-text="暂无付款记录"
-            hide-default-footer
-            :items-per-page="20"
-          >
-            <template v-slot:item.amount="{ item }">
-              <div class="error--text">
-                {{ item.amount }}
-              </div>
+                <v-icon color="primary">
+                  mdi-file-document-box-search
+                </v-icon>
+              </v-btn>
             </template>
-            <template v-slot:item.actualAmount="{ item }">
-              <div class="error--text">
-                {{ item.actualAmount }}
-              </div>
-            </template>
-            <template v-slot:item.dStatus="{ item }">
-              <div :class="item.dStatus | paymentOrderStatusClass">
-                {{ item.dStatus | paymentOrderStatusText }}
-              </div>
-            </template>
-            <template v-slot:item.receiptTime="{ item }">
-              {{ item.receiptTime | dateTruncate(16) }}
-            </template>
-            <template v-slot:item.action="{ item }">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    icon
-                    class="mx-1"
-                    v-on="on"
-                    @click="dialogDetailItem = item; dialogDetail = true;"
-                  >
-                    <v-icon color="primary">
-                      mdi-file-document-box-search
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>详情</span>
-              </v-tooltip>
-              <!-- <v-tooltip bottom>
+            <span>详情</span>
+          </v-tooltip>
+          <!-- <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <v-btn
                     icon
@@ -101,62 +95,60 @@
                 </template>
                 <span>编辑</span>
               </v-tooltip> -->
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    :disabled="item.dStatus !== '2'"
-                    icon
-                    class="mx-1"
-                    v-on="on"
-                    @click="dialogConfirm = true;toConfirmOrder = item.id"
-                  >
-                    <v-icon color="amber">
-                      mdi-check-decagram
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>审核</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    :disabled="item.dStatus !== '2'"
-                    icon
-                    class="mx-1"
-                    v-on="on"
-                    @click="dialogReject = true;toRejectOrder = item.id"
-                  >
-                    <v-icon color="secondary">
-                      mdi-minus-circle
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>驳回</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    :disabled="item.dStatus !== '3'"
-                    icon
-                    class="mx-1"
-                    v-on="on"
-                    @click="dialogNullify = true;toNullifyOrder = item.id"
-                  >
-                    <v-icon color="error lighten-2">
-                      mdi-close-circle
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>作废</span>
-              </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :disabled="item.dStatus !== '2'"
+                icon
+                class="mx-1"
+                v-on="on"
+                @click="dialogConfirm = true;toConfirmOrder = item.id"
+              >
+                <v-icon color="amber">
+                  mdi-check-decagram
+                </v-icon>
+              </v-btn>
             </template>
-          </v-data-table>
-        </v-card>
-      </v-container>
+            <span>审核</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :disabled="item.dStatus !== '2'"
+                icon
+                class="mx-1"
+                v-on="on"
+                @click="dialogReject = true;toRejectOrder = item.id"
+              >
+                <v-icon color="secondary">
+                  mdi-minus-circle
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>驳回</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn
+                :disabled="item.dStatus !== '3'"
+                icon
+                class="mx-1"
+                v-on="on"
+                @click="dialogNullify = true;toNullifyOrder = item.id"
+              >
+                <v-icon color="error lighten-2">
+                  mdi-close-circle
+                </v-icon>
+              </v-btn>
+            </template>
+            <span>作废</span>
+          </v-tooltip>
+        </template>
+      </v-data-table>
     </v-card>
+    <v-divider />
     <div
       class="py-4"
-      style="background-color: #fafafa"
     >
       <v-btn
         v-if="order.receivedAmount !== order.actualAmount && (order.dStatus === '4' || order.dStatus === '5' || order.dStatus === '7' || order.dStatus === '8' || order.dStatus === '9' || order.dStatus === '10')"
@@ -326,9 +318,7 @@
                     订单号：{{ order.orderNo }}
                     <span class="ml-4">客户名称：</span>{{ order.buyerName }}
                   </v-col>
-                  <v-col cols="12">
-                    <v-divider class="my-4" />
-                  </v-col>
+                  <v-col cols="12" />
                   <v-col
                     cols="12"
                     class="headline error--text mb-2"

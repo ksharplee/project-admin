@@ -3,7 +3,7 @@
     <v-card>
       <v-card-text
         ref="advancedSearch"
-        class="advance-search"
+        class="advance-search pa-0"
       >
         <v-data-table
           v-model="selectedOrders"
@@ -13,13 +13,13 @@
           loading-text="加载中，请稍候..."
           class="text-center"
           no-data-text="暂无数据"
-          show-select
           hide-default-footer
           :items-per-page="20"
         >
+          <!-- show-select -->
           <template v-slot:top>
             <div
-              class="text-left d-flex align-center mb-3"
+              class="text-left d-flex align-center mb-2"
               style="height: 36px"
             >
               <template
@@ -119,15 +119,16 @@
                 >
                   <div class="input-group-control">
                     <v-text-field
-                      v-model="searchStr"
-                      placeholder="请输入订单号/客户名称"
+                      v-model="search.orderNo"
+                      placeholder="请输入订单号搜索"
                       outlined
                       class="white"
                       single-line
                       clearable
                       hide-details
                       dense
-                      @click:clear="searchStr = '';getOrderList()"
+                      @click:clear="$set(search,'orderNo', '');getOrderList()"
+                      @keyup.enter="getOrderList({ orderNo: search.orderNo })"
                     />
                   </div>
                   <div class="input-group-append">
@@ -135,7 +136,7 @@
                       color="blue-grey lighten-4 px-0"
                       depressed
                       x-small
-                      @click="getOrderList({ searchStr })"
+                      @click="getOrderList({ orderNo: search.orderNo })"
                     >
                       <v-icon
                         color="blue-grey darken-2"
@@ -167,6 +168,20 @@
               </template>
             </div>
           </template>
+          <template v-slot:item.orderNo="{ item }">
+            <router-link :to="{ name: 'order_detail', params: { id: item.id, currentTab: '0' }}">
+              {{ item.orderNo }}
+            </router-link><v-chip
+              v-if="item.orderType === '4'"
+              outlined
+              small
+              color="#ddd"
+              text-color="primary"
+              class="px-1 ml-2"
+            >
+              代下单
+            </v-chip>
+          </template>
           <template v-slot:item.shipping="{ item }">
             {{ item.dStatus | shippingStatus }}
           </template>
@@ -190,11 +205,6 @@
               </div>
             </div>
           </template>
-          <template v-slot:item.orderType="{ item }">
-            <v-chip small>
-              {{ item.orderType | orderType }}
-            </v-chip>
-          </template>
           <template v-slot:footer>
             <v-divider />
             <div
@@ -207,7 +217,6 @@
               <v-pagination
                 v-model="page"
                 :length="pageCount"
-                :total-visible="7"
                 @input="changePagination"
               />
               <div class="mx-2">
@@ -231,7 +240,6 @@
             <v-menu
               offset-y
               left
-              open-on-hover
             >
               <template v-slot:activator="{ on }">
                 <v-icon
@@ -252,7 +260,7 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-file-document-box-search
-                    </v-icon>查看
+                    </v-icon>订单详情
                   </v-list-item-title>
                 </v-list-item>
                 <!-- 已提交订单可以确认或取消 -->
@@ -268,7 +276,7 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-clipboard-check
-                    </v-icon>确认
+                    </v-icon>确认订单
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item
@@ -283,7 +291,7 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-file-cancel
-                    </v-icon>取消
+                    </v-icon>取消订单
                   </v-list-item-title>
                 </v-list-item>
                 <!-- 已确认，未完成，并且未作废的订单可以添加收款记录 -->
@@ -299,7 +307,7 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-credit-card
-                    </v-icon>收款记录
+                    </v-icon>添加收款记录
                   </v-list-item-title>
                 </v-list-item>
                 <!-- 已确认订单可财务审核，但只有付款状态为未付款的才可作废订单 -->
@@ -315,7 +323,7 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-close-circle
-                    </v-icon>作废
+                    </v-icon>订单作废
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item
@@ -346,7 +354,7 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-truck
-                    </v-icon>发货
+                    </v-icon>订单发货
                   </v-list-item-title>
                 </v-list-item>
                 <!-- 已确认收货或者完成发货并且完成收款的订单可以进行完成订单操作 -->
@@ -362,15 +370,56 @@
                       style="position:relative;top:-1px"
                     >
                       mdi-file-check
-                    </v-icon>完成
+                    </v-icon>完成订单
                   </v-list-item-title>
                 </v-list-item>
+                <!-- <v-list-item
+                  @click="dialogDistribute = true;toCompleteOrder = item.id"
+                >
+                  <v-list-item-title>
+                    <v-icon
+                      class="mr-1"
+                      small
+                      :color="item.amontStatus !== '3' || !(item.dStatus === '8' || item.dStatus === '9') ? '#999' : ''"
+                      style="position:relative;top:-1px"
+                    >
+                      mdi-swap-horizontal-bold
+                    </v-icon>订单分配
+                  </v-list-item-title>
+                </v-list-item> -->
               </v-list>
             </v-menu>
           </template>
         </v-data-table>
       </v-card-text>
     </v-card>
+    <v-dialog
+      v-model="dialogDistribute"
+      max-width="350"
+    >
+      <v-card>
+        <v-card-title class="title grey lighten-3 pa-4">
+          订单分配
+        </v-card-title>
+        <v-card-actions>
+          <div class="flex-grow-1" />
+          <v-btn
+            color="primary"
+            :loading="distributing"
+            :disabled="distributing"
+            @click="distributeOrder"
+          >
+            提交
+          </v-btn>
+          <v-btn
+            color="secondary"
+            @click="dialogDistribute = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog
       v-model="dialogCancel"
       max-width="350"
@@ -733,6 +782,8 @@ export default {
       sortType: { text: '按下单时间降序', value: '2' },
       menuStart: false,
       menuEnd: false,
+      dialogDistribute: false,
+      distributing: false,
       dialogSearch: false,
       dialogCancel: false,
       canceling: false,
@@ -790,9 +841,9 @@ export default {
         { text: '完成收款', value: '4' },
       ],
       orderType: [
-        { text: '全部', orderType: '0' },
-        { text: '代下单', orderType: '4' },
-        { text: '自主下单', orderType: '1' },
+        { text: '全部', value: '0' },
+        { text: '代下单', value: '4' },
+        { text: '自主下单', value: '1' },
       ],
       headers: [
         {
@@ -816,12 +867,6 @@ export default {
         {
           text: '发货状态',
           value: 'shipping',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '订单来源',
-          value: 'orderType',
           align: 'center',
           sortable: false,
         },
@@ -900,6 +945,7 @@ export default {
       'nullifyOrderAsync',
       'completeOrderAsync',
     ]),
+    distributeOrder() {},
     searchOrders() {
       this.dialogSearch = false;
       this.searchStatus = true;
@@ -910,10 +956,17 @@ export default {
     },
     clearAdvancedSearch() {
       this.searchStatus = false;
+      this.search = {
+        operate: '1',
+        orderType: '0',
+        amontStatus: '0',
+      };
       this.getOrderList();
     },
     searchOrderByStatus(item) {
-      this.getOrderList({ operate: item.value });
+      this.currentStatus = item.text;
+      this.$set(this.search, 'operate', item.value);
+      this.getOrderList(this.search);
     },
     getOrderList(params) {
       this.loadingDataItems = true;

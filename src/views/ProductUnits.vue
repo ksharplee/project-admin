@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       单位列表
       <v-btn
         color="primary"
@@ -13,10 +13,10 @@
         </v-icon>添加单位
       </v-btn>
     </div>
-    <v-divider class="my-4" />
+
     <v-card
       outlined
-      elevation="1"
+      elevation="0"
     >
       <v-data-table
         :headers="headers"

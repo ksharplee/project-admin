@@ -13,7 +13,7 @@
         </v-icon>添加规格
       </v-btn>
     </div>
-    <v-divider class="my-4" />
+
     <v-card>
       <v-data-table
         :headers="headers"
@@ -121,7 +121,7 @@
                 />
               </v-col>
             </v-row>
-            <v-divider class="my-4" />
+
             <v-row>
               <v-col
                 md="3"
@@ -243,7 +243,7 @@
                 />
               </v-col>
             </v-row>
-            <v-divider class="my-4" />
+
             <v-row>
               <v-col
                 md="3"

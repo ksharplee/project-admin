@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex flex-wrap align-center">
+    <div class="title d-flex flex-wrap align-center pb-3">
       商品列表
       <v-btn
         color="primary"
@@ -13,7 +13,7 @@
         </v-icon>添加商品
       </v-btn>
     </div>
-    <v-divider class="my-4" />
+
     <v-form ref="form">
       <v-row>
         <v-col

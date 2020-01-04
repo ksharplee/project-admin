@@ -3,7 +3,7 @@
     <div class="title">
       基本信息设置
     </div>
-    <v-divider class="my-4" />
+
     <v-form
       ref="form"
       v-model="valid"
