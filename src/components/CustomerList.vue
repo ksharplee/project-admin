@@ -215,9 +215,7 @@ export default {
   },
   watch: {
     dialog() {
-      if (!this.customerListForSearch.status) {
-        this.getCustomerList();
-      }
+      this.getCustomerList();
     },
   },
   created() {

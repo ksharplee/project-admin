@@ -16,7 +16,6 @@
           hide-default-footer
           :items-per-page="20"
         >
-          <!-- show-select -->
           <template v-slot:top>
             <div
               class="text-left d-flex align-center mb-3"
@@ -636,6 +635,30 @@
                       hide-details
                       dense
                       @click:clear="clearSearchConditions('goodName')"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                md="6"
+                lg="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">商品货号</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="search.goodNo"
+                      placeholder="请输入商品货号"
+                      outlined
+                      class="white"
+                      single-line
+                      clearable
+                      hide-details
+                      dense
+                      @click:clear="clearSearchConditions('goodNo')"
                     />
                   </div>
                 </div>

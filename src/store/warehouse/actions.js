@@ -139,7 +139,11 @@ export default {
   // 出库类型列表
   async getWarehouseOutstockTypeListAsync(context, payload) {
     try {
-      const res = await axios.post('/wh/out_warehouse_type_lists.html', payload);
+      const res = await axios.post('/wh/out_warehouse_type_lists.html', R.mergeRight({
+        pageSize: process.env.VUE_APP_PAGESIZE,
+        timeLimit: context.state.warehouseOutstockList.data.timeLimit,
+        p: context.state.warehouseOutstockList.data.p,
+      }, payload));
       if (res.data.status === 1) {
         context.commit('SET_WAREHOUSE_OUTSTOCK_TYPE_LIST', res.data);
         return Promise.resolve(res.data.status);
@@ -402,9 +406,25 @@ export default {
   // 商品库存
   async getWarehouseProductStockAsync(context, payload) {
     try {
-      const res = await axios.post('/rs/stock_lists.html', payload);
+      const res = await axios.post('/rs/stock_lists.html', R.mergeRight({
+        pageSize: process.env.VUE_APP_PAGESIZE,
+        timeLimit: context.state.warehouseProductStock.data.timeLimit,
+        p: context.state.warehouseProductStock.data.p,
+      }, payload));
       if (res.data.status === 1) {
         context.commit('SET_WAREHOUSE_PRODUCT_STOCK', res.data);
+        return Promise.resolve(res.data.data);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 商品库存详情
+  async getWarehouseStockDetailAsync(context, payload) {
+    try {
+      const res = await axios.post('/rs/get_stock_info.html', payload);
+      if (res.data.status === 1) {
         return Promise.resolve(res.data.data);
       }
       return Promise.reject(new Error(res.data.info));

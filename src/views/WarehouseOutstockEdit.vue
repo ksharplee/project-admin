@@ -330,7 +330,7 @@ export default {
         warehouseId: '',
         outTypeId: '',
         memo: '',
-        deliveryTime: '',
+        deliveryTime: new Date().toISOString().substr(0, 10),
       },
       warehouseRules: [v => !!v || '请选择仓库'],
       outstockTypeRules: [v => !!v || '请选择出库类型'],

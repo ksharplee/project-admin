@@ -157,6 +157,17 @@
               {{ item.goodName }}
             </div>
           </template>
+          <template v-slot:item.action="{ item }">
+            <v-btn
+              color="primary"
+              text
+              @click="openDialogDetail(item)"
+            >
+              <v-icon color="secondary">
+                mdi-dots-horizontal
+              </v-icon>
+            </v-btn>
+          </template>
           <template v-slot:footer>
             <v-divider />
             <div class="d-flex align-center">
@@ -195,6 +206,89 @@
         </v-data-table>
       </v-card-text>
     </v-card>
+    <v-dialog
+      v-model="dialogDetail"
+      max-width="500"
+    >
+      <v-card :loading="loadingStockDetail">
+        <v-card-title class="title grey lighten-3 pa-4">
+          库存详情
+        </v-card-title>
+        <v-container fluid>
+          <v-row>
+            <v-col cols="4">
+              <v-img
+                :src="detail.item.image ? `${detail.item.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
+                aspect-ratio="1"
+                class="grey lighten-1"
+              >
+                <template v-slot:placeholder>
+                  <v-row
+                    class="fill-height ma-0"
+                    align="center"
+                    justify="center"
+                  >
+                    <v-progress-circular
+                      indeterminate
+                      color="grey lighten-5"
+                    />
+                  </v-row>
+                </template>
+              </v-img>
+            </v-col>
+            <v-col class="pl-5">
+              <p><span class="grey--text">商品名称：</span>{{ detail.item.goodName }}</p>
+              <p><span class="grey--text">商品货号：</span>{{ detail.item.goodNo }}</p>
+              <p><span class="grey--text">商品规格：</span>{{ detail.item.goodDetailName }}</p>
+              <p><span class="grey--text">销售价：</span>{{ detail.item.price }}</p>
+              <p><span class="grey--text">库存数量：</span>{{ detail.item.stockNumber }}</p>
+            </v-col>
+          </v-row>
+          <v-card outlined>
+            <v-simple-table class="text-center">
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-center">
+                      仓库名称
+                    </th>
+                    <th class="text-center">
+                      库存数量
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="item in detail.stockInfo"
+                    :key="item.name"
+                  >
+                    <td>{{ item.warehouseName }}</td>
+                    <td>{{ item.stockNumber }} {{ item.unitName }}</td>
+                  </tr>
+                  <tr v-if="!detail.stockInfo.length && !loadingStockDetail">
+                    <td
+                      colspan="2"
+                      class="grey--text"
+                    >
+                      暂无数据
+                    </td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </v-card>
+        </v-container>
+        <v-card-actions>
+          <div class="flex-grow-1" />
+          <v-btn
+            color="secondary"
+            @click="dialogDetail = false"
+          >
+            关闭
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -252,7 +346,19 @@ export default {
           align: 'center',
           sortable: false,
         },
+        {
+          text: '详情',
+          value: 'action',
+          align: 'center',
+          sortable: false,
+          width: '60px',
+        },
       ],
+      detail: {
+        item: {},
+        stockInfo: [],
+      },
+      loadingStockDetail: false,
       searchStr: '',
       selectedProducts: [],
       showCategory: false,
@@ -260,6 +366,7 @@ export default {
       pageEnter: 1,
       currentWarehouse: '所有仓库',
       currentWarehouseId: '',
+      dialogDetail: false,
     };
   },
   computed: {
@@ -327,8 +434,20 @@ export default {
     this.getAllData();
   },
   methods: {
-    ...mapActions('warehouse', ['getWarehouseProductStockAsync', 'getWarehouseListAsync']),
+    ...mapActions('warehouse', ['getWarehouseProductStockAsync', 'getWarehouseListAsync', 'getWarehouseStockDetailAsync']),
     ...mapActions('product', ['getCateListAsync']),
+    openDialogDetail(item) {
+      this.dialogDetail = true;
+      this.loadingStockDetail = true;
+      this.detail.item = item;
+      this.getWarehouseStockDetailAsync({ id: item.goodDetailId }).then((res) => {
+        this.$set(this.detail, 'stockInfo', res);
+      }).catch((err) => {
+        this.checkErr(err, 'openDialogDetail');
+      }).finally(() => {
+        this.loadingStockDetail = false;
+      });
+    },
     changePaginationDirectly() {
       if (R.is(Number, this.pageEnter)) {
         if (this.pageEnter <= this.pageCount) {

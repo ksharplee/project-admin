@@ -343,7 +343,7 @@ export default {
         warehouseId: '',
         inTypeId: '',
         memo: '',
-        deliveryTime: '',
+        deliveryTime: new Date().toISOString().substr(0, 10),
       },
       warehouseRules: [v => !!v || '请选择仓库'],
       instockTypeRules: [v => !!v || '请选择入库类型'],

@@ -268,6 +268,7 @@
                 <v-icon
                   class="mr-1"
                   small
+                  :color="item.dStatus !== '0' ? '#999' : ''"
                   style="position:relative;top:-1px"
                 >
                   mdi-pencil-circle
@@ -282,6 +283,7 @@
                 <v-icon
                   class="mr-1"
                   small
+                  :color="item.dStatus !== '0' ? '#999' : ''"
                   style="position:relative;top:-1px"
                 >
                   mdi-clipboard-check
@@ -296,6 +298,7 @@
                 <v-icon
                   class="mr-1"
                   small
+                  :color="item.dStatus !== '1' ? '#999' : ''"
                   style="position:relative;top:-1px"
                 >
                   mdi-close-circle
@@ -310,6 +313,7 @@
                 <v-icon
                   class="mr-1"
                   small
+                  :color="item.dStatus !== '0' ? '#999' : ''"
                   style="position:relative;top:-1px"
                 >
                   mdi-delete-forever
