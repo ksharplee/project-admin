@@ -859,7 +859,6 @@
                         ref="menuStart"
                         v-model="menuStart"
                         :close-on-content-click="false"
-                        :return-value.sync="search.startShelfTime"
                         transition="scale-transition"
                         offset-y
                         min-width="290px"
@@ -884,23 +883,8 @@
                           v-model="search.startShelfTime"
                           color="primary"
                           scrollable
-                        >
-                          <div class="flex-grow-1" />
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="menuStart = false"
-                          >
-                            取消
-                          </v-btn>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="$refs.menuStart.save(search.startShelfTime)"
-                          >
-                            确定
-                          </v-btn>
-                        </v-date-picker>
+                          @input="menuStart = false"
+                        />
                       </v-menu>
                     </div>
                     <div class="input-group-innerpend">
@@ -911,7 +895,6 @@
                         ref="menuEnd"
                         v-model="menuEnd"
                         :close-on-content-click="false"
-                        :return-value.sync="search.endShelfTime"
                         transition="scale-transition"
                         offset-y
                         min-width="290px"
@@ -937,23 +920,8 @@
                           :min="search.startShelfTime"
                           color="primary"
                           scrollable
-                        >
-                          <div class="flex-grow-1" />
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="menuEnd = false"
-                          >
-                            取消
-                          </v-btn>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="$refs.menuEnd.save(search.endShelfTime)"
-                          >
-                            确定
-                          </v-btn>
-                        </v-date-picker>
+                          @input="menuEnd = false"
+                        />
                       </v-menu>
                     </div>
                     <div class="input-group-append mr-2">

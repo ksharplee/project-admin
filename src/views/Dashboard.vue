@@ -203,6 +203,7 @@
               <v-date-picker
                 v-model="startDate"
                 color="primary"
+                class="elevation-1"
               />
             </v-col>
             <v-col cols="6">
@@ -212,6 +213,7 @@
               <v-date-picker
                 v-model="endDate"
                 color="primary"
+                class="elevation-1"
               />
             </v-col>
           </v-row>

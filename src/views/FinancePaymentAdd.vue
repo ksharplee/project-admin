@@ -87,7 +87,6 @@
                   ref="menuDate"
                   v-model="menuDate"
                   :close-on-content-click="false"
-                  :return-value.sync="payment.receiptTime"
                   transition="scale-transition"
                   offset-y
                   min-width="290px"
@@ -111,23 +110,8 @@
                     v-model="payment.receiptTime"
                     color="primary"
                     scrollable
-                  >
-                    <div class="flex-grow-1" />
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="menuDate = false"
-                    >
-                      取消
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menuDate.save(payment.receiptTime)"
-                    >
-                      确定
-                    </v-btn>
-                  </v-date-picker>
+                    @input="menuDate = false"
+                  />
                 </v-menu>
               </div>
             </div>

@@ -151,7 +151,6 @@
                         ref="menuEntry"
                         v-model="menuEntry"
                         :close-on-content-click="false"
-                        :return-value.sync="employee.entryTime"
                         transition="scale-transition"
                         offset-y
                         min-width="290px"
@@ -176,23 +175,8 @@
                           v-model="employee.entryTime"
                           color="primary"
                           scrollable
-                        >
-                          <div class="flex-grow-1" />
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="menuEntry = false"
-                          >
-                            取消
-                          </v-btn>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="$refs.menuEntry.save(employee.entryTime)"
-                          >
-                            确定
-                          </v-btn>
-                        </v-date-picker>
+                          @input="menuEntry = false"
+                        />
                       </v-menu>
                     </div>
                   </div>
@@ -284,7 +268,6 @@
                         ref="menuBirth"
                         v-model="menuBirth"
                         :close-on-content-click="false"
-                        :return-value.sync="employee.birthDay"
                         transition="scale-transition"
                         offset-y
                         min-width="290px"
@@ -308,23 +291,8 @@
                           v-model="employee.birthDay"
                           color="primary"
                           scrollable
-                        >
-                          <div class="flex-grow-1" />
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="menuBirth = false"
-                          >
-                            取消
-                          </v-btn>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="$refs.menuBirth.save(employee.birthDay)"
-                          >
-                            确定
-                          </v-btn>
-                        </v-date-picker>
+                          @input="menuBirth = false"
+                        />
                       </v-menu>
                     </div>
                   </div>

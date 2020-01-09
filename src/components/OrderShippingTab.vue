@@ -224,7 +224,6 @@
                   ref="menuDate"
                   v-model="menuDate"
                   :close-on-content-click="false"
-                  :return-value.sync="shipping.deliveryTime"
                   transition="scale-transition"
                   offset-y
                   min-width="290px"
@@ -247,23 +246,8 @@
                     v-model="shipping.deliveryTime"
                     color="primary"
                     scrollable
-                  >
-                    <div class="flex-grow-1" />
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="menuDate = false"
-                    >
-                      取消
-                    </v-btn>
-                    <v-btn
-                      text
-                      color="primary"
-                      @click="$refs.menuDate.save(shipping.deliveryTime)"
-                    >
-                      确定
-                    </v-btn>
-                  </v-date-picker>
+                    @input="menuDate = false"
+                  />
                 </v-menu>
               </v-col>
             </v-row>
@@ -484,7 +468,6 @@
                         ref="menuDate"
                         v-model="menuDate"
                         :close-on-content-click="false"
-                        :return-value.sync="toEditShippingOrder.deliveryTime"
                         transition="scale-transition"
                         offset-y
                         min-width="290px"
@@ -507,23 +490,8 @@
                           v-model="toEditShippingOrder.deliveryTime"
                           color="primary"
                           scrollable
-                        >
-                          <div class="flex-grow-1" />
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="menuDate = false"
-                          >
-                            取消
-                          </v-btn>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="$refs.menuDate.save(toEditShippingOrder.deliveryTime)"
-                          >
-                            确定
-                          </v-btn>
-                        </v-date-picker>
+                          @input="menuDate = false"
+                        />
                       </v-menu>
                     </v-col>
                   </v-row>
