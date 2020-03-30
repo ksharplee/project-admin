@@ -141,6 +141,14 @@
           hide-default-footer
           :items-per-page="20"
         >
+          <template v-slot:item.goodName="{ item }">
+            <div
+              class="text-left"
+              style="min-width:200px"
+            >
+              {{ item.goodName }}
+            </div>
+          </template>
           <template v-slot:item.goodDetailName="{ item }">
             {{ item.goodDetailName ? item.goodDetailName : '无' }}
           </template>
@@ -745,6 +753,7 @@ export default {
           value: 'goodDetailName',
           align: 'center',
           sortable: false,
+          width: '90px',
         },
         {
           text: '销售价(元)',

@@ -358,14 +358,14 @@
                 </v-list-item>
                 <!-- 已确认收货或者完成发货并且完成收款的订单可以进行完成订单操作 -->
                 <v-list-item
-                  :disabled="item.amontStatus !== '3' || !(item.dStatus === '8' || item.dStatus === '9')"
+                  :disabled="!(item.dStatus === '8' || item.dStatus === '9')"
                   @click="dialogComplete = true;toCompleteOrder = item.id"
                 >
                   <v-list-item-title>
                     <v-icon
                       class="mr-1"
                       small
-                      :color="item.amontStatus !== '3' || !(item.dStatus === '8' || item.dStatus === '9') ? '#999' : ''"
+                      :color="!(item.dStatus === '8' || item.dStatus === '9') ? '#999' : ''"
                       style="position:relative;top:-1px"
                     >
                       mdi-file-check
@@ -749,7 +749,7 @@
             color="secondary"
             class="ml-4"
             text
-            @click="$refs.form.reset()"
+            @click="resetSearchConditions"
           >
             清空
           </v-btn>
@@ -791,7 +791,8 @@ export default {
       search: {
         operate: '1',
         orderType: '0',
-        amontStatus: '0',
+        amontStatus: '1',
+        orderNo: '',
       },
       loadingDataItems: false,
       sortTypes: [
@@ -845,7 +846,7 @@ export default {
           value: '4',
         },
         {
-          text: '待确认',
+          text: '待收货',
           value: '5',
         },
         {
@@ -858,8 +859,8 @@ export default {
         },
       ],
       amontStatus: [
-        { text: '全部', value: '0' },
-        { text: '未收款', value: '1' },
+        { text: '全部', value: '1' },
+        { text: '未收款', value: '2' },
         { text: '部分收款', value: '3' },
         { text: '完成收款', value: '4' },
       ],
@@ -968,6 +969,14 @@ export default {
       'nullifyOrderAsync',
       'completeOrderAsync',
     ]),
+    resetSearchConditions() {
+      this.search = {
+        operate: '1',
+        orderType: '0',
+        amontStatus: '1',
+        orderNo: '',
+      };
+    },
     distributeOrder() {},
     searchOrders() {
       this.dialogSearch = false;
@@ -982,7 +991,8 @@ export default {
       this.search = {
         operate: '1',
         orderType: '0',
-        amontStatus: '0',
+        amontStatus: '1',
+        orderNo: '',
       };
       this.getOrderList();
     },

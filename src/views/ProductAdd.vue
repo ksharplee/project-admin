@@ -873,6 +873,8 @@
                 <td class="py-3">
                   <v-text-field
                     v-model="item.barCode"
+                    :disabled="goodHasCode"
+                    :style="goodHasCode ? 'background-color:#f5f5f5' : ''"
                     placeholder=""
                     dense
                     outlined
@@ -884,6 +886,42 @@
                 </td>
               </tr>
             </tbody>
+            <tfoot>
+              <tr style="background-color:#fafafa">
+                <td colspan="4" />
+                <td
+                  colspan="2"
+                >
+                  <div class="input-group">
+                    <div class="input-group-control">
+                      <v-text-field
+                        v-model="product.barCode"
+                        placeholder="请输入统一条形码"
+                        :style="goodHasCode ? 'background-color:white' : ''"
+                        :disabled="!goodHasCode"
+                        dense
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                      />
+                    </div>
+                    <div class="input-group-append">
+                      <span class="input-group-text py-0 mb-0">
+                        <v-checkbox
+                          v-model="goodHasCode"
+                          label="统一规格条形码"
+                          color="primary"
+                          class="mt-0 overflow-hidden"
+                          hide-details
+                        />
+                      </span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tfoot>
           </v-simple-table>
         </v-card>
       </v-slide-y-transition>
@@ -1257,10 +1295,12 @@ export default {
       dialogCategory: false,
       searchSupplier: '',
       searchBrand: '',
+      goodHasCode: false,
       cateName: '',
       product: {
         containSpec: '0',
         zeroInventory: false,
+        goodHasCode: false,
         units: [],
         attr: [],
         unitId: '',
@@ -1470,6 +1510,15 @@ export default {
       );
     },
   },
+  watch: {
+    goodHasCode(newValue) {
+      if (newValue) {
+        this.setAllSpec = true;
+      } else {
+        this.setAllSpec = false;
+      }
+    },
+  },
   created() {
     this.$store.commit('SET_BREADCRUMBS', [
       {
@@ -1629,12 +1678,28 @@ export default {
       this.unitsLeft = R.reject(R.propEq('id', v.id), this.productUnits.data);
       this.product.units = [];
     },
+    // 设置所有规格商品统一条形码
+    setAllSpecBarcode(items) {
+      return R.map((item) => {
+        item.barCode = this.product.barCode;
+        return item;
+      }, items);
+    },
     addProduct() {
       this.adding = true;
       const postData = this.params;
+      if (this.goodHasCode) {
+        postData.goodHasCode = '0';
+      } else {
+        postData.goodHasCode = '1';
+      }
       if (this.product.containSpec === '1') {
         postData.spec = this.spec;
-        postData.detail = this.dataItems;
+        if (this.goodHasCode) {
+          postData.detail = this.setAllSpecBarcode(this.dataItems);
+        } else {
+          postData.detail = this.dataItems;
+        }
       }
       this.addProductAsync(postData)
         .then(() => {
@@ -1653,7 +1718,6 @@ export default {
     },
     // 批量添加图片
     getMultipleImgs(pics) {
-      const mapIndexed = R.addIndex(R.map);
       this.$set(
         this.product,
         'images',

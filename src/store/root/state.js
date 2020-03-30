@@ -7,6 +7,7 @@ export default {
   snackbarIcon: '',
   breadCrumbs: [],
   customerId: '',
+  productsAddedOrChanged: false,
   // routers: [
   //   {
   //     url: 'product_add',

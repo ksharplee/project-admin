@@ -25,6 +25,7 @@
             <v-btn
               text
               class="pl-4 subtitle-1"
+              color="white"
               :to="item.url"
             >
               立即查看<v-icon right>
@@ -757,9 +758,9 @@ export default {
         .label('allAmount', {
           formatter: v => `￥${v}`,
         })
-        .label('goodName', {
+        .label('buyerName', {
           formatter: (v) => {
-            if (v.length > 6) {
+            if (v && v.length > 6) {
               return `${v.substr(0, 7)}...`;
             }
             return v;

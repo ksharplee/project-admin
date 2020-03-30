@@ -5,7 +5,7 @@
     max-width="1400"
     @click:outside="$emit('close-dialog')"
   >
-    <v-card>
+    <v-card class="pa-3">
       <v-card-text
         ref="advancedSearch"
         class="advance-search pa-0"

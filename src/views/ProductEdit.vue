@@ -731,6 +731,8 @@
                     <td class="py-3">
                       <v-text-field
                         v-model="item.barCode"
+                        :disabled="goodHasCode"
+                        :style="goodHasCode ? 'background-color:#f5f5f5' : ''"
                         placeholder=""
                         outlined
                         clearable
@@ -742,6 +744,42 @@
                     </td>
                   </tr>
                 </tbody>
+                <tfoot>
+                  <tr style="background-color:#fafafa">
+                    <td colspan="4" />
+                    <td
+                      colspan="2"
+                    >
+                      <div class="input-group">
+                        <div class="input-group-control">
+                          <v-text-field
+                            v-model="product.barCode"
+                            placeholder="请输入统一条形码"
+                            :style="goodHasCode ? 'background-color:white' : ''"
+                            :disabled="!goodHasCode"
+                            dense
+                            outlined
+                            clearable
+                            required
+                            single-line
+                            hide-details
+                          />
+                        </div>
+                        <div class="input-group-append">
+                          <span class="input-group-text py-0 mb-0">
+                            <v-checkbox
+                              v-model="goodHasCode"
+                              label="统一规格条形码"
+                              color="primary"
+                              class="mt-0 overflow-hidden"
+                              hide-details
+                            />
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tfoot>
               </v-simple-table>
             </v-card>
           </v-card-text>
@@ -1042,6 +1080,7 @@ export default {
         attrName: '',
         genre: '1',
       },
+      goodHasCode: false,
       product: {
         containSpec: '0',
         zeroInventory: false,
@@ -1236,9 +1275,26 @@ export default {
       this.unitsLeft = R.reject(R.propEq('id', v.id), this.productUnits.data);
       this.product.units = [];
     },
+    // 设置所有规格商品统一条形码
+    setAllSpecBarcode(items) {
+      return R.map((item) => {
+        item.barCode = this.product.barCode;
+        return item;
+      }, items);
+    },
     editProduct() {
       this.editing = true;
       const postData = this.params;
+      if (this.goodHasCode) {
+        postData.goodHasCode = '0';
+      } else {
+        postData.goodHasCode = '1';
+      }
+      if (this.product.containSpec === '1') {
+        if (this.goodHasCode) {
+          postData.detail = this.setAllSpecBarcode(this.product.detail);
+        }
+      }
       this.editProductAsync(postData)
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
@@ -1300,6 +1356,10 @@ export default {
             );
           } else {
             response.images = R.times(() => R.clone({ image: '' }), 6);
+          }
+          // 是否设置了统一规格条形码
+          if (response.goodHasCode === '0' && response.containSpec === '1') {
+            this.goodHasCode = true;
           }
           // 设置已选中单位
           this.selectedUnitName = response.unitName;

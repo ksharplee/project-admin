@@ -1379,7 +1379,7 @@ export default {
         this.$router.push({ name: 'product_edit', params: { id } });
       } else {
         this.dialogDelete = true;
-        this.toDeleteProducts = [];
+        this.toDeleteProducts = [id];
       }
     },
     reverseSelectedProducts() {

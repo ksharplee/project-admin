@@ -470,7 +470,7 @@ export default {
     },
     getAllData() {
       this.$store.commit('START_LOADING');
-      const promises = [this.getWarehouseInstockTypeListAsync(), this.getWarehouseListAsync(), this.getProductListForSelectAsync()];
+      const promises = [this.getWarehouseInstockTypeListAsync(), this.getWarehouseListAsync(), this.getProductListForSelectAsync({ timeLimit: null })];
       Promise.all(promises).catch((err) => {
         this.checkErr(err, 'getAllData');
       }).finally(() => {

@@ -477,7 +477,7 @@ export default {
       //   return;
       // }
       this.loadingProductList = true;
-      this.getProductListForSelectAsync({ warehouseId: this.outstockOrder.warehouseId }).catch((err) => {
+      this.getProductListForSelectAsync({ warehouseId: this.outstockOrder.warehouseId, timeLimit: null }).catch((err) => {
         this.checkErr(err, 'loadProductListByWarehouseId');
       }).finally(() => {
         this.loadingProductList = false;
