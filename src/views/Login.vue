@@ -1,16 +1,58 @@
 <template>
   <v-container
     fluid
-    fill-height
+    class="height-100 bg-login"
   >
-    <v-row class="mb-8">
+    <v-row class="mb-12">
+      <v-col
+        md="12"
+        lg="8"
+        xl="6"
+        offset-lg="2"
+        offset-xl="3"
+        class="d-flex align-items-center"
+      >
+        <img
+          :src="require('@/assets/logo-opacity.png')"
+          alt=""
+          srcset=""
+        >
+      </v-col>
+    </v-row>
+    <v-row
+      class="mb-8"
+    >
       <v-col
         md="6"
-        offset-md="3"
         lg="4"
-        offset-lg="4"
+        xl="3"
+        offset-lg="2"
+        offset-xl="3"
+        class="white--text"
       >
-        <v-card class="elevation-3">
+        <h2 class="display-1">
+          打破枷锁，链接一切
+        </h2>
+        <h1 class="display-3 my-6 font-weight-bold">
+          义数订货，新品发布
+        </h1>
+        <h2 class="mb-8 display-1">
+          打造企业全渠道营销+管理互动平台
+        </h2>
+        <img
+          :src="require('@/assets/img-login.png')"
+          alt=""
+          class="width-100"
+          srcset=""
+        >
+      </v-col>
+      <v-col
+        md="6"
+        lg="3"
+        xl="2"
+        offset-lg="1"
+      >
+        <v-card class="elevation-3 ml-3">
           <v-card-title class="display-1 grey lighten-3 pb-4">
             欢迎登录管理后台
           </v-card-title>
@@ -188,3 +230,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.bg-login {
+  background-image: url("~@/assets/bg-login.jpg");
+  background-image: no-repeat;
+  background-size: cover;
+}
+</style>

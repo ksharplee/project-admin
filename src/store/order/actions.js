@@ -9,6 +9,7 @@ export default {
       try {
         const res = await axios.post('/g/get_goods_list.html', R.mergeRight({
           pageSize: process.env.VUE_APP_PAGESIZE,
+          priceStatus: context.rootState.user.priceStatus,
           timeLimit: context.state.productListForSelect.data.timeLimit,
           p: context.state.productListForSelect.data.p,
         }, payload));

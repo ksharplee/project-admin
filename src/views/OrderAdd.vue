@@ -837,7 +837,7 @@ export default {
         item.buNumber = 1;
         item.memo = '';
         item.priceOld = item.price;
-        item.price = item.byPrice.toFixed(2);
+        item.price = (+item.byPrice).toFixed(2);
         item.buUnitId = item.unitId;
         item.units = R.prop(
           'units',

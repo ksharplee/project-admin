@@ -452,6 +452,30 @@
             >
               <div class="input-group">
                 <div class="input-group-prepend">
+                  <span class="input-group-text">设为直播商品</span>
+                </div>
+                <div class="input-group-control">
+                  <v-select
+                    v-model="product.isLive"
+                    :items="isLiveOptions"
+                    placeholder="是否设为直播商品"
+                    dense
+                    single-line
+                    hide-details
+                    outlined
+                    clearable
+                    no-data-text="暂无数据"
+                  />
+                </div>
+              </div>
+            </v-col>
+            <v-col
+              cols="12"
+              md="6"
+              xl="4"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
                   <span class="input-group-text">打包销售</span>
                 </div>
                 <div class="input-group-control">
@@ -1297,10 +1321,21 @@ export default {
       searchBrand: '',
       goodHasCode: false,
       cateName: '',
+      isLiveOptions: [
+        {
+          value: '0',
+          text: '否',
+        },
+        {
+          value: '3',
+          text: '是',
+        },
+      ],
       product: {
         containSpec: '0',
         zeroInventory: false,
         goodHasCode: false,
+        isLive: '0',
         units: [],
         attr: [],
         unitId: '',

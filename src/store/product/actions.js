@@ -412,4 +412,17 @@ export default {
       return Promise.reject(new Error('您没有该操作的权限，请联系管理员'));
     }
   },
+  // 编辑商品标签
+  async setProductLiveAsync(context, payload) {
+    try {
+      const res = await axios.post('/g/liveGoods.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getProductListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

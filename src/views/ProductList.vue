@@ -354,6 +354,34 @@
                     />{{ config.text }}
                   </v-list-item-title>
                 </v-list-item>
+                <v-list-item
+                  v-if="item.isLive === '1'"
+                  @click="configProduct(3, item.id, '3')"
+                >
+                  <v-list-item-title>
+                    <v-icon
+                      class="mr-1"
+                      small
+                      style="position:relative;top:-1px"
+                    >
+                      mdi-arrow-up-circle
+                    </v-icon>直播提交
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item
+                  v-if="item.isLive === '3'"
+                  @click="configProduct(4, item.id,'1')"
+                >
+                  <v-list-item-title>
+                    <v-icon
+                      class="mr-1"
+                      small
+                      style="position:relative;top:-1px"
+                    >
+                      mdi-arrow-down-circle
+                    </v-icon>直播撤回
+                  </v-list-item-title>
+                </v-list-item>
               </v-list>
             </v-menu>
           </template>
@@ -412,6 +440,33 @@
           <v-btn
             color="secondary"
             @click="dialogDelete = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="dialogLive"
+      max-width="350"
+    >
+      <v-card>
+        <v-card-title class="title grey lighten-3 pa-4">
+          确定将此商品{{ toLiveOperate === '3' ? '提交' : '撤回' }}直播吗?
+        </v-card-title>
+        <v-card-actions>
+          <div class="flex-grow-1" />
+          <v-btn
+            color="primary"
+            :loading="living"
+            :disabled="living"
+            @click="liveProduct"
+          >
+            提交
+          </v-btn>
+          <v-btn
+            color="secondary"
+            @click="dialogLive = false"
           >
             取消
           </v-btn>
@@ -1245,6 +1300,10 @@ export default {
       isOrder: [],
       pageEnter: 1,
       setttingLabel: false,
+      dialogLive: false,
+      living: false,
+      toLiveProduct: '',
+      toLiveOperate: '',
     };
   },
   computed: {
@@ -1327,14 +1386,33 @@ export default {
       'deleteProductAsync',
       'operateProductAsync',
       'setProductLabelAsync',
+      'setProductLiveAsync',
     ]),
     openDialogLabel() {
-      this.isNew = R.pluck('id', R.filter(R.propEq('isNew', '1'), this.selectedProducts));
-      this.isPromotion = R.pluck('id', R.filter(R.propEq('isPromotion', '1'), this.selectedProducts));
-      this.isRecommend = R.pluck('id', R.filter(R.propEq('isRecommend', '1'), this.selectedProducts));
-      this.isHot = R.pluck('id', R.filter(R.propEq('isHot', '1'), this.selectedProducts));
-      this.isSpot = R.pluck('id', R.filter(R.propEq('isSpot', '1'), this.selectedProducts));
-      this.isOrder = R.pluck('id', R.filter(R.propEq('isOrder', '1'), this.selectedProducts));
+      this.isNew = R.pluck(
+        'id',
+        R.filter(R.propEq('isNew', '1'), this.selectedProducts)
+      );
+      this.isPromotion = R.pluck(
+        'id',
+        R.filter(R.propEq('isPromotion', '1'), this.selectedProducts)
+      );
+      this.isRecommend = R.pluck(
+        'id',
+        R.filter(R.propEq('isRecommend', '1'), this.selectedProducts)
+      );
+      this.isHot = R.pluck(
+        'id',
+        R.filter(R.propEq('isHot', '1'), this.selectedProducts)
+      );
+      this.isSpot = R.pluck(
+        'id',
+        R.filter(R.propEq('isSpot', '1'), this.selectedProducts)
+      );
+      this.isOrder = R.pluck(
+        'id',
+        R.filter(R.propEq('isOrder', '1'), this.selectedProducts)
+      );
       this.dialogLabel = true;
     },
     changePaginationDirectly() {
@@ -1372,14 +1450,49 @@ export default {
       this.currentStatus = item.text;
       this.getProductList({ dStatus: item.value });
     },
-    configProduct(i, id) {
-      if (i === 0) {
-        this.$router.push({ name: 'product_detail', params: { id } });
-      } else if (i === 1) {
-        this.$router.push({ name: 'product_edit', params: { id } });
-      } else {
-        this.dialogDelete = true;
-        this.toDeleteProducts = [id];
+    liveProduct() {
+      this.living = true;
+      this.setProductLiveAsync({
+        id: this.toLiveProduct,
+        operate: this.toLiveOperate,
+      }).then(() => {
+        this.$store.commit('TOGGLE_SNACKBAR', {
+          type: 'success',
+          text: `恭喜，${this.toLiveOperate === '3' ? '提交' : '撤回'}成功!`,
+        });
+      })
+        .catch((err) => {
+          this.checkErr(err);
+        })
+        .finally(() => {
+          this.living = false;
+          this.dialogLive = false;
+        });
+    },
+    configProduct(i, id, toLive) {
+      switch (i) {
+        case 0:
+          this.$router.push({ name: 'product_detail', params: { id } });
+          break;
+        case 1:
+          this.$router.push({ name: 'product_edit', params: { id } });
+          break;
+        case 2:
+          this.dialogDelete = true;
+          this.toDeleteProducts = [id];
+          break;
+        case 3:
+          this.dialogLive = true;
+          this.toLiveProduct = id;
+          this.toLiveOperate = toLive;
+          break;
+        case 4:
+          this.dialogLive = true;
+          this.toLiveProduct = id;
+          this.toLiveOperate = toLive;
+          break;
+        default:
+          break;
       }
     },
     reverseSelectedProducts() {
@@ -1538,22 +1651,30 @@ export default {
       if (this.notOrder.length) {
         promises.push(this.cancelLabelFromOrder());
       }
-      Promise.all(promises).then(() => {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'success',
-          text: '恭喜，设置标签成功!',
-        });
-        this.getProductListAsync(this.search).then(() => {
-          this.dialogLabel = false;
-          this.selectedProducts = R.filter(item => R.includes(item.id, tempIds), this.productList.data.items);
-        }).catch((err) => {
+      Promise.all(promises)
+        .then(() => {
+          this.$store.commit('TOGGLE_SNACKBAR', {
+            type: 'success',
+            text: '恭喜，设置标签成功!',
+          });
+          this.getProductListAsync(this.search)
+            .then(() => {
+              this.dialogLabel = false;
+              this.selectedProducts = R.filter(
+                item => R.includes(item.id, tempIds),
+                this.productList.data.items
+              );
+            })
+            .catch((err) => {
+              this.checkErr(err, 'setProductLabel');
+            })
+            .finally(() => {
+              this.setttingLabel = false;
+            });
+        })
+        .catch((err) => {
           this.checkErr(err, 'setProductLabel');
-        }).finally(() => {
-          this.setttingLabel = false;
         });
-      }).catch((err) => {
-        this.checkErr(err, 'setProductLabel');
-      });
       // const params = {
       //   index: i + 1,
       //   operate: isSet ? '1' : '2',
