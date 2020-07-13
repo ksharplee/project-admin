@@ -199,7 +199,7 @@
                       clearable
                       hide-details
                       dense
-                      @click:clear="dnames = '';getProductList()"
+                      @click:clear="dnames = '';getProductList({p: '1'})"
                     />
                   </div>
                   <div class="input-group-append">
@@ -207,7 +207,7 @@
                       color="blue-grey lighten-4 px-0"
                       depressed
                       x-small
-                      @click="getProductList({ dnames })"
+                      @click="getProductList({ dnames, p: '1' })"
                     >
                       <v-icon color="blue-grey darken-2">
                         mdi-magnify mdi-18px
@@ -296,6 +296,9 @@
           <template v-slot:item.price="{ item }">
             {{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}
           </template>
+          <template v-slot:item.isLive="{ item }">
+            {{ item.isLive === '4' ? '直播中' : item.isLive === '3' ? '审核中' : item.isLive === '2' ? '已驳回' : '未提交' }}
+          </template>
           <template v-slot:item.image="{ item }">
             <div class="py-3">
               <v-img
@@ -355,7 +358,7 @@
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item
-                  v-if="item.isLive === '1'"
+                  v-if="+item.isLive < 3"
                   @click="configProduct(3, item.id, '3')"
                 >
                   <v-list-item-title>
@@ -369,7 +372,7 @@
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item
-                  v-if="item.isLive === '3'"
+                  v-if="+item.isLive >= 3"
                   @click="configProduct(4, item.id,'1')"
                 >
                   <v-list-item-title>
@@ -1202,6 +1205,12 @@ export default {
           sortable: false,
         },
         {
+          text: '直播状态',
+          value: 'isLive',
+          align: 'center',
+          sortable: false,
+        },
+        {
           text: '上架时间',
           value: 'shelfTime',
           align: 'center',
@@ -1378,6 +1387,7 @@ export default {
       .finally(() => {
         this.loadingCategory = false;
       });
+    // this.getOnlineCate();
   },
   methods: {
     ...mapActions('product', [
@@ -1387,6 +1397,7 @@ export default {
       'operateProductAsync',
       'setProductLabelAsync',
       'setProductLiveAsync',
+      'getOnlineCateAsync',
     ]),
     openDialogLabel() {
       this.isNew = R.pluck(
@@ -1437,7 +1448,7 @@ export default {
     },
     clearAdvancedSearch() {
       this.searchStatus = false;
-      this.getProductList();
+      this.getProductList({ p: '1' });
     },
     selectProductType(v) {
       if (v) {
@@ -1448,7 +1459,7 @@ export default {
     },
     searchProductByStatus(item) {
       this.currentStatus = item.text;
-      this.getProductList({ dStatus: item.value });
+      this.getProductList({ dStatus: item.value, p: '1' });
     },
     liveProduct() {
       this.living = true;
@@ -1505,6 +1516,7 @@ export default {
       this.categorySelected = arr;
       this.getProductList({
         categoryId: R.prop('id', R.head(this.categorySelected)),
+        p: '1',
       });
       this.showCategory = false;
     },
@@ -1773,6 +1785,11 @@ export default {
         index: 6,
         operate: '2',
         id: this.notOrder,
+      });
+    },
+    getOnlineCate() {
+      this.getOnlineCateAsync().catch((err) => {
+        this.checkErr(err, 'getOnlineCate');
       });
     },
   },

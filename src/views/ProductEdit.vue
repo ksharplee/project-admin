@@ -670,6 +670,9 @@
                     <th class="text-center">
                       条形码
                     </th>
+                    <th class="text-center">
+                      是否显示
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -742,11 +745,24 @@
                         dense
                       />
                     </td>
+                    <td class="py-3">
+                      <v-select
+                        v-model="item.isShow"
+                        :items="specIsShow"
+                        placeholder="请选择是否显示此规格商品"
+                        dense
+                        single-line
+                        hide-details
+                        outlined
+                        clearable
+                        no-data-text="暂无数据"
+                      />
+                    </td>
                   </tr>
                 </tbody>
                 <tfoot>
                   <tr style="background-color:#fafafa">
-                    <td colspan="4" />
+                    <td colspan="5" />
                     <td
                       colspan="2"
                     >
@@ -835,6 +851,24 @@
                     @update:src="img.image = $event"
                     @update:delete="img.image = ''"
                   />
+                  <div class="d-flex justify-center pt-2">
+                    <v-btn
+                      icon
+                      :disabled="!i"
+                      color="gray"
+                      @click="changeImgIndex(i, 'left')"
+                    >
+                      <v-icon>mdi-arrow-left-bold-circle</v-icon>
+                    </v-btn>
+                    <v-btn
+                      icon
+                      color="gray"
+                      :disabled="i === 5"
+                      @click="changeImgIndex(i, 'right')"
+                    >
+                      <v-icon>mdi-arrow-right-bold-circle</v-icon>
+                    </v-btn>
+                  </div>
                 </v-col>
               </v-row>
             </v-card-text>
@@ -1081,6 +1115,16 @@ export default {
         genre: '1',
       },
       goodHasCode: false,
+      specIsShow: [
+        {
+          value: '1',
+          text: '是',
+        },
+        {
+          value: '2',
+          text: '否',
+        },
+      ],
       product: {
         containSpec: '0',
         zeroInventory: false,
@@ -1385,6 +1429,10 @@ export default {
         .finally(() => {
           this.$store.commit('END_LOADING');
         });
+    },
+    // 修改图片顺序
+    changeImgIndex(i, direction) {
+      this.$set(this.product, 'images', R.move(i, direction === 'right' ? i + 1 : i - 1, this.product.images));
     },
   },
 };

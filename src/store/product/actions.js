@@ -425,4 +425,17 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 直播商品分类
+  async getOnlineCateAsync(context, payload) {
+    try {
+      const res = await axios.post('/g/get_online_cate.html', payload);
+      if (res.data.status === 1) {
+        context.commit('SET_ONLINE_CATE', res.data.data);
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

@@ -14,6 +14,12 @@ export default {
       items: [],
     },
   },
+  onlineCate: {
+    status: 0,
+    data: {
+      items: [],
+    },
+  },
   productBrand: {
     status: 0,
     data: {

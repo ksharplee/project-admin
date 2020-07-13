@@ -160,7 +160,7 @@ export default {
                 that.dialog = false;
               });
           },
-          error(err) {
+          error() {
             that.$store.commit('TOGGLE_SNACKBAR', {
               type: 'error',
               text: '请上传图片文件',

@@ -3,6 +3,7 @@ import {
   SET_PRODUCT_BRAND,
   SET_PRODUCT_UNITS,
   SET_PRODUCT_LIST,
+  SET_ONLINE_CATE,
 } from '../mutation-types';
 
 export default {
@@ -21,5 +22,9 @@ export default {
   [SET_PRODUCT_UNITS](state, payload) {
     state.productUnits.data = payload;
     state.productUnits.status = 1;
+  },
+  [SET_ONLINE_CATE](state, payload) {
+    state.onlineCate.data = payload;
+    state.onlineCate.status = 1;
   },
 };

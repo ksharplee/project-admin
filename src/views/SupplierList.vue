@@ -125,7 +125,7 @@
                         small
                       >
                         mdi-cloud-search
-                      </v-icon>查看详情
+                      </v-icon>详情
                     </v-list-item-title>
                   </v-list-item>
                   <!-- <v-list-item
@@ -236,28 +236,30 @@
     </v-dialog>
     <v-dialog
       v-model="dialogView"
-      max-width="600"
+      max-width="1000"
     >
       <v-card>
         <v-card-title class="title grey lighten-3 pa-4">
           供应商详情
         </v-card-title>
         <v-card-text class="pt-4 black--text body-1">
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              供应商名称：
-            </v-col>
+          <v-row>
             <v-col cols="6">
-              {{ toViewSupplier.dnames }}
-            </v-col>
-          </v-row>
-          <v-row
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  供应商名称：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.dnames }}
+                </v-col>
+              </v-row>
+              <!-- <v-row
             align="center"
             class="mb-3"
           >
@@ -267,109 +269,309 @@
             >
               登录账号：
             </v-col>
-            <v-col cols="6">
+            <v-col cols="8">
               {{ toViewSupplier.account }}
             </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              联系人：
+          </v-row> -->
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  负责人联系电话：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.mobile }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  法人：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.legalPerson }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  主营商品：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.mainGoods }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  微信账号：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.weChat }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  成立时间：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.creationTime }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  年产值：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.annualOutputValue }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  品质：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.quality === '1' ? '优' : toViewSupplier.quality === '2' ? '良' : '差' }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  经营面积：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.businessArea }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  目前销售渠道：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.salesChannels }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  是否启用：
+                </v-col>
+                <v-col
+                  cols="6"
+                  :class="toViewSupplier.locked === '0' ? 'success--text' : 'error--text'"
+                >
+                  {{ toViewSupplier.locked === '0' ? '启用' : '停用' }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  描述：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.desce }}
+                </v-col>
+              </v-row>
             </v-col>
             <v-col cols="6">
-              {{ toViewSupplier.contacter }}
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              联系电话：
-            </v-col>
-            <v-col cols="6">
-              {{ toViewSupplier.mobile }}
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              详细地址：
-            </v-col>
-            <v-col cols="6">
-              {{ toViewSupplier.addressPart }}
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              微信账号：
-            </v-col>
-            <v-col cols="6">
-              {{ toViewSupplier.weChat }}
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              状态：
-            </v-col>
-            <v-col
-              cols="6"
-              :class="toViewSupplier.locked === '0' ? 'success--text' : 'error--text'"
-            >
-              {{ toViewSupplier.locked === '0' ? '启用' : '停用' }}
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              QQ号码：
-            </v-col>
-            <v-col cols="6">
-              {{ toViewSupplier.qq }}
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right grey--text"
-            >
-              描述：
-            </v-col>
-            <v-col cols="6">
-              {{ toViewSupplier.desce }}
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  销售负责人：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.contacter }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  详细地址：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.addressPart }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  法人联系电话：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.legalPersonPhone }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  同类价格情况：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.similarPrice }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  QQ号码：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.qq }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  员工人数：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.employeesNum }}人
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  专利情况：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.patentInformation }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  生产设备情况：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.productionEquipment }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  包装：
+                </v-col>
+                <v-col cols="8">
+                  {{ toViewSupplier.packing === '1' ? '新颖' : toViewSupplier.packing === '2' ? '常规' : '独有' }}
+                </v-col>
+              </v-row>
+              <v-row
+                align="center"
+                class="mb-3"
+              >
+                <v-col
+                  cols="4"
+                  class="text-right grey--text"
+                >
+                  经营性质：
+                </v-col>
+                <v-col cols="6">
+                  {{ toViewSupplier.businessNature === '1' ? '生产' : '贸易' }}
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-card-text>

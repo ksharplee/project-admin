@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex align-center">
+    <div class="title d-flex align-center pb-2">
       <span class="primary--text">{{ cate }}</span>的规格列表
       <v-btn
         color="primary"
@@ -13,7 +13,6 @@
         </v-icon>添加规格
       </v-btn>
     </div>
-
     <v-card>
       <v-data-table
         :headers="headers"
