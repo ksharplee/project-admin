@@ -51,15 +51,15 @@ export default new Router({
             id: '76',
           },
         },
-        {
-          path: 'system/order-sequence',
-          name: 'order_sequence',
-          component: () => import(/* webpackChunkName: "group-system" */ './views/SystemOrderSequenceList.vue'),
-          meta: {
-            required: true,
-            id: '70',
-          },
-        },
+        // {
+        //   path: 'system/order-sequence',
+        //   name: 'order_sequence',
+        //   component: () => import(/* webpackChunkName: "group-system" */ './views/SystemOrderSequenceList.vue'),
+        //   meta: {
+        //     required: true,
+        //     id: '70',
+        //   },
+        // },
         {
           path: 'system/employee-list',
           name: 'employee_list',
