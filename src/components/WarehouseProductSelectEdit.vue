@@ -30,7 +30,7 @@
               <div class="title mr-4">
                 选择商品
               </div>
-              <v-menu
+              <!-- <v-menu
                 v-model="showCategory"
                 offset-y
                 :close-on-content-click="false"
@@ -101,22 +101,22 @@
                     </v-list-item-title>
                   </v-list-item>
                 </v-list>
-              </v-menu>
+              </v-menu> -->
               <div
                 class="input-group ml-4"
                 style="width:300px"
               >
                 <div class="input-group-control">
                   <v-text-field
-                    v-model="search.dnames"
-                    placeholder="请输入商品名称"
+                    v-model="search.searchStr"
+                    placeholder="请输入商品名称/货号"
                     outlined
                     class="white"
                     single-line
                     clearable
                     hide-details
                     dense
-                    @click:clear="$set(search, 'dnames', '');getProductList()"
+                    @click:clear="$set(search, 'searchStr', '');getProductList({p:1})"
                   />
                 </div>
                 <div class="input-group-append">
@@ -124,7 +124,7 @@
                     color="blue-grey lighten-4 px-0"
                     depressed
                     x-small
-                    @click="getProductList({ dnames: search.dnames })"
+                    @click="getProductList({p:1})"
                   >
                     <v-icon
                       color="blue-grey darken-2"
@@ -186,7 +186,7 @@
             <v-divider />
             <div class="d-flex align-center">
               <div class="title">
-                入库商品总数：{{ selectedProductsTotal }}
+                {{ $route.name.includes('outstock') ? '出库' : '入库' }}商品总数：{{ selectedProductsTotal }}
                 <span class="ml-4">
                   总金额： <span class="error--text">￥<span class="display-1">{{ selectedProductsAmountTotal }}</span></span>
                 </span>
@@ -308,14 +308,14 @@ export default {
           sortable: false,
         },
         {
-          text: '入库数量',
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量'`,
           value: 'buNumber',
           align: 'center',
           sortable: false,
           width: '120px',
         },
         {
-          text: '入库价格',
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格'`,
           value: 'price',
           align: 'center',
           sortable: false,
@@ -416,7 +416,7 @@ export default {
       }
     },
     changePagination() {
-      this.getProductList(this.search);
+      this.getProductList();
     },
     setProductList() {
       R.map((item) => {
@@ -430,10 +430,12 @@ export default {
       this.SET_WAREHOUSE_INSTOCK_LIST(this.productListForSelect);
       this.selectedProducts = R.filter(item => R.includes(item.goodDetailId, this.selectedProductsIds), this.productListForSelect.data.items);
     },
-    getProductList() {
+    getProductList(params) {
       this.loadingDataItems = true;
       this.getProductListForSelectAsync(
-        { buyerId: '0', buyerUid: '0', ...this.search },
+        {
+          buyerId: '0', buyerUid: '0', ...this.search, ...params,
+        },
       )
         .catch((err) => {
           this.checkErr(err);
@@ -445,12 +447,12 @@ export default {
     searchProductByStatus(item) {
       this.currentStatus = item.text;
       this.$set(this.search, 'dStatus', item.value);
-      this.getProductList();
+      this.getProductList({ p: 1 });
     },
     getActiveCategory(arr) {
       this.categorySelected = arr;
       this.$set(this.search, 'categoryId', R.prop('id', R.head(this.categorySelected)));
-      this.getProductList();
+      this.getProductList({ p: 1 });
       this.showCategory = false;
     },
   },

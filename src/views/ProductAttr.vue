@@ -25,6 +25,8 @@
         fixed-header
         class="text-center"
         :items-per-page="20"
+        :page.sync="page"
+        @page-count="pageCount = $event"
       >
         <template v-slot:body="{ items }">
           <tbody>
@@ -72,6 +74,16 @@
           </tbody>
         </template>
       </v-data-table>
+      <v-divider />
+      <div
+        v-if="pageCount > 1"
+        class="text-center pt-3"
+      >
+        <v-pagination
+          v-model="page"
+          :length="pageCount"
+        />
+      </div>
     </v-card>
     <v-dialog
       v-model="dialogAdd"
@@ -140,7 +152,6 @@
               </v-col>
             </v-row>
             <template v-if="attrToAdd.genre !== '1'">
-
               <v-row>
                 <v-col
                   md="3"
@@ -282,7 +293,6 @@
               </v-col>
             </v-row>
             <template v-if="attrToEdit.genre !== '1'">
-
               <v-row>
                 <v-col
                   md="3"
@@ -423,6 +433,8 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      pageCount: 0,
       loadingDataItems: false,
       dialogAdd: false,
       dialogEdit: false,

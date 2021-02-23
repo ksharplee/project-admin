@@ -19,7 +19,6 @@
           loading-text="加载中..."
           no-data-text="暂无数据"
           hide-default-footer
-          fixed-header
           show-select
           :items-per-page="20"
         >
@@ -117,7 +116,7 @@
                     clearable
                     hide-details
                     dense
-                    @click:clear="$set(search, 'searchStr', '');getProductList({p: 1})"
+                    @click:clear="$set(search, 'searchStr', '');getProductList({p:1})"
                   />
                 </div>
                 <div class="input-group-append">
@@ -172,12 +171,9 @@
               hide-details
             />
           </template>
-          <template v-slot:item.buyPrice="{ item }">
-            {{ item.price }}
-          </template>
           <template v-slot:item.price="{ item }">
             <v-text-field
-              v-model="item.price"
+              v-model="item.costPrice"
               dense
               outlined
               hide-details
@@ -250,14 +246,20 @@
 
 <script>
 import * as R from 'ramda';
-import { mapActions, mapState, mapGetters } from 'vuex';
+import {
+  mapActions, mapState, mapGetters, mapMutations,
+} from 'vuex';
 
 export default {
-  name: 'WarehouseProductSelect',
+  name: 'WarehouseProductSelectEdit',
   props: {
     show: {
       type: Boolean,
       default: false,
+    },
+    selected: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
@@ -291,26 +293,20 @@ export default {
           sortable: false,
         },
         {
-          text: '销售价',
-          value: 'buyPrice',
-          align: 'center',
-          sortable: false,
-        },
-        {
           text: '库存数量',
           value: 'stockNumber',
           align: 'center',
           sortable: false,
         },
         {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量'`,
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量`,
           value: 'buNumber',
           align: 'center',
           sortable: false,
           width: '120px',
         },
         {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格'`,
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格`,
           value: 'price',
           align: 'center',
           sortable: false,
@@ -344,9 +340,9 @@ export default {
     };
   },
   computed: {
-    ...mapState('order', ['productListForSelect']),
     ...mapState('product', ['productCategory']),
     ...mapGetters('product', ['productCategoryGetter']),
+    ...mapState('order', ['productListForSelect']),
     page: {
       set(value) {
         this.productListForSelect.data.p = value;
@@ -366,16 +362,26 @@ export default {
         this.productListForSelect.data.totalItem / process.env.VUE_APP_PAGESIZE
       );
     },
+    selectedProductsIds() {
+      return R.pluck('goodDetailId', this.selected);
+    },
     selectedProductsTotal() {
       return R.sum(R.map(item => (R.has('buNumber', item) ? +item.buNumber : 0), this.selectedProducts)).toFixed(0);
     },
     selectedProductsAmountTotal() {
       return R.sum(R.map((item) => {
-        if (item.buNumber && item.buNumber > 0 && item.price && item.price > 0) {
-          return item.buNumber * item.price;
+        if (item.buNumber && item.buNumber > 0 && item.costPrice && item.costPrice > 0) {
+          return item.buNumber * item.costPrice;
         }
         return 0;
       }, this.selectedProducts)).toFixed(2);
+    },
+  },
+  watch: {
+    show(newValue) {
+      if (newValue) {
+        this.setProductList();
+      }
     },
   },
   created() {
@@ -386,6 +392,7 @@ export default {
   },
   methods: {
     ...mapActions('order', ['getProductListForSelectAsync']),
+    ...mapMutations('warehouse', ['SET_WAREHOUSE_INSTOCK_LIST']),
     ...mapActions('product', ['getCateListAsync']),
     changePaginationDirectly() {
       if (R.is(Number, this.pageEnter)) {
@@ -402,12 +409,24 @@ export default {
     changePagination() {
       this.getProductList();
     },
+    setProductList() {
+      R.map((item) => {
+        const product = R.find(R.propEq('goodDetailId', item.goodDetailId), this.selected);
+        if (product) {
+          item.price = product.costPrice;
+          item.buNumber = product.buNumber;
+        }
+        return item;
+      }, this.productListForSelect.data.items);
+      this.SET_WAREHOUSE_INSTOCK_LIST(this.productListForSelect);
+      this.selectedProducts = R.filter(item => R.includes(item.goodDetailId, this.selectedProductsIds), this.productListForSelect.data.items);
+    },
     getProductList(params) {
       this.loadingDataItems = true;
       this.getProductListForSelectAsync(
         {
           buyerId: '0', buyerUid: '0', ...this.search, ...params,
-        }
+        },
       )
         .catch((err) => {
           this.checkErr(err);
@@ -427,14 +446,6 @@ export default {
       this.getProductList({ p: 1 });
       this.showCategory = false;
     },
-    // addToSelectedProducts(v, item) {
-    //   if ((item.buNumber && item.buNumber !== '0') && !R.find(R.propEq('goodDetailId', item.goodDetailId), this.selectedProducts)) {
-    //     this.selectedProducts = R.append(item, this.selectedProducts);
-    //   }
-    //   if ((!item.buNumber || item.buNumber === '0') && R.find(R.propEq('goodDetailId', item.goodDetailId), this.selectedProducts)) {
-    //     this.selectedProducts = R.without([item], this.selectedProducts);
-    //   }
-    // },
   },
 };
 </script>

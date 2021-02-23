@@ -226,7 +226,7 @@
           </template>
           <template v-slot:item.price="{ item }">
             <v-text-field
-              v-model="item.price"
+              v-model="item.costPrice"
               :rules="priceRules"
               dense
               outlined
@@ -324,7 +324,7 @@
 import * as R from 'ramda';
 import { mapState, mapActions } from 'vuex';
 import WarehouseSingle from '@/components/WarehouseSingle.vue';
-import WarehouseProductSelect from '@/components/WarehouseProductSelect.vue';
+import WarehouseProductSelect from '@/components/WarehouseProductSelectInstock-jihuo.vue';
 import WarehouseInstockTypeSingle from '@/components/WarehouseInstockTypeSingle.vue';
 
 export default {
@@ -418,8 +418,8 @@ export default {
     },
     selectedProductsAmountTotal() {
       return R.sum(R.map((item) => {
-        if (item.buNumber && item.buNumber > 0 && item.price && item.price > 0) {
-          return item.buNumber * item.price;
+        if (item.buNumber && item.buNumber > 0 && item.costPrice && item.costPrice > 0) {
+          return item.buNumber * item.costPrice;
         }
         return 0;
       }, this.selectedProducts)).toFixed(2);
@@ -430,14 +430,14 @@ export default {
         buUnitId: item.unitId,
         packeNum: 1,
         buNumber: item.buNumber,
-        price: item.price,
+        price: item.costPrice,
       }), this.selectedProducts);
     },
     allDetailNumberEntered() {
       return R.all(item => !!item.buNumber, this.selectedProducts);
     },
     allDetailPriceEntered() {
-      return R.all((item => !!item.price), this.selectedProducts);
+      return R.all((item => !!item.costPrice), this.selectedProducts);
     },
   },
   created() {

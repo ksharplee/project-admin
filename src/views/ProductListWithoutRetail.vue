@@ -250,11 +250,6 @@
             </div>
             <v-divider />
           </template>
-          <template v-slot:item.isRetail="{ item }">
-            <span :class="item.isRetail === '4' ? 'success-text' : item.isRetail === '3' ? 'error--text' : 'grey--text'">
-              {{ item.isRetail === '4' ? '零售中' : item.isRetail === '3' ? '审核中' : item.isRetail === '2' ? '已驳回' : '未提交' }}
-            </span>
-          </template>
           <template v-slot:item.dnames="{ item }">
             <div class="text-left py-3">
               {{ item.dnames }}
@@ -391,34 +386,6 @@
                   </v-list-item-title>
                 </v-list-item>
                 <v-list-item
-                  v-if="+item.isRetail < 3"
-                  @click="retailGoods = item;dialogRetail = true;getProductSpec()"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-arrow-up-drop-circle
-                    </v-icon>零售提交
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                  v-if="+item.isRetail >= 3"
-                  @click="retailGoods = item;dialogUnretail = true;"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-arrow-down-drop-circle
-                    </v-icon>零售撤回
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
                   v-if="+item.isLive < 3"
                   @click="configProduct(3, item.id, '3')"
                 >
@@ -531,33 +498,6 @@
           <v-btn
             color="secondary"
             @click="dialogLive = false"
-          >
-            取消
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="dialogUnretail"
-      max-width="350"
-    >
-      <v-card>
-        <v-card-title class="title grey lighten-3 pa-4">
-          确定将此商品从零售撤回吗?
-        </v-card-title>
-        <v-card-actions>
-          <div class="flex-grow-1" />
-          <v-btn
-            color="primary"
-            :loading="setting"
-            :disabled="setting"
-            @click="setProductRetail('1')"
-          >
-            提交
-          </v-btn>
-          <v-btn
-            color="secondary"
-            @click="dialogUnretail = false"
           >
             取消
           </v-btn>
@@ -851,109 +791,6 @@
             </v-row>
           </v-container>
         </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="dialogRetail"
-      :loading="loadingSpec"
-      max-width="850"
-    >
-      <v-card>
-        <v-card-title class="title grey lighten-3 pa-4">
-          设置商品零售价格
-        </v-card-title>
-        <v-form
-          ref="formSpec"
-          v-model="validSpec"
-          class="pa-4"
-        >
-          <v-simple-table class="text-center">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th
-                    class="text-center"
-                    style="width:80px"
-                  >
-                    图片
-                  </th>
-                  <th class="text-center">
-                    规格
-                  </th>
-                  <th class="text-center">
-                    原价
-                  </th>
-                  <th
-                    class="text-center"
-                    style="width:200px"
-                  >
-                    零售价格
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="spec in retailSpec"
-                  :key="spec.id"
-                >
-                  <td class="py-2">
-                    <v-img
-                      :src="spec.image ? `${spec.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
-                      aspect-ratio="1"
-                      class="grey lighten-1"
-                    >
-                      <template v-slot:placeholder>
-                        <v-row
-                          class="fill-height ma-0"
-                          align="center"
-                          justify="center"
-                        >
-                          <v-progress-circular
-                            indeterminate
-                            color="grey lighten-5"
-                          />
-                        </v-row>
-                      </template>
-                    </v-img>
-                  </td>
-                  <td>{{ spec.dnames }}</td>
-                  <td>{{ spec.price }}</td>
-                  <td>
-                    <v-text-field
-                      v-model="spec.retailPrice"
-                      :rules="priceRules"
-                      placeholder="请输入商品零售价"
-                      dense
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </v-form>
-        <v-divider />
-        <v-card-actions class="grey lighten-3">
-          <div class="flex-grow-1" />
-          <v-btn
-            color="primary"
-            :loading="setting"
-            :disabled="setting"
-            @click="setProductRetail('2')"
-          >
-            提交
-          </v-btn>
-          <v-btn
-            color="secondary"
-            @click="dialogRetail = false"
-          >
-            取消
-          </v-btn>
-        </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog
@@ -1355,10 +1192,6 @@ export default {
     return {
       validSpec: true,
       dialogQrcode: false,
-      dialogRetail: false,
-      dialogUnretail: false,
-      retailGoods: {},
-      retailSpec: [],
       loadingDataItems: false,
       loadingCategory: false,
       dialogDelete: false,
@@ -1466,12 +1299,6 @@ export default {
         {
           text: '直播状态',
           value: 'isLive',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '零售状态',
-          value: 'isRetail',
           align: 'center',
           sortable: false,
         },
@@ -1674,38 +1501,8 @@ export default {
       'setProductLabelAsync',
       'setProductLiveAsync',
       'getOnlineCateAsync',
-      'getProductSpecAsync',
       'setProductRetailAsync',
     ]),
-    setProductRetail(operate) {
-      if (operate === '2' && !this.$refs.formSpec.validate()) return;
-      this.setting = true;
-      this.setProductRetailAsync({
-        id: this.retailGoods.id,
-        operate,
-        detail: R.map(item => ({ goodId: item.goodId, goodDetailId: item.id, retailPrice: item.retailPrice }), this.retailSpec),
-      }).then(() => {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'success',
-          text: '恭喜，设置成功!',
-        });
-        this.dialogRetail = false;
-      }).catch((err) => {
-        this.checkErr(err, 'setProductRetail');
-      }).finally(() => {
-        this.setting = false;
-      });
-    },
-    getProductSpec() {
-      this.loadingSpec = true;
-      this.getProductSpecAsync({ id: this.retailGoods.id }).then((res) => {
-        this.retailSpec = res;
-      }).catch((err) => {
-        this.checkErr(err, 'getProductSpec');
-      }).finally(() => {
-        this.loadingSpec = false;
-      });
-    },
     openDialogLabel() {
       this.isNew = R.pluck(
         'id',

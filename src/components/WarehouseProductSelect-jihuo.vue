@@ -303,14 +303,14 @@ export default {
           sortable: false,
         },
         {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量'`,
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量`,
           value: 'buNumber',
           align: 'center',
           sortable: false,
           width: '120px',
         },
         {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格'`,
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格`,
           value: 'price',
           align: 'center',
           sortable: false,

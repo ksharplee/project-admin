@@ -48,8 +48,8 @@
       </v-col>
       <v-col
         md="6"
-        lg="3"
-        xl="2"
+        lg="4"
+        xl="3"
         offset-lg="1"
       >
         <v-card class="elevation-3 ml-3">

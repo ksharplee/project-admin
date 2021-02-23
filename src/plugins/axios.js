@@ -51,7 +51,12 @@ axios.interceptors.response.use(
     return res;
   },
   (error) => {
-    console.log(error);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(error);
+    }
+    if (error.message.includes('timeout')) {
+      error.message = '连接超时，请检查网络状况并刷新';
+    }
     return Promise.reject(error);
   },
 );

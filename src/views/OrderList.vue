@@ -239,6 +239,7 @@
             <v-menu
               offset-y
               left
+              open-on-hover
             >
               <template v-slot:activator="{ on }">
                 <v-icon

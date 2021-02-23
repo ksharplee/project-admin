@@ -7,8 +7,9 @@
       no-data-text="暂无数据"
       hide-default-footer
       fixed-header
-      :items-per-page="20"
+      disable-pagination
     >
+      <!-- :items-per-page="20" -->
       <template v-slot:top>
         <div
           class="text-left d-flex align-center mb-3"
@@ -106,6 +107,7 @@
               <v-menu
                 offset-y
                 left
+                open-on-hover
               >
                 <template v-slot:activator="{ on }">
                   <v-icon
@@ -169,7 +171,7 @@
           </tr>
         </tbody>
       </template>
-      <template v-slot:footer>
+      <!-- <template v-slot:footer>
         <v-divider />
         <div
           v-if="supplierList.status && supplierList.data.items.length"
@@ -199,7 +201,7 @@
             页
           </div>
         </div>
-      </template>
+      </template> -->
     </v-data-table>
     <supplier-single
       :edit="edit"

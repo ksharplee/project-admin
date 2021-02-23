@@ -48,6 +48,8 @@
             no-data-text="暂无数据"
             hide-default-footer
             :items-per-page="20"
+            :page.sync="page"
+            @page-count="pageCount = $event"
           >
             <template v-slot:item.goodDetailName="{ item }">
               {{ item.goodDetailName ? item.goodDetailName : '无' }}
@@ -213,6 +215,16 @@
               </v-container>
             </template>
           </v-data-table>
+          <v-divider />
+          <div
+            v-if="pageCount > 1"
+            class="text-center pt-3"
+          >
+            <v-pagination
+              v-model="page"
+              :length="pageCount"
+            />
+          </div>
         </v-card>
       </v-container>
       <v-card-actions class="grey lighten-4 py-3">
@@ -266,6 +278,8 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      pageCount: 0,
       dialogProduct: false,
       selectedProducts: [],
       selectedProductsUnits: [],

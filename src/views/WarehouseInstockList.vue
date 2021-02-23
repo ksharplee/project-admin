@@ -237,6 +237,7 @@
         <v-menu
           offset-y
           left
+          open-on-hover
         >
           <template v-slot:activator="{ on }">
             <v-icon
@@ -554,7 +555,7 @@ export default {
     },
     clearSearchConditions() {
       this.$set(this.search, 'searchStr', '');
-      this.getWarehouseIntockList(this.search);
+      this.getWarehouseIntockList({ p: 1, ...this.search });
     },
     getAllData() {
       this.$store.commit('START_LOADING');
@@ -570,17 +571,17 @@ export default {
     searchOrderByStatus(item) {
       this.currentStatus = item.text;
       this.$set(this.search, 'dStatus', item.value);
-      this.getWarehouseIntockList(this.search);
+      this.getWarehouseIntockList({ p: 1, ...this.search });
     },
     searchOrderByWarehouse(item) {
       this.currentWarehouse = item.dnames;
       this.$set(this.search, 'warehouseId', item.id);
-      this.getWarehouseIntockList(this.search);
+      this.getWarehouseIntockList({ p: 1, ...this.search });
     },
     searchOrderByType(item) {
       this.currentType = item.dnames;
       this.$set(this.search, 'inTypeId', item.id);
-      this.getWarehouseIntockList(this.search);
+      this.getWarehouseIntockList({ p: 1, ...this.search });
     },
     getWarehouseIntockList(params) {
       this.loadingDataItems = true;

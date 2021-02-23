@@ -16,6 +16,13 @@ export default new Router({
       component: Login,
     },
     {
+      path: '/print/:src&:dnames&:dno',
+      name: 'print',
+      component: () => import(/* webpackChunkName: "print" */ './views/Print.vue'),
+      props: true,
+      meta: {},
+    },
+    {
       path: '/',
       component: Home,
       children: [
@@ -51,15 +58,15 @@ export default new Router({
             id: '76',
           },
         },
-        // {
-        //   path: 'system/order-sequence',
-        //   name: 'order_sequence',
-        //   component: () => import(/* webpackChunkName: "group-system" */ './views/SystemOrderSequenceList.vue'),
-        //   meta: {
-        //     required: true,
-        //     id: '70',
-        //   },
-        // },
+        {
+          path: 'system/order-sequence',
+          name: 'order_sequence',
+          component: () => import(/* webpackChunkName: "group-system" */ './views/SystemOrderSequenceList.vue'),
+          meta: {
+            required: true,
+            id: '70',
+          },
+        },
         {
           path: 'system/employee-list',
           name: 'employee_list',
@@ -437,7 +444,9 @@ export default new Router({
           path: 'warehouse/instock-type-list',
           name: 'warehouse_instock_type_list',
           props: true,
-          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockTypeList.vue'),
+          component: () => import(
+            /* webpackChunkName: "group-warehouse" */ './views/WarehouseInstockTypeList.vue'
+          ),
           meta: {
             required: true,
             id: '364',
@@ -448,7 +457,9 @@ export default new Router({
           path: 'warehouse/outstock-type-list',
           name: 'warehouse_outstock_type_list',
           props: true,
-          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockTypeList.vue'),
+          component: () => import(
+            /* webpackChunkName: "group-warehouse" */ './views/WarehouseOutstockTypeList.vue'
+          ),
           meta: {
             required: true,
             id: '368',

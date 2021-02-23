@@ -124,11 +124,9 @@
               </div>
               <div class="input-group-control">
                 <v-btn
-                  :loading="loadingProductList"
-                  :disabled="loadingProductList"
                   color="primary"
                   depressed
-                  @click="loadProductListByWarehouseId"
+                  @click="dialogProductSelect = true"
                 >
                   <v-icon left>
                     mdi-plus
@@ -486,7 +484,7 @@ export default {
     },
     getAllData() {
       this.$store.commit('START_LOADING');
-      const promises = [this.getWarehouseOutstockTypeListAsync(), this.getWarehouseListAsync()];
+      const promises = [this.getWarehouseOutstockTypeListAsync(), this.getWarehouseListAsync(), this.getProductListForSelectAsync({ timeLimit: null, p: 1 })];
       Promise.all(promises).catch((err) => {
         this.checkErr(err, 'getAllData');
       }).finally(() => {

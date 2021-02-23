@@ -92,9 +92,9 @@
                     <span class="input-group-text">联系电话</span>
                   </div>
                   <div class="input-group-control">
+                    <!-- :rules="phoneRules" -->
                     <v-text-field
                       v-model="info.mobile"
-                      :rules="phoneRules"
                       type="number"
                       placeholder="请输入联系电话"
                       outlined
@@ -284,12 +284,45 @@
         :loading="submitting"
         :disabled="submitting"
         color="primary"
-        class="px-12 body-1 mr-2"
+        class="px-12 body-1 mb-6"
         @click="addOrEditBasicInfo"
       >
         提交
       </v-btn>
     </v-form>
+    <v-divider class="my-4" />
+    <v-container
+      fluid
+      class="grey lighten-5"
+    >
+      <v-row align="center">
+        <v-col
+          cols="auto"
+          class="mr-2"
+        >
+          默认折扣方式
+        </v-col>
+        <v-radio-group
+          :value="$store.state.user.priceStatus"
+          class="mt-0"
+          mandatory
+          row
+          hide-details
+          @change="setPriceStatus"
+        >
+          <v-radio
+            label="客户等级"
+            color="primary"
+            value="0"
+          />
+          <v-radio
+            label="价格区间"
+            color="primary"
+            value="1"
+          />
+        </v-radio-group>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -378,6 +411,7 @@ export default {
       'addOrEditBasicInfoAsync',
       'getAreaInfoAsync',
       'getAreaRegionInfoAsync',
+      'setPriceStatusAsync',
     ]),
     getBasicInfo() {
       this.$store.commit('START_LOADING');
@@ -463,6 +497,24 @@ export default {
         .finally(() => {
           this.loadingRegions = false;
         });
+    },
+    setPriceStatus(v) {
+      this.$store.commit('START_LOADING');
+      this.setPriceStatusAsync({ priceStatus: v }).then(() => {
+        this.priceStatus = v;
+        const item = JSON.parse(sessionStorage.getItem('user'));
+        item.priceStatus = v;
+        sessionStorage.setItem('user', JSON.stringify(item));
+        this.$store.commit('SET_USER', item);
+        this.$store.commit('TOGGLE_SNACKBAR', {
+          type: 'success',
+          text: '恭喜，设置成功!',
+        });
+      }).catch((err) => {
+        this.checkErr(err, 'setPriceStatus');
+      }).finally(() => {
+        this.$store.commit('END_LOADING');
+      });
     },
   },
 };

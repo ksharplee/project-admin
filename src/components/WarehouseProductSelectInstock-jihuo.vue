@@ -172,12 +172,9 @@
               hide-details
             />
           </template>
-          <template v-slot:item.buyPrice="{ item }">
-            {{ item.price }}
-          </template>
           <template v-slot:item.price="{ item }">
             <v-text-field
-              v-model="item.price"
+              v-model="item.costPrice"
               dense
               outlined
               hide-details
@@ -291,26 +288,20 @@ export default {
           sortable: false,
         },
         {
-          text: '销售价',
-          value: 'buyPrice',
-          align: 'center',
-          sortable: false,
-        },
-        {
           text: '库存数量',
           value: 'stockNumber',
           align: 'center',
           sortable: false,
         },
         {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量'`,
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量`,
           value: 'buNumber',
           align: 'center',
           sortable: false,
           width: '120px',
         },
         {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格'`,
+          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格`,
           value: 'price',
           align: 'center',
           sortable: false,
@@ -371,8 +362,8 @@ export default {
     },
     selectedProductsAmountTotal() {
       return R.sum(R.map((item) => {
-        if (item.buNumber && item.buNumber > 0 && item.price && item.price > 0) {
-          return item.buNumber * item.price;
+        if (item.buNumber && item.buNumber > 0 && item.costPrice && item.costPrice > 0) {
+          return item.buNumber * item.costPrice;
         }
         return 0;
       }, this.selectedProducts)).toFixed(2);

@@ -343,7 +343,14 @@
               no-data-text="暂无数据"
               hide-default-footer
               :items-per-page="20"
+              :page.sync="page"
+              @page-count="pageCount = $event"
             >
+              <template v-slot:item.goodName="{ item }">
+                <div class="text-left">
+                  {{ item.goodName }}
+                </div>
+              </template>
               <template v-slot:item.buUnitName="{ item }">
                 {{ item.buUnitId === item.unitId ? item.unitName : item.buUnitName }}
                 <div
@@ -429,6 +436,15 @@
               </v-card-title>
             </template>
           </v-card>
+          <div
+            v-if="pageCount > 1"
+            class="text-center pt-3"
+          >
+            <v-pagination
+              v-model="page"
+              :length="pageCount"
+            />
+          </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -654,6 +670,8 @@ export default {
   },
   data() {
     return {
+      page: 1,
+      pageCount: 0,
       dialogEdit: false,
       dialogCancel: false,
       canceling: false,
@@ -679,6 +697,7 @@ export default {
           value: 'goodName',
           align: 'center',
           sortable: false,
+          width: '400px',
         },
         {
           text: '商品货号',

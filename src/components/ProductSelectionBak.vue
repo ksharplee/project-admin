@@ -5,7 +5,7 @@
     max-width="1000"
     @click:outside="$emit('close-dialog')"
   >
-    <v-card>
+    <v-card :loading="loadingDataItems">
       <v-card-title class="title grey lighten-3 pa-4">
         选择商品
       </v-card-title>
@@ -83,11 +83,9 @@
             >
               <v-card outlined>
                 <v-data-table
-                  v-model="selectedFromList"
+                  v-model="selectedToAdd"
                   :headers="headers"
-                  :items="productListForSelect.data.items"
-                  :loading="loadingDataItems"
-                  loading-text="加载中..."
+                  :items="selectedProductsFilter(selectedProducts)"
                   item-key="goodDetailId"
                   no-data-text="暂无数据"
                   show-select
@@ -96,31 +94,11 @@
                   :items-per-page="20"
                   height="500"
                 >
-                  <template
-                    v-slot:header.data-table-select="{ on, props }"
-                  >
-                    <v-simple-checkbox
-                      :ripple="false"
-                      color="primary"
-                      v-bind="props"
-                      v-on="on"
-                    />
-                  </template>
-                  <template
-                    v-slot:item.data-table-select="{ isSelected, select, item }"
-                  >
-                    <v-simple-checkbox
-                      color="primary"
-                      :value="isSelected || existInSelectedIds(item.goodDetailId)"
-                      :ripple="false"
-                      @input="select($event)"
-                    />
-                  </template>
                   <template v-slot:item.item="{ item }">
                     <v-row>
                       <v-col cols="3">
                         <v-img
-                          :src="item.image ? `${item.image}?x-oss-process=image/resize,m_mfit,w_100,h_100` : require('@/assets/imgWaiting.png')"
+                          :src="item.image ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
                           aspect-ratio="1"
                           class="grey lighten-1"
                         >
@@ -142,7 +120,7 @@
                         cols="9"
                         class="text-left align-self-stretch d-flex flex-column justify-lg-space-between"
                       >
-                        <div class="font-weight-medium primary--text line-break">
+                        <div class="font-weight-medium primary--text">
                           {{ item.goodName }}
                         </div>
                         <div class="body-2">
@@ -201,7 +179,7 @@
               <div>
                 <div class="mb-2">
                   <v-btn
-                    :disabled="!selectedFromList.length"
+                    :disabled="!selectedToAdd.length"
                     color="secondary"
                     depressed
                     @click="addToSelectedProducts"
@@ -212,7 +190,7 @@
                   </v-btn>
                 </div>
                 <v-btn
-                  :disabled="!selectedFromResults.length"
+                  :disabled="!selectedProducts.length"
                   color="secondary"
                   depressed
                   @click="deleteSelectedProducts"
@@ -226,23 +204,21 @@
             <v-col cols="5">
               <v-card outlined>
                 <v-data-table
-                  v-model="selectedFromResults"
+                  v-model="selectedToCancelOrEmit"
                   :headers="headers"
-                  :items="selectedResults"
+                  :items="selectedProducts"
                   item-key="goodDetailId"
                   no-data-text="暂无数据"
                   show-select
                   hide-default-footer
                   fixed-header
-                  height="500"
                   :items-per-page="20"
-                  :page.sync="pageSelected"
                 >
                   <template v-slot:item.item="{ item }">
                     <v-row>
                       <v-col cols="3">
                         <v-img
-                          :src="item.image ? `${item.image}?x-oss-process=image/resize,m_mfit,w_100,h_100` : require('@/assets/imgWaiting.png')"
+                          :src="item.image ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
                           aspect-ratio="1"
                           class="grey lighten-1"
                         >
@@ -264,7 +240,7 @@
                         cols="9"
                         class="text-left align-self-stretch d-flex flex-column justify-lg-space-between"
                       >
-                        <div class="font-weight-medium primary--text line-break">
+                        <div class="font-weight-medium primary--text">
                           {{ item.goodName }}
                         </div>
                         <div class="body-2">
@@ -284,27 +260,27 @@
                         small
                         class="grey lighten-4"
                       >
-                        {{ `${pageSelected} / ${pageCountSelected}` }}
+                        {{ `${page} / ${pageCount}` }}
                       </v-chip>
                       <v-btn
-                        :disabled="pageSelected === 1"
+                        :disabled="page === 1"
                         color="primary"
                         text
                         small
                         class="ml-auto"
-                        @click="pageSelected -= 1"
+                        @click="changePagination('minus')"
                       >
                         <v-icon left>
                           mdi-menu-left
                         </v-icon> 上一页
                       </v-btn>
                       <v-btn
-                        :disabled="pageCountSelected === pageSelected"
+                        :disabled="pageCount === page"
                         color="primary"
                         text
                         small
                         class="ml-2"
-                        @click="pageSelected += 1"
+                        @click="changePagination('plus')"
                       >
                         下一页
                         <v-icon right>
@@ -366,6 +342,8 @@ export default {
   data() {
     return {
       loadingDataItems: false,
+      selectedToAdd: [],
+      selectedToCancelOrEmit: [],
       selectedProducts: [],
       search: {},
       headers: [
@@ -376,31 +354,17 @@ export default {
           value: 'item',
         },
       ],
-      pageSelected: 1,
-      // 已选的商品id
-      selectedIds: [],
-      // 从列表中选中的商品
-      selectedFromList: [],
-      // 从结果中选中的商品
-      selectedFromResults: [],
-      // 结果列表
-      selectedResults: [],
     };
   },
   computed: {
     ...mapState('order', ['productListForSelect']),
     ...mapGetters('order', ['selectedProductsFilter']),
-    pageCountSelected() {
-      return Math.ceil(
-        this.selectedResults.length / 20
-      ) || 1;
+    selectedProductIds() {
+      return R.pluck('goodDetailId', this.selected);
     },
-    // selectedProductIds() {
-    //   return R.pluck('goodDetailId', this.selected);
-    // },
     selectedProductsByIds() {
       return R.filter((item) => {
-        if (R.includes(item.goodDetailId, this.selectedIds)) {
+        if (R.includes(item.goodDetailId, this.selectedProductIds)) {
           return true;
         }
         return false;
@@ -429,19 +393,12 @@ export default {
   watch: {
     show() {
       if (this.show) {
-        // 已选中的id和products
-        this.selectedIds = R.pluck('goodDetailId', this.selected);
-        this.selectedResults = JSON.parse(JSON.stringify(this.selected));
-        // this.selectedFromResults = this.selectedResults;
         this.getProductList();
       }
     },
   },
   methods: {
     ...mapActions('order', ['getProductListForSelectAsync']),
-    existInSelectedIds(id) {
-      return !!this.selectedIds.find(item => item === id);
-    },
     getProductList(params) {
       this.loadingDataItems = true;
       this.getProductListForSelectAsync(
@@ -451,10 +408,10 @@ export default {
         )
       )
         .then(() => {
-          // if (this.selected.length) {
-          //   this.selectedProducts = this.selectedProductsByIds;
-          //   this.selectedToCancelOrEmit = this.selectedProductsByIds;
-          // }
+          if (this.selected.length) {
+            this.selectedProducts = this.selectedProductsByIds;
+            this.selectedToCancelOrEmit = this.selectedProductsByIds;
+          }
         })
         .catch((err) => {
           this.checkErr(err);
@@ -478,38 +435,34 @@ export default {
       }
     },
     deleteSelectedProducts() {
-      const selectedIds = R.pluck('goodDetailId', this.selectedFromResults);
-      this.selectedResults = R.without(
-        this.selectedFromResults,
-        this.selectedResults
+      this.selectedProducts = R.difference(
+        this.selectedProducts,
+        this.selectedToCancelOrEmit
       );
-      // this.selectedFromResults = this.selectedResults;
-      this.selectedIds = R.without(selectedIds, this.selectedIds);
+      this.selectedToCancelOrEmit = this.selectedProducts;
     },
     confirmSelectedProducts() {
-      this.$emit('update:selectedProducts', this.selectedResults);
+      this.$emit('update:selectedProducts', this.selectedProducts);
       this.$emit('close-dialog');
-      // this.selectedResults = [];
-      // this.selectedProducts = [];
+      this.selectedToCancelOrEmit = [];
+      this.selectedProducts = [];
     },
     searchProducts() {
-      this.getProductList({ ...this.search, p: 1 });
+      this.getProductList(this.search);
     },
     clearSearchConditions(target) {
       this.search[target] = '';
-      this.getProductList({ ...this.search, p: 1 });
+      this.getProductList(this.search);
     },
     resetSearchConditions() {
       this.$refs.form.reset();
       this.getProductList();
     },
     addToSelectedProducts() {
-      const selectedAll = R.concat(this.selectedResults, this.selectedFromList);
-      const selectedIds = R.pluck('goodDetailId', this.selectedFromList);
-      this.selectedResults = selectedAll;
-      // this.selectedFromResults = selectedAll;
-      this.selectedFromList = [];
-      this.selectedIds = R.concat(this.selectedIds, selectedIds);
+      const selectedAll = R.concat(this.selectedProducts, this.selectedToAdd);
+      this.selectedToCancelOrEmit = selectedAll;
+      this.selectedProducts = selectedAll;
+      this.selectedToAdd = [];
     },
   },
 };

@@ -9,18 +9,19 @@
       class="close elevation-0"
       @click="$emit('update:delete')"
     >
-      <v-icon>mdi-close-circle mdi-24px</v-icon>
+      <v-icon>mdi-close-circle {{ delIconSize === 'small' ? '' : 'mdi-24px' }}</v-icon>
     </v-btn>
     <v-img
       :src="image"
       :aspect-ratio="aspectRatio"
-      class="grey lighten-1 white--text d-flex align-center text-center rounded"
+      class="grey lighten-5 d-flex align-center text-center rounded"
       :class="showInput ? 'rounded-bottom-0' : ''"
       style="`border:1px solid #ccc !important`"
+      contain
       @click="getImgClick"
     >
       <template v-if="!image">
-        <v-icon class="white--text">
+        <v-icon color="grey darken--2">
           mdi-plus {{ `mdi-${iconSize}` }}
         </v-icon>
         <div
@@ -116,6 +117,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    delIconSize: {
+      type: String,
+      default: 'default',
     },
     // height: {
     //   type: String,

@@ -388,6 +388,19 @@ export default {
             this.customer.dnames = res.data.userName;
             this.customer.id = '0';
             this.exist = true;
+          } else {
+            this.customer = {
+              // 添加客户设置默认部门，默认客户等级，默认部门员工
+              mobile: this.customer.mobile,
+              sectionId: this.user.sectionId,
+              sectionName: this.user.sectionName,
+              gradeId: R.prop(
+                'id',
+                R.find(R.propEq('default', '1'), this.customerGradeList.data)
+              ),
+              loginStatus: '1',
+            };
+            this.exist = false;
           }
         })
         .catch((err) => {

@@ -5,14 +5,13 @@
   >
     <v-card class="mb-4">
       <v-card-title>
-        新增入库单
+        编辑入库单
       </v-card-title>
       <v-card-text>
         <v-row>
           <v-col
             cols="12"
-            md="5"
-            lg="4"
+            md="4"
           >
             <div class="input-group mb-5">
               <div class="input-group-prepend large">
@@ -68,18 +67,6 @@
                   no-data-text="暂无数据"
                   hide-details
                 />
-              </div>
-              <div class="input-group-append">
-                <v-btn
-                  color="secondary"
-                  small
-                  depressed
-                  @click="dialogInstockType = true"
-                >
-                  添加 <v-icon right>
-                    mdi-plus
-                  </v-icon>
-                </v-btn>
               </div>
             </div>
             <div class="input-group mb-5">
@@ -149,7 +136,6 @@
           <v-col
             cols="12"
             md="6"
-            lg="5"
           >
             <div class="input-group align-start">
               <div
@@ -299,23 +285,20 @@
       color="primary"
       large
       class="px-12 body-1 ml-4"
-      @click="addWarehouseInstock"
+      @click="editWarehouseInstock"
     >
-      确定入库
+      确定修改
     </v-btn>
     <warehouse-single
       :edit="false"
       :show="dialogWarehouse"
       @close-dialog="dialogWarehouse = false"
     />
-    <warehouse-product-select
+    <warehouse-product-select-edit
       :show="dialogProductSelect"
+      :selected="selectedProducts"
       @update:selected="selectedProducts = $event"
       @update:close-dialog="dialogProductSelect = false"
-    />
-    <warehouse-instock-type-single
-      :show="dialogInstockType"
-      @close-dialog="dialogInstockType = false"
     />
   </v-form>
 </template>
@@ -324,18 +307,22 @@
 import * as R from 'ramda';
 import { mapState, mapActions } from 'vuex';
 import WarehouseSingle from '@/components/WarehouseSingle.vue';
-import WarehouseProductSelect from '@/components/WarehouseProductSelect.vue';
-import WarehouseInstockTypeSingle from '@/components/WarehouseInstockTypeSingle.vue';
+import WarehouseProductSelectEdit from '@/components/WarehouseProductSelectEditInstock-jihuo.vue';
 
 export default {
-  name: 'WarehouseInstockAdd',
-  components: { WarehouseSingle, WarehouseProductSelect, WarehouseInstockTypeSingle },
+  name: 'WarehouseInstockEdit',
+  components: { WarehouseSingle, WarehouseProductSelectEdit },
+  props: {
+    id: {
+      type: String,
+      default: '',
+    },
+  },
   data() {
     return {
       loadingDataItems: false,
       dialogProductSelect: false,
       dialogWarehouse: false,
-      dialogInstockType: false,
       valid: true,
       menuDate: false,
       submitting: false,
@@ -407,12 +394,11 @@ export default {
       page: 1,
       pageEnter: 1,
       pageCount: 0,
-      selected: [],
       selectedProducts: [],
     };
   },
   computed: {
-    ...mapState('warehouse', ['warehouseInstockList', 'warehouseInstockTypeList', 'warehouseList']),
+    ...mapState('warehouse', ['warehouseInstockTypeList', 'warehouseList']),
     selectedProductsTotal() {
       return R.sum(R.map(item => (R.has('buNumber', item) ? +item.buNumber : 0), this.selectedProducts)).toFixed(0);
     },
@@ -455,7 +441,7 @@ export default {
         exact: true,
       },
       {
-        text: '新增入库单',
+        text: '编辑入库单',
         disabled: true,
         exact: true,
       },
@@ -463,15 +449,21 @@ export default {
     this.getAllData();
   },
   methods: {
-    ...mapActions('warehouse', ['getWarehouseListAsync', 'getWarehouseInstockTypeListAsync', 'addWarehouseInstockAsync', 'editWarehouseInstockAsync']),
+    ...mapActions('warehouse', ['getWarehouseListAsync', 'getWarehouseInstockTypeListAsync', 'addWarehouseInstockAsync', 'getWarehouseInstockDetailAsync', 'editWarehouseInstockAsync']),
     ...mapActions('order', ['getProductListForSelectAsync']),
     deleteSelectedProduct(id) {
       this.selectedProducts = R.reject(R.propEq('goodDetailId', id), this.selectedProducts);
     },
     getAllData() {
       this.$store.commit('START_LOADING');
-      const promises = [this.getWarehouseInstockTypeListAsync(), this.getWarehouseListAsync(), this.getProductListForSelectAsync({ timeLimit: null, p: 1 })];
-      Promise.all(promises).catch((err) => {
+      const promises = [this.getWarehouseInstockTypeListAsync(), this.getWarehouseListAsync(), this.getWarehouseInstockDetailAsync({ id: this.id }), this.getProductListForSelectAsync()];
+      Promise.all(promises).then((res) => {
+        this.instockOrder = R.nth(2, res);
+        this.selectedProducts = R.map(item => ({
+          ...item,
+          price: item.price,
+        }), this.instockOrder.detail);
+      }).catch((err) => {
         this.checkErr(err, 'getAllData');
       }).finally(() => {
         this.$store.commit('END_LOADING');
@@ -498,19 +490,16 @@ export default {
         this.pageEnter = 1;
       }
     },
-    addWarehouseInstock() {
+    editWarehouseInstock() {
       if (!this.selectedProducts.length) {
         this.checkErr(new Error('请选择入库商品'));
         return;
       }
       this.submitting = true;
-      this.addWarehouseInstockAsync({
-        ...this.instockOrder,
-        detail: this.detail,
-      }).then(() => {
+      this.editWarehouseInstockAsync(R.mergeRight(this.instockOrder, { detail: this.detail })).then(() => {
         this.$store.commit('TOGGLE_SNACKBAR', {
           type: 'success',
-          text: '恭喜，添加成功!',
+          text: '恭喜，编辑成功!',
         });
         this.$router.replace({ name: 'warehouse_instock_list' });
       }).catch((err) => {

@@ -15,6 +15,29 @@ export default {
       return Promise.reject(error);
     }
   },
+  async getProductSpecAsync(context, payload) {
+    try {
+      const res = await axios.post('/g/get_goods_spec.html', payload);
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data.data);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async setProductRetailAsync(context, payload) {
+    try {
+      const res = await axios.post('/g/setRetail.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getProductListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
   async addCateAsync(context, payload) {
     const right = await context.dispatch('checkAuthorityAsync', { rightId: 20 }, { root: true });
     if (right) {
@@ -200,7 +223,11 @@ export default {
   },
   // 商品品牌
   async addOrEditBrandAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 358 : 357 }, { root: true });
+    const right = await context.dispatch(
+      'checkAuthorityAsync',
+      { rightId: payload.edit ? 358 : 357 },
+      { root: true }
+    );
     if (right) {
       try {
         const res = await axios.post('/brand/add_save_brand.html', payload);
@@ -247,7 +274,11 @@ export default {
   },
   // 商品单位
   async addOrEditUnitsAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 66 : 65 }, { root: true });
+    const right = await context.dispatch(
+      'checkAuthorityAsync',
+      { rightId: payload.edit ? 66 : 65 },
+      { root: true }
+    );
     if (right) {
       try {
         const res = await axios.post('/unit/add_save.html', payload);
@@ -344,11 +375,17 @@ export default {
   // 商品列表
   async getProductListAsync(context, payload) {
     try {
-      const res = await axios.post('/g/lists.html', R.mergeRight({
-        pageSize: process.env.VUE_APP_PAGESIZE,
-        timeLimit: context.state.productList.data.timeLimit,
-        p: context.state.productList.data.p,
-      }, payload));
+      const res = await axios.post(
+        '/g/lists.html',
+        R.mergeRight(
+          {
+            pageSize: process.env.VUE_APP_PAGESIZE,
+            timeLimit: context.state.productList.data.timeLimit,
+            p: context.state.productList.data.p,
+          },
+          payload
+        )
+      );
       if (res.data.status === 1) {
         context.commit('SET_PRODUCT_LIST', res.data.data);
         return Promise.resolve(res.data.status);
