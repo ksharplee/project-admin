@@ -1690,6 +1690,7 @@ export default {
           text: '恭喜，设置成功!',
         });
         this.dialogRetail = false;
+        this.dialogUnretail = false;
       }).catch((err) => {
         this.checkErr(err, 'setProductRetail');
       }).finally(() => {

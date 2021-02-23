@@ -390,6 +390,33 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend">
+                    <span class="input-group-text">&nbsp;零&nbsp;售&nbsp;价&nbsp;</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="product.retailPrice"
+                      type="number"
+                      placeholder="请输入零售价"
+                      dense
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-slide-y-transition>
+            <v-slide-y-transition>
+              <v-col
+                v-if="product.containSpec === '0'"
+                cols="12"
+                md="6"
+                xl="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
                     <span class="input-group-text">商品重量</span>
                   </div>
                   <div class="input-group-control">
@@ -718,6 +745,21 @@
                         </v-icon>
                       </v-btn>
                     </th>
+                    <th
+                      class="text-center"
+                    >
+                      零售价
+                      <v-btn
+                        icon
+                        x-small
+                        class="ml-2"
+                        @click="dialogUnifyRetailPrice = true"
+                      >
+                        <v-icon color="#666">
+                          mdi-square-edit-outline
+                        </v-icon>
+                      </v-btn>
+                    </th>
                     <th class="text-center">
                       重量
                       <v-btn
@@ -788,6 +830,21 @@
                         dense
                       />
                     </td>
+                    <td
+                      class="py-3"
+                    >
+                      <v-text-field
+                        v-model="item.retailPrice"
+                        type="number"
+                        placeholder=""
+                        dense
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                      />
+                    </td>
                     <td class="py-3">
                       <v-text-field
                         v-model="item.weight"
@@ -833,7 +890,7 @@
                 <tfoot>
                   <tr class="grey lighten-5">
                     <td
-                      :colspan="usePriceStatus ? 3 : 5"
+                      :colspan="usePriceStatus ? 3 : 6"
                     />
                     <td
                       colspan="2"
@@ -1106,10 +1163,6 @@
                     outlined
                     clearable
                     no-data-text="暂无数据"
-                    chips
-                    small-chips
-                    multiple
-                    deletable-chips
                   >
                     <template v-slot:prepend-item>
                       <v-form>
@@ -1151,7 +1204,7 @@
         :disabled="!valid || editing"
         color="primary"
         large
-        class="px-12 body-1"
+        class="px-12 body-1 mb-4"
         @click="editProduct"
       >
         提交
@@ -1327,6 +1380,46 @@
       </v-card>
     </v-dialog>
     <v-dialog
+      v-model="dialogUnifyRetailPrice"
+      width="300"
+    >
+      <v-card>
+        <v-card-title>
+          统一设置零售价
+          <v-spacer />
+          <v-btn
+            small
+            icon
+            @click="dialogUnifyRetailPrice = false"
+          >
+            <v-icon color="#999">
+              mdi-close
+            </v-icon>
+          </v-btn>
+        </v-card-title>
+        <v-card-text class="pt-3">
+          <v-text-field
+            v-model="unifyRetailPrice"
+            label="零售价"
+            outlined
+            dense
+            hide-details
+            clearable
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            :disabled="!unifyRetailPrice"
+            @click="dialogUnifyRetailPrice = false;setByTarget('retailPrice', unifyRetailPrice)"
+          >
+            确定
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
       v-model="dialogUnifyWeight"
       width="300"
     >
@@ -1398,6 +1491,8 @@ export default {
   },
   data() {
     return {
+      unifyRetailPrice: '',
+      dialogUnifyRetailPrice: false,
       dialogUnifyCostPrice: false,
       unifyCostPrice: '',
       dialogUnifyPrice: false,
@@ -1551,6 +1646,7 @@ export default {
             }),
             arr
           ),
+          supplyers: v => (v ? [v] : ''),
         },
         this.product
       );
@@ -1742,9 +1838,9 @@ export default {
           const response = R.clone(res);
           // 是否设置了供应商
           if (response.supplyers) {
-            response.supplyers = R.pluck('supplyerId', res.supplyers);
+            response.supplyers = R.prop('supplyerId', R.head(res.supplyers));
           } else {
-            response.supplyers = [];
+            response.supplyers = '';
           }
           // 是否上传了图片
           if (response.images) {
