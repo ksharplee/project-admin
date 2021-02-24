@@ -462,6 +462,31 @@
                 </div>
               </v-col>
             </v-slide-y-transition>
+            <v-col
+              cols="12"
+              md="6"
+              xl="4"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">付款比例</span>
+                </div>
+                <div class="input-group-control">
+                  <v-text-field
+                    v-model="product.bili"
+                    type="number"
+                    placeholder="请输入付款比例"
+                    dense
+                    outlined
+                    clearable
+                    required
+                    single-line
+                    hide-details
+                    suffix="%"
+                  />
+                </div>
+              </div>
+            </v-col>
           </v-row>
           <v-slide-y-transition>
             <div v-if="isBundle === '1'">
