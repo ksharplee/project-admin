@@ -181,15 +181,6 @@ export default new Router({
           },
         },
         {
-          path: 'supplier/list',
-          name: 'supplier_list',
-          component: () => import(/* webpackChunkName: "group-supplier" */ './views/SupplierList.vue'),
-          meta: {
-            required: true,
-            id: '219',
-          },
-        },
-        {
           path: 'customer/list',
           name: 'customer_list',
           component: () => import(/* webpackChunkName: "group-customer" */ './views/CustomerList.vue'),
@@ -225,34 +216,6 @@ export default new Router({
           meta: {
             required: true,
             id: '6504',
-          },
-        },
-        {
-          path: 'authority/role',
-          name: 'authority_role',
-          component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityRole.vue'),
-          meta: {
-            required: true,
-            id: '6524',
-          },
-        },
-        {
-          path: 'authority/role/add',
-          name: 'authority_role_add',
-          component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityRoleSingle.vue'),
-          meta: {
-            required: true,
-            id: '6521',
-          },
-        },
-        {
-          path: 'authority/role/edit/id=:id',
-          name: 'authority_role_edit',
-          props: true,
-          component: () => import(/* webpackChunkName: "group-authority" */ './views/AuthorityRoleSingle.vue'),
-          meta: {
-            required: true,
-            id: '6522',
           },
         },
         {
@@ -312,15 +275,6 @@ export default new Router({
           },
         },
         // 订单
-        {
-          path: 'order/add',
-          name: 'order_add',
-          component: () => import(/* webpackChunkName: "group-finance" */ './views/OrderAdd.vue'),
-          meta: {
-            required: true,
-            id: '1034',
-          },
-        },
         {
           // path: 'order/list/active=:active',
           path: 'order/list',

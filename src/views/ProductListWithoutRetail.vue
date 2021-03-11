@@ -308,11 +308,6 @@
           <template v-slot:item.price="{ item }">
             {{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}
           </template>
-          <template v-slot:item.isLive="{ item }">
-            <span :class="item.isLive === '4' ? 'success-text' : item.isLive === '3' ? 'error--text' : 'grey--text'">
-              {{ item.isLive === '4' ? '直播中' : item.isLive === '3' ? '审核中' : item.isLive === '2' ? '已驳回' : '未提交' }}
-            </span>
-          </template>
           <template v-slot:item.onlineErweimaPath="{ item }">
             <router-link
               :to="item.isLive === '4' ? {name: 'print', params: {
@@ -385,34 +380,6 @@
                     />{{ config.text }}
                   </v-list-item-title>
                 </v-list-item>
-                <v-list-item
-                  v-if="+item.isLive < 3"
-                  @click="configProduct(3, item.id, '3')"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-arrow-up-circle
-                    </v-icon>直播提交
-                  </v-list-item-title>
-                </v-list-item>
-                <v-list-item
-                  v-if="+item.isLive >= 3"
-                  @click="configProduct(4, item.id,'1')"
-                >
-                  <v-list-item-title>
-                    <v-icon
-                      class="mr-1"
-                      small
-                      style="position:relative;top:-1px"
-                    >
-                      mdi-arrow-down-circle
-                    </v-icon>直播撤回
-                  </v-list-item-title>
-                </v-list-item>
               </v-list>
             </v-menu>
           </template>
@@ -471,33 +438,6 @@
           <v-btn
             color="secondary"
             @click="dialogDelete = false"
-          >
-            取消
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="dialogLive"
-      max-width="350"
-    >
-      <v-card>
-        <v-card-title class="title grey lighten-3 pa-4">
-          确定将此商品{{ toLiveOperate === '3' ? '提交' : '撤回' }}直播吗?
-        </v-card-title>
-        <v-card-actions>
-          <div class="flex-grow-1" />
-          <v-btn
-            color="primary"
-            :loading="living"
-            :disabled="living"
-            @click="liveProduct"
-          >
-            提交
-          </v-btn>
-          <v-btn
-            color="secondary"
-            @click="dialogLive = false"
           >
             取消
           </v-btn>
@@ -1293,18 +1233,6 @@ export default {
         {
           text: '上架状态',
           value: 'dstatus',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '直播状态',
-          value: 'isLive',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '二维码',
-          value: 'onlineErweimaPath',
           align: 'center',
           sortable: false,
         },

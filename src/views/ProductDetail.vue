@@ -457,34 +457,7 @@
         disabled
       />
     </v-card>
-    <v-card
-      outlined
-      elevation="0"
-      class="mb-4"
-    >
-      <v-card-title class="pa-3 grey lighten-3 title">
-        商品供应商
-      </v-card-title>
-      <v-container fluid>
-        <v-row>
-          <v-col cols="12">
-            <v-row justify="start">
-              <v-col
-                cols="auto"
-                class="grey--text"
-              >
-                商品供应商：
-              </v-col>
-              <v-col cols="auto">
-                {{ product.supplyers | supplierString }}
-              </v-col>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-card>
   </div>
-  </v-col>
 </template>
 
 <script>

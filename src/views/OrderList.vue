@@ -154,16 +154,6 @@
                   高级搜索
                 </v-btn>
                 <v-spacer />
-                <v-btn
-                  color="primary"
-                  depressed
-                  class="px-5"
-                  :to="{ name: 'order_add' }"
-                >
-                  <v-icon left>
-                    mdi-plus
-                  </v-icon> 代客下单
-                </v-btn>
               </template>
             </div>
           </template>

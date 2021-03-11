@@ -147,18 +147,10 @@ export default {
         model: false,
         children: [
           {
-            text: '订货单',
+            text: '订单列表',
             url: { name: 'order_list', params: { active: '0' } },
           },
-          // { text: '退货单', url: { name: '' } },
-          { text: '代客下单', url: { name: 'order_add' } },
         ],
-      },
-      {
-        icon: 'mdi-account-multiple',
-        text: '供应商',
-        model: false,
-        children: [{ text: '供应商列表', url: { name: 'supplier_list' } }],
       },
       {
         icon: 'mdi-account-card-details',
@@ -166,7 +158,6 @@ export default {
         model: false,
         children: [
           { text: '部门设置', url: { name: 'authority_department' } },
-          { text: '角色管理', url: { name: 'authority_role' } },
           { text: '员工设置', url: { name: 'employee_list' } },
         ],
       },
@@ -194,12 +185,6 @@ export default {
           { text: '广告图设置', url: { name: 'ads' } },
         ],
       },
-      // {
-      //   icon: 'mdi-chart-areaspline-variant',
-      //   text: '报表',
-      //   model: false,
-      //   children: [{ text: '报表数据', url: { name: '' } }],
-      // },
       {
         icon: 'mdi-home-currency-usd',
         text: '财务',
@@ -213,6 +198,12 @@ export default {
           { text: '银行管理', url: { name: 'finance_bank' } },
         ],
       },
+      // {
+      //   icon: 'mdi-chart-areaspline-variant',
+      //   text: '报表',
+      //   model: false,
+      //   children: [{ text: '报表数据', url: { name: '' } }],
+      // },
     ],
   }),
   computed: {

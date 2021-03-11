@@ -1072,80 +1072,6 @@
           @update:html="product.detailDesc = $event"
         />
       </v-card>
-      <v-card
-        outlined
-        elevation="0"
-        class="mb-4"
-      >
-        <v-card-title class="pa-3 grey lighten-3 title">
-          商品供应商
-        </v-card-title>
-        <v-card-text class="pt-4">
-          <v-row>
-            <v-col
-              cols="12"
-              lg="6"
-              xl="4"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">商品供应商</span>
-                </div>
-                <div class="input-group-control">
-                  <v-select
-                    v-model="product.supplyers"
-                    :items="supplierFilter(searchSupplier)"
-                    :loading="loadingSuppliers"
-                    :disabled="loadingSuppliers"
-                    item-text="dnames"
-                    item-value="supplyId"
-                    placeholder="请选择商品供应商"
-                    single-line
-                    hide-details
-                    dense
-                    outlined
-                    clearable
-                    no-data-text="暂无数据"
-                    chips
-                    small-chips
-                    multiple
-                    deletable-chips
-                  >
-                    <template v-slot:prepend-item>
-                      <v-form>
-                        <div class="pa-3">
-                          <v-text-field
-                            v-model="searchSupplier"
-                            placeholder="输入供应商名称搜索"
-                            append-icon="mdi-magnify"
-                            outlined
-                            clearable
-                            required
-                            single-line
-                            hide-details
-                            dense
-                          />
-                        </div>
-                      </v-form>
-                    </template>
-                  </v-select>
-                </div>
-                <div class="input-group-append">
-                  <v-btn
-                    color="secondary"
-                    depressed
-                    @click="dialogSupplier = true"
-                  >
-                    <v-icon left>
-                      mdi-plus
-                    </v-icon> 添加供应商
-                  </v-btn>
-                </div>
-              </div>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-card>
       <v-btn
         :loading="editing"
         :disabled="!valid || editing"
@@ -1590,13 +1516,6 @@ export default {
         this.loadingBrand = false;
       });
     this.loadingSuppliers = true;
-    this.getSupplierListAsync({ locked: '0' })
-      .catch((err) => {
-        this.checkErr(err, 'getSupplierListAsync');
-      })
-      .finally(() => {
-        this.loadingSuppliers = false;
-      });
   },
   methods: {
     ...mapActions('product', [
@@ -1605,7 +1524,6 @@ export default {
       'editProductAsync',
       'getProductDetailEditAsync',
     ]),
-    ...mapActions('supplier', ['getSupplierListAsync']),
     // 删除本地添加的属性
     deleteAttrAdded(i) {
       this.$set(this.product, 'attr', R.remove(i, 1, this.product.attr));

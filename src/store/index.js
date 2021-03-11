@@ -5,7 +5,6 @@ import getters from './root/getters';
 import mutations from './root/mutations';
 import actions from './root/actions';
 import product from './product/index';
-import supplier from './supplier/index';
 import system from './system/index';
 import customer from './customer/index';
 import finance from './finance/index';
@@ -30,13 +29,6 @@ export default new Vuex.Store({
       getters: order.getters,
       mutations: order.mutations,
       actions: order.actions,
-    },
-    supplier: {
-      namespaced: true,
-      state: supplier.state,
-      getters: supplier.getters,
-      mutations: supplier.mutations,
-      actions: supplier.actions,
     },
     system: {
       namespaced: true,

@@ -204,78 +204,6 @@
                   </div>
                 </div>
               </v-col>
-              <v-col
-                cols="12"
-                lg="6"
-                xl="4"
-                class="text-right"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend large">
-                    <span class="input-group-text">短信服务平台</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-model="info.smServer"
-                      placeholder="请输入短信服务平台"
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                lg="6"
-                xl="4"
-                class="text-right"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend large">
-                    <span class="input-group-text">短信宝账号</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-model="info.smAccount"
-                      placeholder="请输入短信宝账号"
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col
-                cols="12"
-                lg="6"
-                xl="4"
-                class="text-right"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend large">
-                    <span class="input-group-text">短信宝密码</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-model="info.smPassword"
-                      placeholder="请输入短信宝密码"
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      dense
-                    />
-                  </div>
-                </div>
-              </v-col>
             </v-row>
           </v-col>
         </v-row>
@@ -284,45 +212,12 @@
         :loading="submitting"
         :disabled="submitting"
         color="primary"
-        class="px-12 body-1 mb-6"
+        class="px-12 body-1 mr-2"
         @click="addOrEditBasicInfo"
       >
         提交
       </v-btn>
     </v-form>
-    <v-divider class="my-4" />
-    <v-container
-      fluid
-      class="grey lighten-5"
-    >
-      <v-row align="center">
-        <v-col
-          cols="auto"
-          class="mr-2"
-        >
-          默认折扣方式
-        </v-col>
-        <v-radio-group
-          :value="$store.state.user.priceStatus"
-          class="mt-0"
-          mandatory
-          row
-          hide-details
-          @change="setPriceStatus"
-        >
-          <v-radio
-            label="客户等级"
-            color="primary"
-            value="0"
-          />
-          <v-radio
-            label="价格区间"
-            color="primary"
-            value="1"
-          />
-        </v-radio-group>
-      </v-row>
-    </v-container>
   </div>
 </template>
 
@@ -346,6 +241,7 @@ export default {
         addressSecondId: '',
         addressId: '',
         addressFirstId: '',
+        isLoginStatus: '0',
       },
       loadingArea: false,
       companyRules: [v => !!v || '请填写公司名称'],
@@ -355,6 +251,16 @@ export default {
       ],
       cities: [],
       regions: [],
+      loginStatus: [
+        {
+          text: '是',
+          value: '1',
+        },
+        {
+          text: '否',
+          value: '0',
+        },
+      ],
     };
   },
   computed: {
@@ -411,7 +317,6 @@ export default {
       'addOrEditBasicInfoAsync',
       'getAreaInfoAsync',
       'getAreaRegionInfoAsync',
-      'setPriceStatusAsync',
     ]),
     getBasicInfo() {
       this.$store.commit('START_LOADING');
@@ -497,24 +402,6 @@ export default {
         .finally(() => {
           this.loadingRegions = false;
         });
-    },
-    setPriceStatus(v) {
-      this.$store.commit('START_LOADING');
-      this.setPriceStatusAsync({ priceStatus: v }).then(() => {
-        this.priceStatus = v;
-        const item = JSON.parse(sessionStorage.getItem('user'));
-        item.priceStatus = v;
-        sessionStorage.setItem('user', JSON.stringify(item));
-        this.$store.commit('SET_USER', item);
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'success',
-          text: '恭喜，设置成功!',
-        });
-      }).catch((err) => {
-        this.checkErr(err, 'setPriceStatus');
-      }).finally(() => {
-        this.$store.commit('END_LOADING');
-      });
     },
   },
 };
