@@ -475,4 +475,53 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 热搜设置
+  async getHotSearchListAsync(context, payload) {
+    try {
+      const res = await axios.post('/k/lists.html', payload);
+      if (res.data.status === 1) {
+        context.commit('SET_PRODUCT_HOT_SEARCH', res.data.data);
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async deleteHotSearchAsync(context, payload) {
+    try {
+      const res = await axios.post('/k/delete.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getHotSearchListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async addHotSearchAsync(context, payload) {
+    try {
+      const res = await axios.post('/k/add.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getHotSearchListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  async editHotSearchAsync(context, payload) {
+    try {
+      const res = await axios.post('/k/edit.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getHotSearchListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
 };

@@ -4,7 +4,11 @@ import axios from '@/plugins/axios';
 export default {
   // 添加客户
   async addOrEditCustomerAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 263 : 259 }, { root: true });
+    const right = await context.dispatch(
+      'checkAuthorityAsync',
+      { rightId: payload.edit ? 263 : 259 },
+      { root: true }
+    );
     if (right) {
       try {
         const res = await axios.post('/buyer/add_save_buyer.html', payload);
@@ -52,7 +56,11 @@ export default {
   },
   // 传buyerId,buyerUid
   async addOrEditCustomerShippingAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 351 : 350 }, { root: true });
+    const right = await context.dispatch(
+      'checkAuthorityAsync',
+      { rightId: payload.edit ? 351 : 350 },
+      { root: true }
+    );
     if (right) {
       try {
         const res = await axios.post('/buyer/do_addr.html', payload);
@@ -104,11 +112,17 @@ export default {
   // 客户列表
   async getCustomerListAsync(context, payload) {
     try {
-      const res = await axios.post('/buyer/buyer_list.html', R.mergeRight({
-        pageSize: process.env.VUE_APP_PAGESIZE,
-        timeLimit: context.state.customerList.data.timeLimit,
-        p: context.state.customerList.data.p,
-      }, payload));
+      const res = await axios.post(
+        '/buyer/buyer_list.html',
+        R.mergeRight(
+          {
+            pageSize: process.env.VUE_APP_PAGESIZE,
+            timeLimit: context.state.customerList.data.timeLimit,
+            p: context.state.customerList.data.p,
+          },
+          payload
+        )
+      );
       if (res.data.status === 1) {
         context.commit('SET_CUSTOMER_LIST', res.data);
         return Promise.resolve(res.data.status);
@@ -118,13 +132,65 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 客户反馈列表
+  async getCustomerFeedbackListAsync(context, payload) {
+    try {
+      const res = await axios.post(
+        '/ot/feedback_list.html',
+        R.mergeRight(
+          {
+            pageSize: process.env.VUE_APP_PAGESIZE,
+            timeLimit: context.state.customerFeedbackList.data.timeLimit,
+            p: context.state.customerFeedbackList.data.p,
+          },
+          payload
+        )
+      );
+      if (res.data.status === 1) {
+        context.commit('SET_CUSTOMER_FEEDBACK_LIST', res.data);
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 客户订阅列表
+  async getCustomerNewsLetterListAsync(context, payload) {
+    try {
+      const res = await axios.post(
+        '/ot/email_list.html',
+        R.mergeRight(
+          {
+            pageSize: process.env.VUE_APP_PAGESIZE,
+            timeLimit: context.state.customerNewsLetterList.data.timeLimit,
+            p: context.state.customerNewsLetterList.data.p,
+          },
+          payload
+        )
+      );
+      if (res.data.status === 1) {
+        context.commit('SET_CUSTOMER_NEWS_LETTER_LIST', res.data);
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
   async getCustomerListForSearchAsync(context, payload) {
     try {
-      const res = await axios.post('/buyer/buyer_list.html', R.mergeRight({
-        pageSize: process.env.VUE_APP_PAGESIZE,
-        timeLimit: context.state.customerListForSearch.data.timeLimit,
-        p: context.state.customerListForSearch.data.p,
-      }, payload));
+      const res = await axios.post(
+        '/buyer/buyer_list.html',
+        R.mergeRight(
+          {
+            pageSize: process.env.VUE_APP_PAGESIZE,
+            timeLimit: context.state.customerListForSearch.data.timeLimit,
+            p: context.state.customerListForSearch.data.p,
+          },
+          payload
+        )
+      );
       if (res.data.status === 1) {
         context.commit('SET_CUSTOMER_FOR_SEARCH_LIST', res.data);
         return Promise.resolve(res.data.status);
@@ -182,7 +248,11 @@ export default {
     }
   },
   async addOrEditCustomerGradeAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 254 : 253 }, { root: true });
+    const right = await context.dispatch(
+      'checkAuthorityAsync',
+      { rightId: payload.edit ? 254 : 253 },
+      { root: true }
+    );
     if (right) {
       try {
         const res = await axios.post('/buyer/add_save_level.html', payload);

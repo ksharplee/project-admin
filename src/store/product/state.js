@@ -30,4 +30,8 @@ export default {
     status: 0,
     data: [],
   },
+  productHotSearch: {
+    status: 0,
+    data: [],
+  },
 };

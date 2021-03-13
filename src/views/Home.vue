@@ -130,6 +130,7 @@ export default {
           { text: '类别管理', url: { name: 'product_category' } },
           { text: '品牌管理', url: { name: 'product_brand' } },
           { text: '单位管理', url: { name: 'product_unit' } },
+          { text: '热搜设置', url: { name: 'product_hot_search' } },
         ],
       },
       {
@@ -139,6 +140,8 @@ export default {
         children: [
           { text: '客户列表', url: { name: 'customer_list' } },
           { text: '客户等级', url: { name: 'customer_grade_list' } },
+          { text: '客户反馈', url: { name: 'customer_feedback_list' } },
+          { text: '客户订阅', url: { name: 'customer_news_letter_list' } },
         ],
       },
       {
@@ -172,6 +175,14 @@ export default {
           { text: '出库类型', url: { name: 'warehouse_outstock_type_list' } },
           { text: '仓库管理', url: { name: 'warehouse_list' } },
           { text: '商品库存', url: { name: 'warehouse_product_stock' } },
+        ],
+      },
+      {
+        icon: 'mdi-information',
+        text: '信息',
+        model: false,
+        children: [
+          { text: '信息列表', url: { name: 'information_list' } },
         ],
       },
       {

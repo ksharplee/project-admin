@@ -4,6 +4,7 @@ import {
   SET_PRODUCT_UNITS,
   SET_PRODUCT_LIST,
   SET_ONLINE_CATE,
+  SET_PRODUCT_HOT_SEARCH,
 } from '../mutation-types';
 
 export default {
@@ -14,6 +15,10 @@ export default {
   [SET_PRODUCT_CATEGORY](state, payload) {
     state.productCategory.data.items = payload;
     state.productCategory.status = 1;
+  },
+  [SET_PRODUCT_HOT_SEARCH](state, payload) {
+    state.productHotSearch.data = payload;
+    state.productHotSearch.status = 1;
   },
   [SET_PRODUCT_BRAND](state, payload) {
     state.productBrand.data = payload;

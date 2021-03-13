@@ -11,11 +11,19 @@ import finance from './finance/index';
 import order from './order/index';
 import authority from './authority/index';
 import warehouse from './warehouse/index';
+import information from './information/index';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
+    information: {
+      namespaced: true,
+      state: information.state,
+      getters: information.getters,
+      mutations: information.mutations,
+      actions: information.actions,
+    },
     product: {
       namespaced: true,
       state: product.state,

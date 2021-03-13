@@ -181,6 +181,15 @@ export default new Router({
           },
         },
         {
+          path: 'product/hot-search',
+          name: 'product_hot_search',
+          component: () => import(/* webpackChunkName: "group-product" */ './views/ProductHotSearch.vue'),
+          meta: {
+            required: true,
+            id: '68',
+          },
+        },
+        {
           path: 'customer/list',
           name: 'customer_list',
           component: () => import(/* webpackChunkName: "group-customer" */ './views/CustomerList.vue'),
@@ -196,6 +205,24 @@ export default new Router({
           meta: {
             required: true,
             id: '252',
+          },
+        },
+        {
+          path: 'customer/feedback',
+          name: 'customer_feedback_list',
+          component: () => import(/* webpackChunkName: "group-customer" */ './views/CustomerFeedbackList.vue'),
+          meta: {
+            required: true,
+            id: '261',
+          },
+        },
+        {
+          path: 'customer/newsletter',
+          name: 'customer_news_letter_list',
+          component: () => import(/* webpackChunkName: "group-customer" */ './views/CustomerNewsLetterList.vue'),
+          meta: {
+            required: true,
+            id: '261',
           },
         },
         {
@@ -295,6 +322,26 @@ export default new Router({
             required: true,
             id: '1053',
           },
+        },
+        // 信息
+        {
+          path: 'information/list',
+          name: 'information_list',
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/InformationList.vue'),
+          meta: {},
+        },
+        {
+          path: 'information/add',
+          name: 'information_add',
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/InformationSingle.vue'),
+          meta: {},
+        },
+        {
+          path: 'information/edit/:id',
+          name: 'information_edit',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/InformationSingle.vue'),
+          meta: {},
         },
         // 仓库
         {
