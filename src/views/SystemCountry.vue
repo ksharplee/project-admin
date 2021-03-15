@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="title d-flex flex-wrap align-center pb-3">
-      单位列表
+      国家语言设置
       <v-btn
         color="primary"
         class="ml-auto"
@@ -10,18 +10,20 @@
       >
         <v-icon left>
           mdi-plus
-        </v-icon>添加单位
+        </v-icon>添加国家
       </v-btn>
     </div>
     <v-card>
       <v-data-table
         :headers="headers"
-        :items="productUnits.data"
+        :items="country.data"
         class="text-center"
         no-data-text="暂无数据"
         hide-default-footer
         fixed-header
         :items-per-page="20"
+        :page.sync="page"
+        @page-count="pageCount = $event"
       >
         <template v-slot:body="{ items }">
           <tbody>
@@ -29,20 +31,23 @@
               v-for="item in items"
               :key="item.id"
             >
-              <td>{{ item.sort }}</td>
               <td class="pa-3">
                 {{ item.dnames }}
               </td>
-
-              <td>{{ item.enDnames }}</td>
+              <td class="pa-3">
+                {{ item.rate }}
+              </td>
+              <td class="pa-3">
+                {{ item.languageType === '1' ? '阿拉伯语' : '英语' }}
+              </td>
               <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
                       icon
                       class="mx-1"
-                      v-on="on"
                       @click="target = item;edit = true;dialogSingle = true"
+                      v-on="on"
                     >
                       <v-icon color="teal">
                         mdi-pencil-circle
@@ -57,7 +62,7 @@
                       icon
                       class="mx-1"
                       v-on="on"
-                      @click="dialogDelete = true;toDeleteUnit = item.id"
+                      @click="dialogDelete = true;toDeleteCountry = item.id"
                     >
                       <v-icon color="secondary">
                         mdi-delete-forever
@@ -71,8 +76,18 @@
           </tbody>
         </template>
       </v-data-table>
+      <v-divider />
+      <div
+        v-if="pageCount > 1"
+        class="text-center pt-3"
+      >
+        <v-pagination
+          v-model="page"
+          :length="pageCount"
+        />
+      </div>
     </v-card>
-    <units-single
+    <country-single
       :edit="edit"
       :target="target"
       :show="dialogSingle"
@@ -92,7 +107,7 @@
             color="primary"
             :loading="deleting"
             :disabled="deleting"
-            @click="deleteUnits"
+            @click="deleteCountry"
           >
             提交
           </v-btn>
@@ -109,38 +124,39 @@
 </template>
 
 <script>
-// import * as R from 'ramda';
 import { mapState, mapActions } from 'vuex';
-import UnitsSingle from '@/components/UnitsSingle.vue';
+import CountrySingle from '@/components/CountrySingle.vue';
 
 export default {
-  name: 'ProductUnits',
-  components: { UnitsSingle },
+  name: 'SystemCountry',
+  components: { CountrySingle },
   data() {
     return {
+      page: 1,
+      pageCount: 0,
       loadingDataItems: false,
       dialogSingle: false,
       dialogDelete: false,
       deleting: false,
-      toDeleteUnit: '',
+      toDeleteCountry: '',
       edit: true,
       target: {},
       headers: [
         {
-          text: '排序',
-          value: 'sort',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '单位名称',
+          text: '国家',
           value: 'dnames',
           align: 'center',
           sortable: false,
         },
         {
-          text: '英文名称',
-          value: 'dnames',
+          text: '汇率',
+          value: 'rate',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '语言',
+          value: 'languageType',
           align: 'center',
           sortable: false,
         },
@@ -154,7 +170,7 @@ export default {
     };
   },
   computed: {
-    ...mapState('product', ['productUnits']),
+    ...mapState('system', ['country']),
   },
   created() {
     this.$store.commit('SET_BREADCRUMBS', [
@@ -165,34 +181,29 @@ export default {
         exact: true,
       },
       {
-        text: '单位列表',
+        text: '热搜设置',
         disabled: true,
         exact: true,
       },
     ]);
-    // if (!this.productUnits.status) {
     this.$store.commit('START_LOADING');
-    this.getUnitsList();
-    // }
+    this.getCountryList();
   },
   methods: {
-    ...mapActions('product', ['getUnitsListAsync', 'deleteUnitsAsync']),
-    // 获取单位列表
-    getUnitsList(params) {
+    ...mapActions('system', ['getCountryListAsync', 'deleteCountryAsync']),
+    getCountryList() {
       this.loadingDataItems = true;
-      this.getUnitsListAsync(params)
-        .catch((err) => {
-          this.checkErr(err);
-        })
+      this.getCountryListAsync().catch((err) => {
+        this.checkErr(err, 'getCountryList');
+      })
         .finally(() => {
-          this.$store.commit('END_LOADING');
           this.loadingDataItems = false;
+          this.$store.commit('END_LOADING');
         });
     },
-    // 删除单位
-    deleteUnits() {
+    deleteCountry() {
       this.deleting = true;
-      this.deleteUnitsAsync({ id: this.toDeleteUnit })
+      this.deleteCountryAsync({ id: this.toDeleteCountry })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

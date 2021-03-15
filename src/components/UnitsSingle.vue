@@ -22,13 +22,13 @@
               cols="3"
               class="text-right"
             >
-              中文名称：
+              单位名称：
             </v-col>
             <v-col cols="5">
               <v-text-field
                 v-model="unit.dnames"
                 :rules="nameRules"
-                placeholder="请输入单位中文名称"
+                placeholder="请输入单位名称"
                 dense
                 outlined
                 clearable
@@ -146,7 +146,7 @@ export default {
           text: '否',
         },
       ],
-      nameRules: [v => !!v || '请填写单位中文名称'],
+      nameRules: [v => !!v || '请填写单位名称'],
       sortRules: [v => (v && v >= 0) || '排序不能小于0'],
     };
   },

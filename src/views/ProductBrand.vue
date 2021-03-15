@@ -1,90 +1,5 @@
 <template>
   <div>
-    <!-- <div class="title d-flex flex-wrap align-center pb-3">
-      品牌列表
-      <v-btn
-        color="primary"
-        class="ml-auto"
-        depressed
-        @click="dialogSingle = true;edit = false"
-      >
-        <v-icon left>
-          mdi-plus
-        </v-icon>添加品牌
-      </v-btn>
-    </div>
-    <v-form ref="form">
-      <v-row class="mb-3">
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">品牌名称</span>
-            </div>
-            <div class="input-group-control">
-              <v-text-field
-                v-model="search.dnames"
-                placeholder="请输入品牌名称搜索"
-                outlined
-                class="white"
-                single-line
-                clearable
-                hide-details
-                dense
-                @click:clear="clearSearchConditions('dnames')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col
-          cols="12"
-          md="4"
-          lg="3"
-          xl="2"
-        >
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">是否启用</span>
-            </div>
-            <div class="input-group-control">
-              <v-select
-                v-model="search.isUse"
-                :items="useOptions"
-                placeholder="请选择是否启用"
-                class="white"
-                single-line
-                outlined
-                clearable
-                no-data-text="暂无数据"
-                dense
-                hide-details
-                @click:clear="clearSearchConditions('isUse')"
-              />
-            </div>
-          </div>
-        </v-col>
-        <v-col align-self="center">
-          <v-btn
-            color="primary mr-2"
-            depressed
-            @click="searchBrand"
-          >
-            搜索
-          </v-btn>
-          <v-btn
-            color="secondary"
-            depressed
-            @click="resetSearchConditions"
-          >
-            重置
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-form> -->
     <v-card>
       <v-data-table
         :headers="headers"
@@ -203,6 +118,7 @@
                 </v-img>
               </td>
               <td>{{ item.dnames }}</td>
+              <td>{{ item.dnamesEn }}</td>
               <td :class="item.isUse === '0' ? 'grey--text' : 'success--text'">
                 {{ item.isUse === '0' ? '否' : '是' }}
               </td>
@@ -318,6 +234,12 @@ export default {
           sortable: false,
         },
         {
+          text: '品牌英文名称',
+          value: 'dnamesEn',
+          align: 'center',
+          sortable: false,
+        },
+        {
           text: '是否启用',
           value: 'isUse',
           align: 'center',
@@ -370,10 +292,8 @@ export default {
         exact: true,
       },
     ]);
-    // if (!this.productBrand.status) {
     this.$store.commit('START_LOADING');
     this.getBrandList();
-    // }
   },
   methods: {
     ...mapActions('product', ['getBrandListAsync', 'deleteBrandAsync']),

@@ -34,11 +34,13 @@
       <v-treeview
         v-if="productCategory.data.items.length"
         :items="productCategory.data.items"
-        item-text="dnames"
         item-key="id"
         item-children="son"
         hoverable
       >
+        <template v-slot:label="{ item,leaf, open }">
+          {{ item.dnames }}({{ item.dnamesEn }})
+        </template>
         <template v-slot:prepend="{ item,leaf, open }">
           <v-icon>
             {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
@@ -169,16 +171,19 @@
           </v-card-title>
           <div class="pa-4">
             <v-row>
-              <v-col md="3">
+              <v-col>
                 分类名称
               </v-col>
-              <v-col md="3">
+              <v-col>
+                分类英文名称
+              </v-col>
+              <v-col>
                 是否是最后一级
               </v-col>
-              <v-col md="3">
+              <v-col>
                 是否显示前台
               </v-col>
-              <v-col md="3">
+              <v-col>
                 排序
               </v-col>
             </v-row>
@@ -187,7 +192,7 @@
               :key="index"
               class="mb-2"
             >
-              <v-col md="3">
+              <v-col>
                 <v-text-field
                   v-model="cate.dnames"
                   :rules="nameRules"
@@ -200,7 +205,20 @@
                   dense
                 />
               </v-col>
-              <v-col md="3">
+              <v-col>
+                <v-text-field
+                  v-model="cate.dnamesEn"
+                  :rules="nameRules"
+                  placeholder="请输入分类名"
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  hide-details
+                  dense
+                />
+              </v-col>
+              <v-col>
                 <v-select
                   v-model="cate.isEnd"
                   :items="switchOptions"
@@ -214,7 +232,7 @@
                   no-data-text="暂无数据"
                 />
               </v-col>
-              <v-col md="3">
+              <v-col>
                 <v-select
                   v-model="cate.isPublish"
                   :items="switchOptions"
@@ -228,7 +246,7 @@
                   no-data-text="暂无数据"
                 />
               </v-col>
-              <v-col md="3">
+              <v-col>
                 <v-text-field
                   v-model="cate.sort"
                   :rules="sortRules"
@@ -287,21 +305,24 @@
           </v-card-title>
           <div class="pa-4">
             <v-row>
-              <v-col md="3">
+              <v-col>
                 分类名称
               </v-col>
-              <v-col md="3">
+              <v-col>
+                分类英文名称
+              </v-col>
+              <v-col>
                 是否是最后一级
               </v-col>
-              <v-col md="3">
+              <v-col>
                 是否显示前台
               </v-col>
-              <v-col md="3">
+              <v-col>
                 排序
               </v-col>
             </v-row>
             <v-row class="mb-2">
-              <v-col md="3">
+              <v-col>
                 <v-text-field
                   v-model="cateToEdit.dnames"
                   :rules="nameRules"
@@ -313,7 +334,19 @@
                   dense
                 />
               </v-col>
-              <v-col md="3">
+              <v-col>
+                <v-text-field
+                  v-model="cateToEdit.dnamesEn"
+                  :rules="nameRules"
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  hide-details
+                  dense
+                />
+              </v-col>
+              <v-col>
                 <v-select
                   v-model="cateToEdit.isEnd"
                   :items="switchOptions"
@@ -327,7 +360,7 @@
                   no-data-text="暂无数据"
                 />
               </v-col>
-              <v-col md="3">
+              <v-col>
                 <v-select
                   v-model="cateToEdit.isPublish"
                   :items="switchOptions"
@@ -341,7 +374,7 @@
                   no-data-text="暂无数据"
                 />
               </v-col>
-              <v-col md="3">
+              <v-col>
                 <v-text-field
                   v-model="cateToEdit.sort"
                   :rules="sortRules"

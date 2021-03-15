@@ -46,6 +46,30 @@
               cols="3"
               class="text-right"
             >
+              关键字英文：
+            </v-col>
+            <v-col cols="5">
+              <v-text-field
+                v-model="hotSearch.dnamesEn"
+                :rules="nameRules"
+                placeholder="请输入热搜关键字"
+                dense
+                outlined
+                clearable
+                required
+                single-line
+                hide-details
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            align="center"
+            class="mb-3"
+          >
+            <v-col
+              cols="3"
+              class="text-right"
+            >
               是否首页显示：
             </v-col>
             <v-col cols="5">

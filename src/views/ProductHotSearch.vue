@@ -35,6 +35,9 @@
                 {{ item.dnames }}
               </td>
               <td class="pa-3">
+                {{ item.dnamesEn }}
+              </td>
+              <td class="pa-3">
                 {{ item.isHot === '1' ? '是' : '否' }}
               </td>
               <td>
@@ -142,6 +145,12 @@ export default {
         {
           text: '热搜关键字',
           value: 'dnames',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '热搜关键字英文',
+          value: 'dnamesEn',
           align: 'center',
           sortable: false,
         },

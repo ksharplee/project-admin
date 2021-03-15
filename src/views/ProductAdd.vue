@@ -1,9 +1,5 @@
 <template>
   <div>
-    <!-- <div class="title">
-      添加商品
-    </div> -->
-
     <v-form
       ref="form"
       v-model="valid"
@@ -65,7 +61,6 @@
                       :items="productCategory.data.items"
                       :active="categorySelected"
                       dense
-                      item-text="dnames"
                       item-key="id"
                       item-children="son"
                       open-on-click
@@ -74,6 +69,9 @@
                       return-object
                       @update:active="getActiveCategory"
                     >
+                      <template v-slot:label="{ item,leaf, open }">
+                        {{ item.dnames }}({{ item.dnamesEn }})
+                      </template>
                       <template v-slot:prepend="{ item,leaf, open }">
                         <v-icon>
                           {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
@@ -149,6 +147,30 @@
                 <div class="input-group-control">
                   <v-text-field
                     v-model="product.dnames"
+                    :rules="nameRules"
+                    placeholder="请输入商品名称"
+                    dense
+                    outlined
+                    clearable
+                    required
+                    single-line
+                    hide-details
+                  />
+                </div>
+              </div>
+            </v-col>
+            <v-col
+              cols="12"
+              md="6"
+              xl="4"
+            >
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text required">商品英文名称</span>
+                </div>
+                <div class="input-group-control">
+                  <v-text-field
+                    v-model="product.dnamesEn"
                     :rules="nameRules"
                     placeholder="请输入商品名称"
                     dense
@@ -1217,10 +1239,6 @@
       :show="dialogBrand"
       @close-dialog="dialogBrand = false"
     />
-    <supplier-single
-      :show="dialogSupplier"
-      @close-dialog="dialogSupplier = false"
-    />
     <v-dialog
       v-model="dialogAddAttr"
       width="500"
@@ -1512,7 +1530,6 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import BrandSingle from '@/components/BrandSingle.vue';
 import ImgUpload from '@/components/ImgUpload.vue';
 import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
-import SupplierSingle from '@/components/SupplierSingle.vue';
 import WangEditor from '@/components/WangEditor.vue';
 
 const isNotEmpty = v => !!v && R.complement(R.isEmpty(v));
@@ -1525,7 +1542,6 @@ export default {
     BrandSingle,
     ImgUpload,
     ImgUploadMultiple,
-    SupplierSingle,
     WangEditor,
   },
   data() {
@@ -1679,8 +1695,6 @@ export default {
   computed: {
     ...mapState('product', ['productCategory', 'productBrand', 'productUnits']),
     ...mapGetters('product', ['productBrandInUse', 'brandFilter']),
-    ...mapState('supplier', ['supplierList']),
-    ...mapGetters('supplier', ['supplierFilter']),
     priceAreaAvailable() {
       return R.all(R.where({
         minNum: isNotEmpty,

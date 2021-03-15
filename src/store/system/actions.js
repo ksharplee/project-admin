@@ -31,11 +31,17 @@ export default {
   // 员工列表
   async getEmployeeListAsync(context, payload) {
     try {
-      const res = await axios.post('/a/fetchs.html', R.mergeRight({
-        pageSize: process.env.VUE_APP_PAGESIZE,
-        timeLimit: context.state.employeeList.data.timeLimit,
-        p: context.state.employeeList.data.p,
-      }, payload));
+      const res = await axios.post(
+        '/a/fetchs.html',
+        R.mergeRight(
+          {
+            pageSize: process.env.VUE_APP_PAGESIZE,
+            timeLimit: context.state.employeeList.data.timeLimit,
+            p: context.state.employeeList.data.p,
+          },
+          payload
+        )
+      );
       if (res.data.status === 1) {
         if (payload && payload.all === '1') {
           return Promise.resolve(res.data.data.items);
@@ -74,7 +80,11 @@ export default {
   },
   // 订单处理流程设置
   async addOrEditOrderSequenceAsync(context, payload) {
-    const right = await context.dispatch('checkAuthorityAsync', { rightId: payload.edit ? 72 : 71 }, { root: true });
+    const right = await context.dispatch(
+      'checkAuthorityAsync',
+      { rightId: payload.edit ? 72 : 71 },
+      { root: true }
+    );
     if (right) {
       try {
         const res = await axios.post('/system/add_save_order_flow_setting.html', payload);
@@ -241,6 +251,58 @@ export default {
     try {
       const res = await axios.post('/us/setDefaulPriceStyle.html', payload);
       if (res.data.status === 1) {
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 国家列表
+  async getCountryListAsync(context, payload) {
+    try {
+      const res = await axios.post('/cty/lists.html', payload);
+      if (res.data.status === 1) {
+        context.commit('SET_COUNTRY_LIST', res.data);
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 添加国家 参数: dnames  rate language
+  async addCountryAsync(context, payload) {
+    try {
+      const res = await axios.post('/cty/add.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getCountryListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 编辑国家 参数: id dnames  rate language
+  async editCountryAsync(context, payload) {
+    try {
+      const res = await axios.post('/cty/edit.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getCountryListAsync');
+        return Promise.resolve(res.data.status);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  // 删除国家 参数: id
+  async deleteCountryAsync(context, payload) {
+    try {
+      const res = await axios.post('/cty/delete.html', payload);
+      if (res.data.status === 1) {
+        await context.dispatch('getCountryListAsync');
         return Promise.resolve(res.data.status);
       }
       return Promise.reject(new Error(res.data.info));

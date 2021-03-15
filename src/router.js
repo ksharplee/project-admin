@@ -59,6 +59,15 @@ export default new Router({
           },
         },
         {
+          path: 'system/country',
+          name: 'system_country',
+          component: () => import(/* webpackChunkName: "group-system" */ './views/SystemCountry.vue'),
+          meta: {
+            required: true,
+            id: '76',
+          },
+        },
+        {
           path: 'system/order-sequence',
           name: 'order_sequence',
           component: () => import(/* webpackChunkName: "group-system" */ './views/SystemOrderSequenceList.vue'),

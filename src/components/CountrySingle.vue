@@ -7,7 +7,7 @@
   >
     <v-card>
       <v-card-title class="title grey lighten-3 pa-4">
-        添加品牌
+        添加国家
       </v-card-title>
       <v-card-text class="pt-4 black--text body-1">
         <v-form
@@ -22,17 +22,17 @@
               cols="3"
               class="text-right"
             >
-              <span class="red--text">*</span>品牌名称：
+              国家名称：
             </v-col>
             <v-col cols="5">
               <v-text-field
-                v-model="brand.dnames"
+                v-model="country.dnames"
                 :rules="nameRules"
-                placeholder="请输入品牌名称"
+                placeholder="请输入国家关键字"
+                dense
                 outlined
                 clearable
                 required
-                dense
                 single-line
                 hide-details
               />
@@ -46,17 +46,17 @@
               cols="3"
               class="text-right"
             >
-              <span class="red--text">*</span>品牌英文名称：
+              汇率：
             </v-col>
             <v-col cols="5">
               <v-text-field
-                v-model="brand.dnamesEn"
-                :rules="nameRules"
-                placeholder="请输入品牌英文名称"
+                v-model="country.rate"
+                :rules="rateRules"
+                placeholder="请输入汇率"
+                dense
                 outlined
                 clearable
                 required
-                dense
                 single-line
                 hide-details
               />
@@ -70,84 +70,20 @@
               cols="3"
               class="text-right"
             >
-              品牌图片：
-            </v-col>
-            <v-col cols="5">
-              <img-upload
-                :image="brand.image ? brand.image : require('@/assets/imgWaiting.png')"
-                icon-size="48px"
-                @update:src="brand.image = $event"
-                @update:delete="brand.image = ''"
-              />
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right"
-            >
-              是否启用：
+              语言：
             </v-col>
             <v-col cols="5">
               <v-select
-                v-model="brand.isUse"
-                :items="isUse"
-                placeholder="请选择是否启用"
+                v-model="country.languageType"
+                :items="languageType"
+                :rules="typeRules"
+                placeholder="请选择语言"
                 clearable
                 outlined
                 dense
                 single-line
                 hide-details
                 no-data-text="暂无数据"
-              />
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right"
-            >
-              品牌描述：
-            </v-col>
-            <v-col cols="9">
-              <v-textarea
-                v-model="brand.desc"
-                outlined
-                value=""
-                dense
-                placeholder="请输入品牌描述"
-                hide-details
-              />
-            </v-col>
-          </v-row>
-          <v-row
-            align="center"
-            class="mb-3"
-          >
-            <v-col
-              cols="3"
-              class="text-right"
-            >
-              排序：
-            </v-col>
-            <v-col cols="5">
-              <v-text-field
-                v-model="brand.sort"
-                :rules="sortRules"
-                type="number"
-                dense
-                placeholder="请输入排序"
-                outlined
-                clearable
-                required
-                single-line
-                hide-details
               />
             </v-col>
           </v-row>
@@ -159,7 +95,7 @@
           :loading="submitting"
           :disabled="submitting"
           color="primary"
-          @click="addOrEditProductBrand"
+          @click="addOrEditCountry"
         >
           提交
         </v-btn>
@@ -177,11 +113,9 @@
 <script>
 import * as R from 'ramda';
 import { mapActions } from 'vuex';
-import ImgUpload from '@/components/ImgUpload.vue';
 
 export default {
-  name: 'BrandSingle',
-  components: { ImgUpload },
+  name: 'CountrySingle',
   props: {
     show: {
       type: Boolean,
@@ -200,45 +134,48 @@ export default {
     return {
       valid: true,
       submitting: false,
-      brand: {
-        image: '',
+      country: {
+        languageType: '2',
       },
-      isUse: [
+      languageType: [
         {
           value: '1',
-          text: '是',
+          text: '阿拉伯语',
         },
         {
-          value: '0',
-          text: '否',
+          value: '2',
+          text: '英语',
         },
       ],
-      nameRules: [v => !!v || '请填写品牌名称'],
-      sortRules: [v => (v && v >= 0) || '排序不能小于0'],
+      nameRules: [v => !!v || '请填写国家名称'],
+      rateRules: [v => !!v || '请填写汇率'],
+      typeRules: [v => !!v || '请选择语言'],
     };
   },
   watch: {
     show() {
       if (this.edit) {
-        this.brand = R.clone(this.target);
+        this.country = R.clone(this.target);
       } else {
-        this.brand = {};
+        this.country = {
+          languageType: '2',
+        };
       }
     },
   },
   created() {},
   methods: {
-    ...mapActions('product', ['addOrEditBrandAsync']),
-    addOrEditProductBrand() {
+    ...mapActions('system', ['addCountryAsync', 'editCountryAsync']),
+    addCountry() {
       this.submitting = true;
-      this.addOrEditBrandAsync({ ...this.brand, edit: this.edit })
+      this.addCountryAsync({ ...this.country, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',
             text: `恭喜，${this.edit ? '修改' : '添加'}成功!`,
           });
-          this.brand = {
-            image: '',
+          this.country = {
+            languageType: '2',
           };
         })
         .catch((err) => {
@@ -248,6 +185,33 @@ export default {
           this.submitting = false;
           this.$emit('close-dialog');
         });
+    },
+    editCountry() {
+      this.submitting = true;
+      this.editCountryAsync({ ...this.country })
+        .then(() => {
+          this.$store.commit('TOGGLE_SNACKBAR', {
+            type: 'success',
+            text: `恭喜，${this.edit ? '修改' : '添加'}成功!`,
+          });
+          this.country = {
+            languageType: '2',
+          };
+        })
+        .catch((err) => {
+          this.checkErr(err);
+        })
+        .finally(() => {
+          this.submitting = false;
+          this.$emit('close-dialog');
+        });
+    },
+    addOrEditCountry() {
+      if (this.edit) {
+        this.editCountry();
+      } else {
+        this.addCountry();
+      }
     },
   },
 };

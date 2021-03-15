@@ -5,6 +5,7 @@ import {
   SET_AREA_INFO,
   SET_ORDER_SEQUENCE,
   CLEAR_BASIC_INFO,
+  SET_COUNTRY_LIST,
 } from '../mutation-types';
 
 export default {
@@ -19,6 +20,9 @@ export default {
   },
   [SET_AREA_INFO](state, payload) {
     state.areaInfo = payload;
+  },
+  [SET_COUNTRY_LIST](state, payload) {
+    state.country = payload;
   },
   [SET_ORDER_SEQUENCE](state, payload) {
     if (payload.data.length) {

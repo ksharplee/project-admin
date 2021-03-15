@@ -16,6 +16,10 @@ export default {
     status: 0,
     data: [],
   },
+  country: {
+    status: 0,
+    data: [],
+  },
   orderSequence: {
     status: 0,
     data: [

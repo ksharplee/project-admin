@@ -194,6 +194,7 @@ export default {
           { text: '订单处理流程', url: { name: 'order_sequence' } },
           { text: '小程序二维码', url: { name: 'qrcode' } },
           { text: '广告图设置', url: { name: 'ads' } },
+          { text: '国家语言设置', url: { name: 'system_country' } },
         ],
       },
       {

@@ -35,6 +35,7 @@
             >
               <td>{{ item.sort }}</td>
               <td>{{ item.dnames }}</td>
+              <td>{{ item.dnamesEn }}</td>
               <td>{{ item.specItem | concatItemNames }}</td>
               <td>
                 <v-tooltip bottom>
@@ -85,7 +86,7 @@
     </v-card>
     <v-dialog
       v-model="dialogAdd"
-      max-width="500px"
+      max-width="650px"
     >
       <v-card>
         <v-form
@@ -116,6 +117,24 @@
             </v-row>
             <v-row align="center">
               <v-col md="3">
+                规格英文名称：
+              </v-col>
+              <v-col md="8">
+                <v-text-field
+                  v-model="specToAdd.dnamesEn"
+                  :rules="nameRules"
+                  placeholder="请填写规格名称"
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  dense
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row align="center">
+              <v-col md="3">
                 排序：
               </v-col>
               <v-col md="8">
@@ -132,7 +151,6 @@
                 />
               </v-col>
             </v-row>
-
             <v-row>
               <v-col
                 md="3"
@@ -150,6 +168,18 @@
                     <v-text-field
                       v-model="specItem.itemName"
                       placeholder="请输入规格值"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      dense
+                      hide-details
+                    />
+                  </div>
+                  <div class="input-group-contro pl-2">
+                    <v-text-field
+                      v-model="specItem.itemNameEn"
+                      placeholder="请输入规格值英文名"
                       outlined
                       clearable
                       required
@@ -207,7 +237,7 @@
     </v-dialog>
     <v-dialog
       v-model="dialogEdit"
-      max-width="500px"
+      max-width="650px"
     >
       <v-card>
         <v-form
@@ -225,6 +255,24 @@
               <v-col md="8">
                 <v-text-field
                   v-model="specToEdit.dnames"
+                  :rules="nameRules"
+                  placeholder="请填写规格名称"
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  dense
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row align="center">
+              <v-col md="3">
+                规格英文名称：
+              </v-col>
+              <v-col md="8">
+                <v-text-field
+                  v-model="specToEdit.dnamesEn"
                   :rules="nameRules"
                   placeholder="请填写规格名称"
                   outlined
@@ -272,6 +320,18 @@
                     <v-text-field
                       v-model="specItem.itemName"
                       placeholder="请输入规格值"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      dense
+                      hide-details
+                    />
+                  </div>
+                  <div class="input-group-contro pl-2">
+                    <v-text-field
+                      v-model="specItem.itemNameEn"
+                      placeholder="请输入规格值英文名"
                       outlined
                       clearable
                       required
@@ -367,7 +427,7 @@ export default {
   name: 'ProductSpec',
   filters: {
     concatItemNames(arr) {
-      return R.join('，', R.pluck('itemName', arr));
+      return R.join(',', R.map(item => `${item.itemName}(${item.itemNameEn})`, arr));
     },
   },
   props: {
@@ -401,6 +461,7 @@ export default {
         specItem: [
           {
             itemName: '',
+            itemNameEn: '',
           },
         ],
       },
@@ -415,6 +476,12 @@ export default {
         },
         {
           text: '规格名称',
+          align: 'center',
+          sortable: false,
+          value: 'dnames',
+        },
+        {
+          text: '规格英文名称',
           align: 'center',
           sortable: false,
           value: 'dnames',
@@ -436,31 +503,23 @@ export default {
     };
   },
   computed: {
-    toAddItemNames() {
-      return R.uniq(
-        R.without([''], R.pluck('itemName', this.specToAdd.specItem))
-      );
-    },
     toAddParams() {
       return {
         categoryId: this.id,
         dnames: this.specToAdd.dnames,
+        dnamesEn: this.specToAdd.dnamesEn,
         sort: this.specToAdd.sort,
-        specItem: R.map(R.objOf('itemName'), this.toAddItemNames),
+        specItem: this.specToAdd.specItem,
       };
-    },
-    toEditItemNames() {
-      return R.uniq(
-        R.without([''], R.pluck('itemName', this.specToEdit.specItem))
-      );
     },
     toEditParams() {
       return {
         categoryId: this.id,
         id: this.specToEdit.id,
         dnames: this.specToEdit.dnames,
+        dnamesEn: this.specToEdit.dnamesEn,
         sort: this.specToEdit.sort,
-        specItem: R.map(R.objOf('itemName'), this.toEditItemNames),
+        specItem: this.specToEdit.specItem,
       };
     },
   },

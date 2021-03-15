@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title d-flex align-center">
+    <div class="title d-flex align-center mb-3">
       <span class="primary--text">{{ cate }}</span>的属性列表
       <v-btn
         color="primary"
@@ -13,7 +13,6 @@
         </v-icon>添加属性
       </v-btn>
     </div>
-
     <v-card>
       <v-data-table
         :headers="headers"
@@ -36,6 +35,7 @@
             >
               <td>{{ item.sort }}</td>
               <td>{{ item.dnames }}</td>
+              <td>{{ item.dnamesEn }}</td>
               <td>{{ item.genre | genreText }}</td>
               <td>{{ item.attrItem | concatItemNames }}</td>
               <td>
@@ -87,7 +87,7 @@
     </v-card>
     <v-dialog
       v-model="dialogAdd"
-      max-width="500px"
+      max-width="650px"
     >
       <v-card>
         <v-form
@@ -105,6 +105,24 @@
               <v-col md="8">
                 <v-text-field
                   v-model="attrToAdd.dnames"
+                  :rules="nameRules"
+                  placeholder="请填写属性名称"
+                  dense
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row align="center">
+              <v-col md="3">
+                属性英文名称：
+              </v-col>
+              <v-col md="8">
+                <v-text-field
+                  v-model="attrToAdd.dnamesEn"
                   :rules="nameRules"
                   placeholder="请填写属性名称"
                   dense
@@ -177,6 +195,18 @@
                         hide-details
                       />
                     </div>
+                    <div class="input-group-control pl-2">
+                      <v-text-field
+                        v-model="attrItem.attrItemNameEn"
+                        placeholder="请输入属性值英文名"
+                        dense
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                      />
+                    </div>
                     <div class="input-group-append">
                       <span class="input-group-text pa-0">
                         <v-btn
@@ -228,7 +258,7 @@
     </v-dialog>
     <v-dialog
       v-model="dialogEdit"
-      max-width="500px"
+      max-width="650px"
     >
       <v-card>
         <v-form
@@ -246,6 +276,24 @@
               <v-col md="8">
                 <v-text-field
                   v-model="attrToEdit.dnames"
+                  :rules="nameRules"
+                  placeholder="请填写属性名称"
+                  dense
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row align="center">
+              <v-col md="3">
+                属性名称：
+              </v-col>
+              <v-col md="8">
+                <v-text-field
+                  v-model="attrToEdit.dnamesEn"
                   :rules="nameRules"
                   placeholder="请填写属性名称"
                   dense
@@ -310,6 +358,18 @@
                       <v-text-field
                         v-model="attrItem.attrItemName"
                         placeholder="请输入属性值"
+                        dense
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
+                      />
+                    </div>
+                    <div class="input-group-control pl-2">
+                      <v-text-field
+                        v-model="attrItem.attrItemNameEn"
+                        placeholder="请输入属性值英文名"
                         dense
                         outlined
                         clearable
@@ -408,7 +468,7 @@ export default {
   filters: {
     concatItemNames(arr) {
       return arr[0].attrItemName
-        ? R.join('，', R.pluck('attrItemName', arr))
+        ? R.join(',', R.map(item => `${item.attrItemName}(${item.attrItemNameEn})`, arr))
         : '无';
     },
     genreText(genre) {
@@ -459,6 +519,7 @@ export default {
         attrItem: [
           {
             attrItemName: '',
+            attrItemNameEn: '',
           },
         ],
       },
@@ -494,6 +555,12 @@ export default {
           value: 'dnames',
         },
         {
+          text: '属性英文名称',
+          align: 'center',
+          sortable: false,
+          value: 'dnamesEn',
+        },
+        {
           text: '属性类型',
           align: 'center',
           sortable: false,
@@ -516,33 +583,25 @@ export default {
     };
   },
   computed: {
-    toAddItemNames() {
-      return R.uniq(
-        R.without([''], R.pluck('attrItemName', this.attrToAdd.attrItem))
-      );
-    },
     toAddParams() {
       return {
         categoryId: this.id,
         dnames: this.attrToAdd.dnames,
+        dnamesEn: this.attrToAdd.dnamesEn,
         sort: this.attrToAdd.sort,
         genre: this.attrToAdd.genre,
-        attrItem: R.map(R.objOf('attrItemName'), this.toAddItemNames),
+        attrItem: this.attrToAdd.attrItem,
       };
-    },
-    toEditItemNames() {
-      return R.uniq(
-        R.without([''], R.pluck('attrItemName', this.attrToEdit.attrItem))
-      );
     },
     toEditParams() {
       return {
         categoryId: this.id,
         id: this.attrToEdit.id,
         dnames: this.attrToEdit.dnames,
+        dnamesEn: this.attrToEdit.dnamesEn,
         genre: this.attrToEdit.genre,
         sort: this.attrToEdit.sort,
-        attrItem: R.map(R.objOf('attrItemName'), this.toEditItemNames),
+        attrItem: this.attrToEdit.attrItem,
       };
     },
   },
