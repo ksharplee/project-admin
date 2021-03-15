@@ -1512,7 +1512,6 @@ import { mapState, mapActions, mapGetters } from 'vuex';
 import BrandSingle from '@/components/BrandSingle.vue';
 import ImgUpload from '@/components/ImgUpload.vue';
 import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
-import SupplierSingle from '@/components/SupplierSingle.vue';
 import WangEditor from '@/components/WangEditor.vue';
 
 const isNotEmpty = v => !!v && R.complement(R.isEmpty(v));
@@ -1525,7 +1524,6 @@ export default {
     BrandSingle,
     ImgUpload,
     ImgUploadMultiple,
-    SupplierSingle,
     WangEditor,
   },
   data() {
@@ -1679,8 +1677,6 @@ export default {
   computed: {
     ...mapState('product', ['productCategory', 'productBrand', 'productUnits']),
     ...mapGetters('product', ['productBrandInUse', 'brandFilter']),
-    ...mapState('supplier', ['supplierList']),
-    ...mapGetters('supplier', ['supplierFilter']),
     priceAreaAvailable() {
       return R.all(R.where({
         minNum: isNotEmpty,
