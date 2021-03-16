@@ -33,7 +33,9 @@
                 >
                   <v-icon>mdi-close</v-icon>
                 </v-btn>
-                已选择&nbsp;<span class="primary--text">{{ selectedProducts.length }} </span>&nbsp;项
+                已选择&nbsp;<span
+                  class="primary--text"
+                >{{ selectedProducts.length }} </span>&nbsp;项
                 <v-divider
                   vertical
                   class="ml-8 mr-4"
@@ -48,7 +50,8 @@
                     class="mr-1"
                   >
                     mdi-inbox-arrow-up mdi-18px
-                  </v-icon> 上架
+                  </v-icon>
+                  上架
                 </v-btn>
                 <v-btn
                   text
@@ -60,7 +63,8 @@
                     class="mr-1"
                   >
                     mdi-inbox-arrow-down mdi-18px
-                  </v-icon> 下架
+                  </v-icon>
+                  下架
                 </v-btn>
                 <v-btn
                   text
@@ -72,7 +76,8 @@
                     class="mr-1"
                   >
                     mdi-delete mdi-18px
-                  </v-icon> 删除
+                  </v-icon>
+                  删除
                 </v-btn>
                 <v-btn
                   text
@@ -84,7 +89,8 @@
                     class="mr-1"
                   >
                     mdi-bookmark mdi-18px
-                  </v-icon> 设置标签
+                  </v-icon>
+                  设置标签
                 </v-btn>
                 <!-- <v-btn
                   text
@@ -115,7 +121,8 @@
                     class="mr-1"
                   >
                     mdi-eraser mdi-18px
-                  </v-icon> 清除搜索
+                  </v-icon>
+                  清除搜索
                 </v-btn>
                 <v-btn
                   text
@@ -127,7 +134,8 @@
                     class="mr-1"
                   >
                     mdi-feature-search mdi-18px
-                  </v-icon> 继续搜索
+                  </v-icon>
+                  继续搜索
                 </v-btn>
               </template>
               <template v-else>
@@ -142,7 +150,12 @@
                       class="px-1"
                       v-on="on"
                     >
-                      {{ categorySelected.length ? categorySelected[0].dnames : '全部分类' }} <v-icon :class="value ? 'rotate-180' : ''">
+                      {{
+                        categorySelected.length
+                          ? categorySelected[0].dnames
+                          : "全部分类"
+                      }}
+                      <v-icon :class="value ? 'rotate-180' : ''">
                         mdi-chevron-down mdi-18px
                       </v-icon>
                     </v-btn>
@@ -164,9 +177,15 @@
                         class="custom-treeview-class"
                         @update:active="getActiveCategory"
                       >
-                        <template v-slot:prepend="{ item,leaf, open }">
+                        <template v-slot:prepend="{ item, leaf, open }">
                           <v-icon>
-                            {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
+                            {{
+                              leaf
+                                ? "mdi-bookmark-outline"
+                                : open
+                                  ? "mdi-bookmark-outline"
+                                  : "mdi-bookmark"
+                            }}
                           </v-icon>
                         </template>
                       </v-treeview>
@@ -180,7 +199,8 @@
                       class="px-1 ml-2"
                       v-on="on"
                     >
-                      {{ currentStatus }} <v-icon :class="value ? 'rotate-180' : ''">
+                      {{ currentStatus }}
+                      <v-icon :class="value ? 'rotate-180' : ''">
                         mdi-chevron-down mdi-18px
                       </v-icon>
                     </v-btn>
@@ -199,7 +219,7 @@
                 </v-menu>
                 <div
                   class="input-group ml-4"
-                  style="width:300px"
+                  style="width: 300px"
                 >
                   <div class="input-group-control">
                     <v-text-field
@@ -211,7 +231,10 @@
                       clearable
                       hide-details
                       dense
-                      @click:clear="$set(search,'searchStr', '');getProductList({p: '1'})"
+                      @click:clear="
+                        $set(search, 'searchStr', '');
+                        getProductList({ p: '1' });
+                      "
                     />
                   </div>
                   <div class="input-group-append">
@@ -251,13 +274,32 @@
             <v-divider />
           </template>
           <template v-slot:item.isRetail="{ item }">
-            <span :class="item.isRetail === '4' ? 'success-text' : item.isRetail === '3' ? 'error--text' : 'grey--text'">
-              {{ item.isRetail === '4' ? '零售中' : item.isRetail === '3' ? '审核中' : item.isRetail === '2' ? '已驳回' : '未提交' }}
+            <span
+              :class="
+                item.isRetail === '4'
+                  ? 'success-text'
+                  : item.isRetail === '3'
+                    ? 'error--text'
+                    : 'grey--text'
+              "
+            >
+              {{
+                item.isRetail === "4"
+                  ? "零售中"
+                  : item.isRetail === "3"
+                    ? "审核中"
+                    : item.isRetail === "2"
+                      ? "已驳回"
+                      : "未提交"
+              }}
             </span>
           </template>
           <template v-slot:item.dnames="{ item }">
             <div class="text-left py-3">
-              {{ item.dnames }}
+              <div class="mb-1">
+                {{ item.dnames }}
+              </div>
+              <div>En:{{ item.dnamesEn }}</div>
               <div class="mt-1">
                 <v-chip
                   v-if="item.isNew === '1'"
@@ -311,25 +353,40 @@
             </div>
           </template>
           <template v-slot:item.price="{ item }">
-            {{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}
+            {{
+              item.containSpec === "1"
+                ? `${item.minPrice}~${item.maxPrice}`
+                : item.price
+            }}
           </template>
           <template v-slot:item.onlineErweimaPath="{ item }">
             <router-link
-              :to="item.isLive === '4' ? {name: 'print', params: {
-                src: item.onlineErweimaPath,
-                dnames: item.dnames,
-                dno: item.dno
-              }} : '#'"
+              :to="
+                item.isLive === '4'
+                  ? {
+                    name: 'print',
+                    params: {
+                      src: item.onlineErweimaPath,
+                      dnames: item.dnames,
+                      dno: item.dno,
+                    },
+                  }
+                  : '#'
+              "
               :class="item.isLive === '4' ? 'primary--text' : 'grey--text'"
               download
             >
-              {{ item.isLive === '4' ? '下载二维码' : '未审核' }}
+              {{ item.isLive === "4" ? "下载二维码" : "未审核" }}
             </router-link>
           </template>
           <template v-slot:item.image="{ item }">
             <div class="py-3">
               <v-img
-                :src="item.image ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
+                :src="
+                  item.image
+                    ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100`
+                    : require('@/assets/imgWaiting.png')
+                "
                 aspect-ratio="1"
                 class="grey lighten-1"
               >
@@ -349,10 +406,20 @@
             </div>
           </template>
           <template v-slot:item.dstatus="{ item }">
-            <span :class="item.dstatus === '4' ? 'success--text' : 'grey--text'">{{ item.dstatus === '4' ? '已上架' : item.dstatus === '0' ? '未上架' : '已下架' }}</span>
+            <span
+              :class="item.dstatus === '4' ? 'success--text' : 'grey--text'"
+            >{{
+              item.dstatus === "4"
+                ? "已上架"
+                : item.dstatus === "0"
+                  ? "未上架"
+                  : "已下架"
+            }}</span>
           </template>
           <template v-slot:item.shelfTime="{ item }">
-            <span :class="item.shelfTime ? '' : 'grey--text'">{{ item.shelfTime | dateTruncate(16) }}</span>
+            <span :class="item.shelfTime ? '' : 'grey--text'">{{
+              item.shelfTime | dateTruncate(16)
+            }}</span>
           </template>
           <template v-slot:item.action="{ item }">
             <v-menu
@@ -380,7 +447,7 @@
                       class="mr-1"
                       small
                       :color="i !== 0 && item.dstatus === '4' ? '#999' : ''"
-                      style="position:relative;top:-1px"
+                      style="position: relative; top: -1px"
                       v-text="config.icon"
                     />{{ config.text }}
                   </v-list-item-title>
@@ -395,7 +462,9 @@
               class="pa-4 d-flex align-center justify-end text-no-wrap body-1"
             >
               <div class="mr-2">
-                共<span class="error--text">{{ productList.data.totalItem }}</span>商品
+                共<span class="error--text">{{
+                  productList.data.totalItem
+                }}</span>商品
               </div>
               <v-pagination
                 v-model="page"
@@ -405,12 +474,17 @@
               <div class="mx-2">
                 跳至
               </div>
-              <div style="width:50px">
+              <div style="width: 50px">
                 <input
                   v-model="pageEnter"
                   type="text"
                   class="width-100 px-2 text-center"
-                  style="height:30px;border:1px solid #ddd;max-width:100%;border-radius:3px"
+                  style="
+                    height: 30px;
+                    border: 1px solid #ddd;
+                    max-width: 100%;
+                    border-radius: 3px;
+                  "
                   @keyup.enter="changePaginationDirectly"
                 >
               </div>
@@ -428,7 +502,11 @@
     >
       <v-card>
         <v-card-title class="title grey lighten-3 pa-4">
-          确定删除{{ toDeleteProducts.length === 1 ? '此商品' : `这${toDeleteProducts.length}个商品` }}吗?
+          确定删除{{
+            toDeleteProducts.length === 1
+              ? "此商品"
+              : `这${toDeleteProducts.length}个商品`
+          }}吗?
         </v-card-title>
         <v-card-actions>
           <div class="flex-grow-1" />
@@ -455,7 +533,12 @@
     >
       <v-card>
         <v-card-title class="title grey lighten-3 pa-4">
-          确定{{ operate }}{{ toOperateProducts.length === 1 ? '此商品' : `这${toOperateProducts.length}个商品` }}吗?
+          确定{{ operate
+          }}{{
+            toOperateProducts.length === 1
+              ? "此商品"
+              : `这${toOperateProducts.length}个商品`
+          }}吗?
         </v-card-title>
         <v-card-actions>
           <div class="flex-grow-1" />
@@ -483,9 +566,7 @@
       hide-overlay
     >
       <v-card>
-        <v-card-title>
-          批量设置标签
-        </v-card-title>
+        <v-card-title> 批量设置标签 </v-card-title>
         <v-card-text>
           <v-data-table
             :items="selectedProducts"
@@ -499,9 +580,7 @@
             <template v-slot:header="{ props: { headers } }">
               <thead>
                 <tr>
-                  <th>
-                    商品货号
-                  </th>
+                  <th>商品货号</th>
                   <th>商品名称</th>
                   <th>
                     <v-checkbox
@@ -511,7 +590,10 @@
                       dense
                       color="primary"
                       hide-details
-                      :indeterminate="isNew.length > 0 && isNew.length < selectedProducts.length"
+                      :indeterminate="
+                        isNew.length > 0 &&
+                          isNew.length < selectedProducts.length
+                      "
                       @change="setSelectedProductsLabel($event, 'isNew')"
                     />
                   </th>
@@ -523,8 +605,11 @@
                       dense
                       color="primary"
                       hide-details
-                      :indeterminate="isHot.length > 0 && isHot.length < selectedProducts.length"
-                      @change="setSelectedProductsLabel($event,'isHot')"
+                      :indeterminate="
+                        isHot.length > 0 &&
+                          isHot.length < selectedProducts.length
+                      "
+                      @change="setSelectedProductsLabel($event, 'isHot')"
                     />
                   </th>
                   <th>
@@ -535,8 +620,11 @@
                       dense
                       color="primary"
                       hide-details
-                      :indeterminate="isRecommend.length > 0 && isRecommend.length < selectedProducts.length"
-                      @change="setSelectedProductsLabel($event,'isRecommend')"
+                      :indeterminate="
+                        isRecommend.length > 0 &&
+                          isRecommend.length < selectedProducts.length
+                      "
+                      @change="setSelectedProductsLabel($event, 'isRecommend')"
                     />
                   </th>
                   <th>
@@ -547,8 +635,11 @@
                       dense
                       color="primary"
                       hide-details
-                      :indeterminate="isPromotion.length > 0 && isPromotion.length < selectedProducts.length"
-                      @change="setSelectedProductsLabel($event,'isPromotion')"
+                      :indeterminate="
+                        isPromotion.length > 0 &&
+                          isPromotion.length < selectedProducts.length
+                      "
+                      @change="setSelectedProductsLabel($event, 'isPromotion')"
                     />
                   </th>
                   <th>
@@ -559,8 +650,11 @@
                       dense
                       color="primary"
                       hide-details
-                      :indeterminate="isSpot.length > 0 && isSpot.length < selectedProducts.length"
-                      @change="setSelectedProductsLabel($event,'isSpot')"
+                      :indeterminate="
+                        isSpot.length > 0 &&
+                          isSpot.length < selectedProducts.length
+                      "
+                      @change="setSelectedProductsLabel($event, 'isSpot')"
                     />
                   </th>
                   <th>
@@ -571,8 +665,11 @@
                       dense
                       color="primary"
                       hide-details
-                      :indeterminate="isOrder.length > 0 && isOrder.length < selectedProducts.length"
-                      @change="setSelectedProductsLabel($event,'isOrder')"
+                      :indeterminate="
+                        isOrder.length > 0 &&
+                          isOrder.length < selectedProducts.length
+                      "
+                      @change="setSelectedProductsLabel($event, 'isOrder')"
                     />
                   </th>
                 </tr>
@@ -725,7 +822,9 @@
                       </v-row>
                     </template>
                   </v-img>
-                  <div class="mt-4 mb-2 text-center display-1 font-weight-bold text-truncate">
+                  <div
+                    class="mt-4 mb-2 text-center display-1 font-weight-bold text-truncate"
+                  >
                     {{ item.dnames }}
                   </div>
                   <div class="mb-4 text-center display-1 font-weight-bold">
@@ -758,7 +857,7 @@
                 <tr>
                   <th
                     class="text-center"
-                    style="width:80px"
+                    style="width: 80px"
                   >
                     图片
                   </th>
@@ -770,7 +869,7 @@
                   </th>
                   <th
                     class="text-center"
-                    style="width:200px"
+                    style="width: 200px"
                   >
                     零售价格
                   </th>
@@ -783,7 +882,11 @@
                 >
                   <td class="py-2">
                     <v-img
-                      :src="spec.image ? `${spec.image}?x-oss-process=image/resize,m_fill,w_100,h_100` : require('@/assets/imgWaiting.png')"
+                      :src="
+                        spec.image
+                          ? `${spec.image}?x-oss-process=image/resize,m_fill,w_100,h_100`
+                          : require('@/assets/imgWaiting.png')
+                      "
                       aspect-ratio="1"
                       class="grey lighten-1"
                     >
@@ -848,9 +951,7 @@
       hide-overlay
     >
       <v-card>
-        <v-card-title>
-          高级搜索
-        </v-card-title>
+        <v-card-title> 高级搜索 </v-card-title>
         <v-form ref="form">
           <v-container fluid>
             <v-row>
@@ -919,7 +1020,11 @@
                     >
                       <template v-slot:activator="{ on, value }">
                         <v-text-field
-                          :value="categorySearchSelected.length ? categorySearchSelected[0].dnames : ''"
+                          :value="
+                            categorySearchSelected.length
+                              ? categorySearchSelected[0].dnames
+                              : ''
+                          "
                           :loading="loadingCategory"
                           :disabled="loadingCategory"
                           class="white"
@@ -953,9 +1058,15 @@
                             class="custom-treeview-class"
                             @update:active="getActiveCategorySearch"
                           >
-                            <template v-slot:prepend="{ item,leaf, open }">
+                            <template v-slot:prepend="{ item, leaf, open }">
                               <v-icon>
-                                {{ leaf ? 'mdi-bookmark-outline' : open ? 'mdi-bookmark-outline' : 'mdi-bookmark' }}
+                                {{
+                                  leaf
+                                    ? "mdi-bookmark-outline"
+                                    : open
+                                      ? "mdi-bookmark-outline"
+                                      : "mdi-bookmark"
+                                }}
                               </v-icon>
                             </template>
                           </v-treeview>
@@ -1046,7 +1157,9 @@
                             clearable
                             readonly
                             v-on="on"
-                            @click:clear="clearSearchConditions('startShelfTime')"
+                            @click:clear="
+                              clearSearchConditions('startShelfTime')
+                            "
                           />
                         </template>
                         <v-date-picker
@@ -1182,7 +1295,10 @@
             color="secondary"
             class="ml-4"
             text
-            @click="$refs.form.reset();$set(search, 'categoryId', '0')"
+            @click="
+              $refs.form.reset();
+              $set(search, 'categoryId', '0');
+            "
           >
             清空
           </v-btn>
@@ -1306,12 +1422,12 @@ export default {
           align: 'center',
           sortable: false,
         },
-        {
-          text: '销售价',
-          value: 'price',
-          align: 'center',
-          sortable: false,
-        },
+        // {
+        //   text: '销售价',
+        //   value: 'price',
+        //   align: 'center',
+        //   sortable: false,
+        // },
         {
           text: '上架状态',
           value: 'dstatus',
@@ -1520,28 +1636,41 @@ export default {
       this.setProductRetailAsync({
         id: this.retailGoods.id,
         operate,
-        detail: R.map(item => ({ goodId: item.goodId, goodDetailId: item.id, retailPrice: item.retailPrice }), this.retailSpec),
-      }).then(() => {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'success',
-          text: '恭喜，设置成功!',
+        detail: R.map(
+          item => ({
+            goodId: item.goodId,
+            goodDetailId: item.id,
+            retailPrice: item.retailPrice,
+          }),
+          this.retailSpec
+        ),
+      })
+        .then(() => {
+          this.$store.commit('TOGGLE_SNACKBAR', {
+            type: 'success',
+            text: '恭喜，设置成功!',
+          });
+          this.dialogRetail = false;
+        })
+        .catch((err) => {
+          this.checkErr(err, 'setProductRetail');
+        })
+        .finally(() => {
+          this.setting = false;
         });
-        this.dialogRetail = false;
-      }).catch((err) => {
-        this.checkErr(err, 'setProductRetail');
-      }).finally(() => {
-        this.setting = false;
-      });
     },
     getProductSpec() {
       this.loadingSpec = true;
-      this.getProductSpecAsync({ id: this.retailGoods.id }).then((res) => {
-        this.retailSpec = res;
-      }).catch((err) => {
-        this.checkErr(err, 'getProductSpec');
-      }).finally(() => {
-        this.loadingSpec = false;
-      });
+      this.getProductSpecAsync({ id: this.retailGoods.id })
+        .then((res) => {
+          this.retailSpec = res;
+        })
+        .catch((err) => {
+          this.checkErr(err, 'getProductSpec');
+        })
+        .finally(() => {
+          this.loadingSpec = false;
+        });
     },
     openDialogLabel() {
       this.isNew = R.pluck(
@@ -1618,12 +1747,13 @@ export default {
       this.setProductLiveAsync({
         id: this.toLiveProduct,
         operate: this.toLiveOperate,
-      }).then(() => {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'success',
-          text: `恭喜，${this.toLiveOperate === '3' ? '提交' : '撤回'}成功!`,
-        });
       })
+        .then(() => {
+          this.$store.commit('TOGGLE_SNACKBAR', {
+            type: 'success',
+            text: `恭喜，${this.toLiveOperate === '3' ? '提交' : '撤回'}成功!`,
+          });
+        })
         .catch((err) => {
           this.checkErr(err);
         })

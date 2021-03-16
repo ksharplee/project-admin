@@ -198,7 +198,7 @@
                     :items="brandFilter(searchBrand)"
                     :loading="loadingBrand"
                     :disabled="loadingBrand"
-                    item-text="dnames"
+                    :item-text="getConcactName"
                     item-value="id"
                     placeholder="请选择商品品牌"
                     dense
@@ -305,7 +305,7 @@
                     :rules="unitRules"
                     :loading="loadingUnits"
                     :disabled="loadingUnits"
-                    item-text="dnames"
+                    :item-text="getUnitConcactName"
                     item-value="id"
                     placeholder="请选择商品单位"
                     dense
@@ -392,35 +392,6 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text required">&nbsp;销&nbsp;售&nbsp;价&nbsp;</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      :value="product.price"
-                      :rules="priceRules"
-                      type="number"
-                      placeholder="请输入销售价"
-                      dense
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      @input="setProductPrice"
-                    />
-                  </div>
-                </div>
-              </v-col>
-            </v-slide-y-transition>
-            <v-slide-y-transition>
-              <v-col
-                v-if="product.containSpec === '0'"
-                cols="12"
-                md="6"
-                xl="4"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
                     <span class="input-group-text">商品重量</span>
                   </div>
                   <div class="input-group-control">
@@ -466,32 +437,6 @@
                 </div>
               </v-col>
             </v-slide-y-transition>
-            <v-col
-              v-if="$store.state.user.priceStatus === '1'"
-              cols="12"
-              md="6"
-              xl="4"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">启用价格区间</span>
-                </div>
-                <div class="input-group-control">
-                  <v-select
-                    :value="usePriceStatus"
-                    :items="priceStatusOptions"
-                    placeholder="是否启用价格区间"
-                    dense
-                    single-line
-                    hide-details
-                    outlined
-                    clearable
-                    no-data-text="暂无数据"
-                    @change="setUsePriceStatus"
-                  />
-                </div>
-              </div>
-            </v-col>
             <v-col
               cols="12"
               md="6"
@@ -550,7 +495,7 @@
                               v-model="bundle.id"
                               :items="productUnits.data"
                               disabled
-                              item-text="dnames"
+                              :item-text="getUnitConcactName"
                               item-value="id"
                               placeholder="打包单位"
                               dense
@@ -605,7 +550,7 @@
                             <v-select
                               v-model="bundleCurrent.id"
                               :items="unitsLeft"
-                              item-text="dnames"
+                              :item-text="getUnitConcactName"
                               item-value="id"
                               placeholder="打包单位"
                               dense
@@ -673,6 +618,50 @@
       </v-card>
       <v-slide-y-transition>
         <v-card
+          v-if="product.containSpec === '0'"
+          outlined
+          elevation="0"
+          class="mb-4"
+        >
+          <v-card-title class="pa-3 grey lighten-3 title d-flex">
+            商品售价
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <v-row>
+              <v-col
+                v-for="(country, i) in countryLocal"
+                :key="i"
+                cols="12"
+                md="6"
+                xl="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text required">{{ country.dnames }}</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="country.price"
+                      :rules="priceRules"
+                      type="number"
+                      placeholder="请输入销售价"
+                      dense
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      suffix="$"
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-slide-y-transition>
+      <v-slide-y-transition>
+        <v-card
           outlined
           elevation="0"
           class="mb-4"
@@ -691,13 +680,13 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text">{{ attr.attrName }}</span>
+                    <span class="input-group-text">{{ attr.attrName }}({{ attr.attrNameEn }})</span>
                   </div>
                   <div class="input-group-control">
                     <v-text-field
                       v-if="attr.genre === '1'"
                       v-model="attr.attrValue"
-                      :placeholder="`请输入${attr.attrName}`"
+                      :placeholder="`请输入${attr.attrName}(${attr.attrNameEn})`"
                       dense
                       outlined
                       clearable
@@ -711,9 +700,9 @@
                       v-else
                       v-model="attr.attrValue"
                       :items="attr.attrItem"
-                      item-text="attrItemName"
+                      :item-text="getAttrConcactName"
                       item-value="attrItemId"
-                      :placeholder="`请选择${attr.attrName}`"
+                      :placeholder="`请选择${attr.attrName}(${attr.attrNameEn})`"
                       dense
                       single-line
                       hide-details
@@ -813,6 +802,7 @@
                     multiple
                     column
                     active-class="primary"
+                    @change="setDataItems"
                   >
                     <v-chip
                       v-for="detail in selectedDetails"
@@ -933,13 +923,17 @@
                         class="py-3"
                       >
                         <v-text-field
-                          v-model="item.price"
+                          v-for="subitem in item.countryPrice"
+                          :key="subitem.id"
+                          v-model="subitem.price"
                           :rules="priceRules"
+                          :prefix="subitem.dnames"
                           type="number"
                           placeholder=""
+                          class="mb-2"
                           dense
                           outlined
-                          clearable
+                          suffix="$"
                           required
                           single-line
                           hide-details
@@ -1029,117 +1023,6 @@
           </v-card-text>
         </v-card>
       </v-slide-y-transition>
-      <v-slide-y-transition>
-        <v-card
-          v-if="usePriceStatus"
-          outlined
-          class="mb-4"
-        >
-          <v-card-title class="pa-3 grey lighten-3 title">
-            价格区间设置
-          </v-card-title>
-          <v-card-text class="pt-3">
-            <v-card outlined>
-              <v-simple-table class="text-center">
-                <thead>
-                  <tr>
-                    <th class="text-center">
-                      最小数量
-                    </th>
-                    <th class="text-center">
-                      最大数量
-                    </th>
-                    <th class="text-center">
-                      销售价
-                    </th>
-                    <th class="text-center">
-                      操作
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(item,i) in priceAreaLocal"
-                    :key="i"
-                  >
-                    <td
-                      style="width:25%"
-                      class="py-3"
-                    >
-                      <v-text-field
-                        v-model="item.minNum"
-                        :rules="i > 0 ? [minNumRules(item.minNum,i)] : []"
-                        :disabled="i === 0"
-                        type="number"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                      />
-                    </td>
-                    <td
-                      style="width:25%"
-                      class="py-3"
-                    >
-                      <v-text-field
-                        v-model="item.maxNum"
-                        :rules="[maxNumRules(item.maxNum,i)]"
-                        type="number"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                      />
-                    </td>
-                    <td class="py-3">
-                      <v-text-field
-                        :value="item.price"
-                        type="number"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                        @input="setPriceAreaPrice($event,i)"
-                      />
-                    </td>
-                    <td class="py-3">
-                      <v-btn
-                        :disabled="i === 0"
-                        icon
-                        @click="removeFromPriceAreaLocal(i)"
-                      >
-                        <v-icon>mdi-close</v-icon>
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot class="grey lighten-5">
-                  <tr>
-                    <td
-                      colspan="4"
-                      class="text-left py-3"
-                    >
-                      <v-btn
-                        color="secondary"
-                        outlined
-                        @click="addToPriceAreaLocal"
-                      >
-                        <v-icon>mdi-plus</v-icon>添加区间
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tfoot>
-              </v-simple-table>
-            </v-card>
-          </v-card-text>
-        </v-card>
-      </v-slide-y-transition>
       <v-card
         outlined
         elevation="0"
@@ -1226,7 +1109,7 @@
       </v-card>
       <v-btn
         :loading="adding"
-        :disabled="!valid || adding ||(!dataItems.length && product.containSpec === '1')"
+        :disabled="adding"
         color="primary"
         large
         class="px-12 body-1"
@@ -1267,6 +1150,30 @@
                   v-model="attrToAdd.attrName"
                   :rules="attrNameRules"
                   placeholder="请输入属性名称"
+                  outlined
+                  clearable
+                  required
+                  dense
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
+                <span class="red--text">*</span>属性英文名称：
+              </v-col>
+              <v-col cols="7">
+                <v-text-field
+                  v-model="attrToAdd.attrNameEn"
+                  :rules="attrNameRules"
+                  placeholder="请输入属性英文名称"
                   outlined
                   clearable
                   required
@@ -1532,8 +1439,6 @@ import ImgUpload from '@/components/ImgUpload.vue';
 import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
 import WangEditor from '@/components/WangEditor.vue';
 
-const isNotEmpty = v => !!v && R.complement(R.isEmpty(v));
-
 const mapIndexed = R.addIndex(R.map);
 
 export default {
@@ -1568,7 +1473,7 @@ export default {
       dialogCategory: false,
       searchSupplier: '',
       searchBrand: '',
-      goodHasCode: false,
+      goodHasCode: true,
       cateName: '',
       isLiveOptions: [
         {
@@ -1580,24 +1485,7 @@ export default {
           text: '是',
         },
       ],
-      priceStatusOptions: [
-        {
-          value: false,
-          text: '否',
-        },
-        {
-          value: true,
-          text: '是',
-        },
-      ],
       usePriceStatus: false,
-      priceAreaLocal: [
-        {
-          minNum: '1',
-          maxNum: '',
-          price: '',
-        },
-      ],
       specIsShow: [
         {
           value: '1',
@@ -1616,6 +1504,7 @@ export default {
         units: [],
         attr: [],
         unitId: '',
+        price: 1,
         images: [
           { src: '' },
           { src: '' },
@@ -1630,6 +1519,7 @@ export default {
         attrId: '0',
         attrValue: '',
         attrName: '',
+        attrNameEn: '',
         genre: '1',
       },
       specToAdd: {
@@ -1690,18 +1580,14 @@ export default {
         v => !!v || '请填写销售价',
         v => (v && v >= 0) || '销售价不能小于0',
       ],
+      countryLocal: [],
+      dataItems: [],
     };
   },
   computed: {
     ...mapState('product', ['productCategory', 'productBrand', 'productUnits']),
+    ...mapState('system', ['country']),
     ...mapGetters('product', ['productBrandInUse', 'brandFilter']),
-    priceAreaAvailable() {
-      return R.all(R.where({
-        minNum: isNotEmpty,
-        maxNum: isNotEmpty,
-        price: isNotEmpty,
-      }), this.priceAreaLocal);
-    },
     unitString() {
       return R.join(',', R.pluck('dnames', this.unitsLeft));
     },
@@ -1790,7 +1676,17 @@ export default {
         ? R.map(item => [item], this.headSelectedSpecOptions)
         : [];
     },
-    // 可选规格组合
+    // 国家价格
+    countryPrice() {
+      return R.fromPairs(R.map(item => [item.dnames, item.price], this.countryLocal));
+    },
+    // 已选规格组合
+    // dataItems() {
+    //   return R.filter(
+    //     item => R.includes(item.detailName, this.dataItemsDetailNames),
+    //     this.selectedDetails
+    //   );
+    // },
     selectedDetails() {
       return R.map(
         R.compose(
@@ -1798,7 +1694,7 @@ export default {
             id: '0',
             image: '',
             costPrice: this.unifyCostPrice ? this.unifyCostPrice : '',
-            price: this.unifyPrice ? this.unifyPrice : '',
+            price: 1,
             weight: this.unifyWeight ? this.unifyWeight : '',
             barCode: '',
             isShow: '1',
@@ -1818,13 +1714,6 @@ export default {
           })
         ),
         this.currentSpecOptions
-      );
-    },
-    // 已选规格组合
-    dataItems() {
-      return R.filter(
-        item => R.includes(item.detailName, this.dataItemsDetailNames),
-        this.selectedDetails
       );
     },
   },
@@ -1857,6 +1746,13 @@ export default {
         exact: true,
       },
     ]);
+    if (!this.country.status) {
+      this.getCountryListAsync().then(() => {
+        this.countryLocal = R.clone(this.country.data);
+      });
+    } else {
+      this.countryLocal = R.clone(this.country.data);
+    }
     this.loadingCate = true;
     this.getCateListAsync()
       .catch((err) => {
@@ -1891,6 +1787,34 @@ export default {
       'getUnitsListAsync',
       'addProductAsync',
     ]),
+    ...mapActions('system', ['getCountryListAsync']),
+    setDataItems() {
+      const array = R.map(
+        (item) => {
+          item.countryPrice = R.clone(this.countryLocal);
+          return item;
+        },
+        R.clone(this.selectedDetails)
+      );
+      this.dataItems = R.filter(
+        item => R.includes(item.detailName, this.dataItemsDetailNames),
+        array
+      );
+    },
+    updateCountryPrice(v, country, i) {
+      this.dataItems[i].countryPrice[country] = v;
+      this.$forceUpdate();
+      // this.$set(this.dataItems[i].countryPrice, country, v);
+    },
+    getConcactName(item) {
+      return `${item.dnames}(${item.dnamesEn})`;
+    },
+    getAttrConcactName(item) {
+      return `${item.attrItemName}(${item.attrItemNameEn})`;
+    },
+    getUnitConcactName(item) {
+      return `${item.dnames}(${item.enDnames})`;
+    },
     // 删除本地添加的属性
     deleteAttrAdded(i) {
       this.attrOptions = R.remove(i, 1, this.attrOptions);
@@ -1902,6 +1826,7 @@ export default {
         attrId: '0',
         attrValue: '',
         attrName: '',
+        attrNameEn: '',
         genre: '1',
       };
       this.dialogAddAttr = false;
@@ -1996,49 +1921,44 @@ export default {
       }, items);
     },
     addProduct() {
-      const postData = this.params;
-      if (this.usePriceStatus) {
-        if (this.priceAreaAvailable) {
-          postData.priceArea = this.priceAreaLocal;
-        } else {
-          this.$store.commit('TOGGLE_SNACKBAR', {
-            type: 'error',
-            text: '请将价格区间填写完整',
-          });
-          return;
-        }
-      }
-      if (this.goodHasCode) {
-        postData.goodHasCode = '0';
-      } else {
-        postData.goodHasCode = '1';
-      }
-      if (this.product.containSpec === '1') {
-        postData.spec = this.spec;
+      if (this.$refs.form.validate()) {
+        const postData = this.params;
         if (this.goodHasCode) {
-          postData.detail = this.setAllSpecBarcode(this.dataItems);
+          postData.goodHasCode = '0';
         } else {
-          postData.detail = this.dataItems;
+          postData.goodHasCode = '1';
         }
-        if (this.usePriceStatus) {
-          postData.detail = R.map(R.assoc('price', postData.priceArea[0].price), postData.detail);
+        if (this.product.containSpec === '1') {
+          postData.spec = this.spec;
+          const dataItems = R.map((item) => {
+            item.countryPrice = R.fromPairs(R.map(subitem => [subitem.dnames, subitem.price], item.countryPrice));
+            return item;
+          }, this.dataItems);
+          if (this.goodHasCode) {
+            postData.detail = this.setAllSpecBarcode(dataItems);
+          } else {
+            postData.detail = dataItems;
+          }
+        } else {
+        // 无规格商品价格
+          postData.countryPrice = this.countryPrice;
         }
-      }
-      this.adding = true;
-      this.addProductAsync(postData)
-        .then(() => {
-          this.$store.commit('TOGGLE_SNACKBAR', {
-            type: 'success',
-            text: '恭喜，添加成功!',
+        this.adding = true;
+        this.addProductAsync(postData)
+          .then(() => {
+            this.$store.commit('TOGGLE_SNACKBAR', {
+              type: 'success',
+              text: '恭喜，添加成功!',
+            });
+            this.$router.replace({ name: 'product_list' });
+          })
+          .catch((err) => {
+            this.checkErr(err);
+          })
+          .finally(() => {
+            this.adding = false;
           });
-          this.$router.replace({ name: 'product_list' });
-        })
-        .catch((err) => {
-          this.checkErr(err);
-        })
-        .finally(() => {
-          this.adding = false;
-        });
+      }
     },
     // 批量添加图片
     getMultipleImgs(pics) {
@@ -2065,14 +1985,6 @@ export default {
     // 修改图片顺序
     changeImgIndex(i, direction) {
       this.$set(this.product, 'images', R.move(i, direction === 'right' ? i + 1 : i - 1, this.product.images));
-    },
-    setProductPrice(v) {
-      this.$set(this.product, 'price', v);
-      if (this.usePriceStatus) {
-        const item = this.priceAreaLocal[0];
-        item.price = v;
-        this.$set(this.priceAreaLocal, 0, item);
-      }
     },
     setPriceAreaPrice(v, i) {
       const item = this.priceAreaLocal[i];

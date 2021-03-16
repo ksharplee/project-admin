@@ -138,7 +138,7 @@
                     :items="brandFilter(searchBrand)"
                     :loading="loadingBrand"
                     :disabled="loadingBrand"
-                    item-text="dnames"
+                    :item-text="getConcactName"
                     item-value="id"
                     placeholder="请选择商品品牌"
                     single-line
@@ -245,7 +245,7 @@
                     :rules="unitRules"
                     :loading="loadingUnits"
                     :disabled="loadingUnits"
-                    item-text="dnames"
+                    :item-text="getUnitConcactName"
                     item-value="id"
                     placeholder="请选择商品单位"
                     single-line
@@ -292,33 +292,6 @@
                       hide-details
                     />
                   </span>
-                </div>
-              </div>
-            </v-col>
-            <v-col
-              v-if="$store.state.user.priceStatus === '1'"
-              cols="12"
-              md="6"
-              xl="4"
-            >
-              <div class="input-group">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">启用价格区间</span>
-                </div>
-                <div class="input-group-control">
-                  <v-select
-                    :value="usePriceStatus"
-                    :items="priceStatusOptions"
-                    :disabled="!product.priceArea || !product.priceArea.length"
-                    placeholder="是否启用价格区间"
-                    dense
-                    single-line
-                    hide-details
-                    outlined
-                    clearable
-                    no-data-text="暂无数据"
-                    @change="setUsePriceStatus"
-                  />
                 </div>
               </div>
             </v-col>
@@ -371,35 +344,6 @@
                       single-line
                       hide-details
                       dense
-                    />
-                  </div>
-                </div>
-              </v-col>
-            </v-slide-y-transition>
-            <v-slide-y-transition>
-              <v-col
-                v-if="product.containSpec === '0'"
-                cols="12"
-                md="6"
-                xl="4"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text required">&nbsp;销&nbsp;售&nbsp;价&nbsp;</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      :value="product.price"
-                      :rules="priceRules"
-                      type="number"
-                      placeholder="请输入销售价"
-                      dense
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      @input="setProductPrice"
                     />
                   </div>
                 </div>
@@ -612,6 +556,50 @@
           </v-slide-y-transition>
         </v-card-text>
       </v-card>
+      <v-slide-y-transition>
+        <v-card
+          v-if="product.containSpec === '0'"
+          outlined
+          elevation="0"
+          class="mb-4"
+        >
+          <v-card-title class="pa-3 grey lighten-3 title d-flex">
+            商品售价
+          </v-card-title>
+          <v-card-text class="pt-4">
+            <v-row>
+              <v-col
+                v-for="(price, country) in product.countryPrice"
+                :key="country"
+                cols="12"
+                md="6"
+                xl="4"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text required">{{ country }}</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      :value="price"
+                      :rules="priceRules"
+                      type="number"
+                      placeholder="请输入销售价"
+                      dense
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      @input="setCountryPrice($event,country)"
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card
           outlined
@@ -897,117 +885,6 @@
           </v-card-text>
         </v-card>
       </v-slide-y-transition>
-      <v-slide-y-transition>
-        <v-card
-          v-if="usePriceStatus"
-          outlined
-          class="mb-4"
-        >
-          <v-card-title class="pa-3 grey lighten-3 title">
-            价格区间设置
-          </v-card-title>
-          <v-card-text class="pt-3">
-            <v-card outlined>
-              <v-simple-table class="text-center">
-                <thead>
-                  <tr>
-                    <th class="text-center">
-                      最小数量
-                    </th>
-                    <th class="text-center">
-                      最大数量
-                    </th>
-                    <th class="text-center">
-                      销售价
-                    </th>
-                    <th class="text-center">
-                      操作
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    v-for="(item,i) in priceAreaLocal"
-                    :key="i"
-                  >
-                    <td
-                      style="width:25%"
-                      class="py-3"
-                    >
-                      <v-text-field
-                        v-model="item.minNum"
-                        :rules="i > 0 ? [minNumRules(item.minNum,i)] : []"
-                        :disabled="i === 0"
-                        type="number"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                      />
-                    </td>
-                    <td
-                      style="width:25%"
-                      class="py-3"
-                    >
-                      <v-text-field
-                        v-model="item.maxNum"
-                        :rules="[maxNumRules(item.maxNum,i)]"
-                        type="number"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                      />
-                    </td>
-                    <td class="py-3">
-                      <v-text-field
-                        :value="item.price"
-                        type="number"
-                        dense
-                        outlined
-                        clearable
-                        required
-                        single-line
-                        hide-details
-                        @input="setPriceAreaPrice($event,i)"
-                      />
-                    </td>
-                    <td class="py-3">
-                      <v-btn
-                        :disabled="i === 0"
-                        icon
-                        @click="removeFromPriceAreaLocal(i)"
-                      >
-                        <v-icon>mdi-close</v-icon>
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tbody>
-                <tfoot class="grey lighten-5">
-                  <tr>
-                    <td
-                      colspan="4"
-                      class="text-left py-3"
-                    >
-                      <v-btn
-                        color="secondary"
-                        outlined
-                        @click="addToPriceAreaLocal"
-                      >
-                        <v-icon>mdi-plus</v-icon>添加区间
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tfoot>
-              </v-simple-table>
-            </v-card>
-          </v-card-text>
-        </v-card>
-      </v-slide-y-transition>
       <v-card
         outlined
         elevation="0"
@@ -1101,7 +978,7 @@
         :disabled="!valid || editing"
         color="primary"
         large
-        class="px-12 body-1"
+        class="px-12 body-1 mb-3"
         @click="editProduct"
       >
         提交
@@ -1323,8 +1200,6 @@ import ImgUpload from '@/components/ImgUpload.vue';
 import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
 import WangEditor from '@/components/WangEditor.vue';
 
-const isNotEmpty = v => !!v && R.complement(R.isEmpty(v));
-
 const mapIndexed = R.addIndex(R.map);
 
 export default {
@@ -1369,24 +1244,7 @@ export default {
         attrName: '',
         genre: '1',
       },
-      priceStatusOptions: [
-        {
-          value: false,
-          text: '否',
-        },
-        {
-          value: true,
-          text: '是',
-        },
-      ],
       usePriceStatus: false,
-      priceAreaLocal: [
-        {
-          minNum: '1',
-          maxNum: '',
-          price: '',
-        },
-      ],
       goodHasCode: false,
       specIsShow: [
         {
@@ -1404,6 +1262,7 @@ export default {
         units: [],
         attr: [],
         unitId: '',
+        price: 1,
         images: [
           { image: '' },
           { image: '' },
@@ -1466,14 +1325,8 @@ export default {
   },
   computed: {
     ...mapState('product', ['productCategory', 'productBrand', 'productUnits']),
+    ...mapState('system', ['country']),
     ...mapGetters('product', ['productBrandInUse', 'brandFilter']),
-    priceAreaAvailable() {
-      return R.all(R.where({
-        minNum: isNotEmpty,
-        maxNum: isNotEmpty,
-        price: isNotEmpty,
-      }), this.priceAreaLocal);
-    },
     unitString() {
       return R.join(',', R.pluck('dnames', this.unitsLeft));
     },
@@ -1522,6 +1375,9 @@ export default {
         exact: true,
       },
     ]);
+    if (!this.country.status) {
+      this.getCountryListAsync();
+    }
     this.getProductDetailEdit();
     this.loadingBrand = true;
     this.getBrandListAsync({ isUse: '1' })
@@ -1540,6 +1396,16 @@ export default {
       'editProductAsync',
       'getProductDetailEditAsync',
     ]),
+    ...mapActions('system', ['getCountryListAsync']),
+    getConcactName(item) {
+      return `${item.dnames}(${item.dnamesEn})`;
+    },
+    getUnitConcactName(item) {
+      return `${item.dnames}(${item.enDnames})`;
+    },
+    setCountryPrice(v, country) {
+      this.$set(this.product.countryPrice, country, v);
+    },
     // 删除本地添加的属性
     deleteAttrAdded(i) {
       this.$set(this.product, 'attr', R.remove(i, 1, this.product.attr));
@@ -1603,23 +1469,9 @@ export default {
       } else {
         postData.goodHasCode = '1';
       }
-      if (this.usePriceStatus) {
-        if (this.priceAreaAvailable) {
-          postData.priceArea = this.priceAreaLocal;
-        } else {
-          this.$store.commit('TOGGLE_SNACKBAR', {
-            type: 'error',
-            text: '请将价格区间填写完整',
-          });
-          return;
-        }
-      }
       if (this.product.containSpec === '1') {
         if (this.goodHasCode) {
           postData.detail = this.setAllSpecBarcode(this.product.detail);
-        }
-        if (this.usePriceStatus) {
-          postData.detail = R.map(R.assoc('price', postData.priceArea[0].price), postData.detail);
         }
       }
       this.editing = true;
@@ -1693,11 +1545,6 @@ export default {
           if (response.goodHasCode === '0' && response.containSpec === '1') {
             this.goodHasCode = true;
           }
-          // 设置本地价格区间
-          if (response.priceArea && response.priceArea.length) {
-            this.priceAreaLocal = response.priceArea;
-            this.usePriceStatus = true;
-          }
           // 设置已选中单位
           this.selectedUnitName = response.unitName;
           this.unitsLeft = R.reject(
@@ -1732,51 +1579,6 @@ export default {
     },
     setProductPrice(v) {
       this.$set(this.product, 'price', v);
-      if (this.usePriceStatus) {
-        const item = this.priceAreaLocal[0];
-        item.price = v;
-        this.$set(this.priceAreaLocal, 0, item);
-      }
-    },
-    setPriceAreaPrice(v, i) {
-      const item = this.priceAreaLocal[i];
-      item.price = v;
-      this.$set(this.priceAreaLocal, i, item);
-      if (i === 0) {
-        this.$set(this.product, 'price', v);
-      }
-    },
-    setUsePriceStatus(v) {
-      this.usePriceStatus = v;
-      if (v) {
-        const item = this.priceAreaLocal[0];
-        item.price = this.product.price;
-        this.$set(this.priceAreaLocal, 0, item);
-      }
-    },
-    addToPriceAreaLocal() {
-      const item = this.priceAreaLocal[this.priceAreaLocal.length - 1];
-      if (!item.minNum || !item.maxNum || !item.price) {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'error',
-          text: '请先填写区间信息',
-        });
-        return;
-      }
-      this.priceAreaLocal = R.append({
-        minNum: +this.priceAreaLocal[this.priceAreaLocal.length - 1].maxNum + 1,
-        maxNum: '',
-        price: '',
-      }, this.priceAreaLocal);
-    },
-    removeFromPriceAreaLocal(i) {
-      this.priceAreaLocal = R.remove(i, 1, this.priceAreaLocal);
-    },
-    minNumRules(v, i) {
-      return (v > 0 && v > +this.priceAreaLocal[i - 1].maxNum) || ' ';
-    },
-    maxNumRules(v, i) {
-      return (v > 0 && v > +this.priceAreaLocal[i].minNum) || ' ';
     },
   },
 };
