@@ -46,6 +46,25 @@ export default {
       return Promise.reject(error);
     }
   },
+  // 上传图片搜索
+  async uploadImgSearchSync(context, payload) {
+    try {
+      const res = await axios({
+        url: '/g/upload_image.html',
+        method: 'post',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        data: payload,
+      });
+      if (res.data.status === 1) {
+        return Promise.resolve(res.data);
+      }
+      return Promise.reject(new Error(res.data.info));
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
   // 上传图片
   async uploadImgSync(context, payload) {
     try {
