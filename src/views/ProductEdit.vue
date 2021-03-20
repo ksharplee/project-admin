@@ -602,77 +602,6 @@
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card
-          outlined
-          elevation="0"
-          class="mb-4"
-        >
-          <v-card-title class="pa-3 grey lighten-3 title d-flex">
-            商品参数
-          </v-card-title>
-          <v-card-text class="pt-4">
-            <v-row>
-              <v-col
-                v-for="(attr, i) in product.attr"
-                :key="i"
-                cols="12"
-                lg="6"
-                xl="4"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">{{ attr.attrName }}</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-if="attr.genre == '1'"
-                      v-model="attr.attrValue"
-                      :placeholder="`请输入${attr.attrName}`"
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      dense
-                      :append-icon="attr.attrId === '0' ? 'mdi-delete' : ''"
-                      @click:append="deleteAttrAdded(i)"
-                    />
-                    <v-select
-                      v-else
-                      v-model="attr.attrValue"
-                      :items="attr.attrItem"
-                      item-text="attrItemName"
-                      item-value="attrItemId"
-                      :placeholder="`请选择${attr.attrName}`"
-                      single-line
-                      hide-details
-                      dense
-                      outlined
-                      clearable
-                      return-object
-                      no-data-text="暂无数据"
-                      :chips="attr.genre === '3'"
-                      :small-chips="attr.genre === '3'"
-                      :multiple="attr.genre === '3'"
-                      :deletable-chips="attr.genre === '3'"
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col cols="12">
-                <v-btn
-                  color="secondary"
-                  outlined
-                  @click="dialogAdd = true"
-                >
-                  <v-icon>mdi-plus</v-icon>添加参数
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-slide-y-transition>
-      <v-slide-y-transition>
-        <v-card
           v-if="product.containSpec === '1'"
           outlined
           elevation="0"
@@ -788,16 +717,22 @@
                       class="py-3"
                     >
                       <v-text-field
-                        v-model="item.price"
+                        v-for="(price, country) in item.countryPrice"
+                        :key="country"
+                        :value="price"
                         :rules="priceRules"
+                        suffix="$"
+                        :prefix="country"
                         type="number"
                         placeholder=""
+                        class="mb-2"
                         outlined
                         clearable
                         required
                         single-line
                         hide-details
                         dense
+                        @input="setDetailCountryPrice($event, country, i)"
                       />
                     </td>
                     <td class="py-3">
@@ -898,21 +833,16 @@
           <v-card outlined>
             <v-card-text>
               <div class="mb-2">
-                <img-upload-multiple
-                  :counter="6"
-                  @update:pics="getMultipleImgs"
-                />
                 <v-btn
                   color="secondary"
                   outlined
-                  class="ml-3"
                   @click="product.images = [
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
                   ]"
                 >
                   <v-icon left>
@@ -929,11 +859,13 @@
                   lg="2"
                   xl="1"
                 >
-                  <img-upload
-                    :image="img.image"
+                  <img-upload-search
+                    :image="img.picPath"
                     icon-size="36px"
-                    @update:src="img.image = $event"
-                    @update:delete="img.image = ''"
+                    @update:src="getImg($event, i)"
+                    @update:delete="img = {
+                      picPath: ''
+                    }"
                   />
                   <div class="d-flex justify-center pt-2">
                     <v-btn
@@ -959,20 +891,46 @@
           </v-card>
         </v-card-text>
       </v-card>
-      <v-card
-        outlined
-        elevation="0"
-        class="mb-4"
-      >
-        <v-card-title class="pa-3 grey lighten-3 title">
-          商品描述
-        </v-card-title>
-        <component
-          :is="component"
-          :content="product.detailDesc"
-          @update:html="product.detailDesc = $event"
-        />
-      </v-card>
+      <v-row>
+        <v-col
+          cols="12"
+          lg="6"
+        >
+          <v-card
+            outlined
+            elevation="0"
+            class="mb-4"
+          >
+            <v-card-title class="pa-3 grey lighten-3 title">
+              商品描述
+            </v-card-title>
+            <component
+              :is="component"
+              :content="product.detailDesc"
+              @update:html="product.detailDesc = $event"
+            />
+          </v-card>
+        </v-col>
+        <v-col
+          cols="12"
+          lg="6"
+        >
+          <v-card
+            outlined
+            elevation="0"
+            class="mb-4"
+          >
+            <v-card-title class="pa-3 grey lighten-3 title">
+              商品英文描述
+            </v-card-title>
+            <component
+              :is="componentEn"
+              :content="product.detailDescEn"
+              @update:html="product.detailDescEn = $event"
+            />
+          </v-card>
+        </v-col>
+      </v-row>
       <v-btn
         :loading="editing"
         :disabled="!valid || editing"
@@ -988,87 +946,6 @@
       :show="dialogBrand"
       @close-dialog="dialogBrand = false"
     />
-    <v-dialog
-      v-model="dialogAdd"
-      width="500"
-    >
-      <v-card>
-        <v-form
-          ref="form"
-          v-model="validAdd"
-        >
-          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
-            添加商品属性
-          </v-card-title>
-          <div class="pa-4">
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>属性名称：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="attrToAdd.attrName"
-                  :rules="attrNameRules"
-                  placeholder="请输入属性名称"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>属性值：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="attrToAdd.attrValue"
-                  :rules="attrValueRules"
-                  placeholder="请输入属性值"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-          </div>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="primary"
-              :disabled="!validAdd"
-              @click="addAttrLocal"
-            >
-              确定
-            </v-btn>
-            <v-btn
-              color="secondary"
-              @click="dialogAdd = false"
-            >
-              取消
-            </v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card>
-    </v-dialog>
     <v-dialog
       v-model="dialogUnifyCostPrice"
       width="300"
@@ -1197,17 +1074,15 @@ import * as R from 'ramda';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import BrandSingle from '@/components/BrandSingle.vue';
 import ImgUpload from '@/components/ImgUpload.vue';
-import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
+import ImgUploadSearch from '@/components/ImgUploadSearch.vue';
 import WangEditor from '@/components/WangEditor.vue';
-
-const mapIndexed = R.addIndex(R.map);
 
 export default {
   name: 'ProductEdit',
   components: {
     BrandSingle,
     ImgUpload,
-    ImgUploadMultiple,
+    ImgUploadSearch,
   },
   props: {
     id: {
@@ -1224,6 +1099,7 @@ export default {
       dialogUnifyWeight: false,
       unifyWeight: '',
       component: null,
+      componentEn: null,
       loadingCate: false,
       loadingBrand: false,
       loadingUnits: false,
@@ -1238,12 +1114,6 @@ export default {
       dialogCategory: false,
       searchSupplier: '',
       searchBrand: '',
-      attrToAdd: {
-        attrId: '0',
-        attrValue: '',
-        attrName: '',
-        genre: '1',
-      },
       usePriceStatus: false,
       goodHasCode: false,
       specIsShow: [
@@ -1260,18 +1130,18 @@ export default {
         containSpec: '0',
         zeroInventory: false,
         units: [],
-        attr: [],
         unitId: '',
         price: 1,
         images: [
-          { image: '' },
-          { image: '' },
-          { image: '' },
-          { image: '' },
-          { image: '' },
-          { image: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
         ],
         detailDesc: '',
+        detailDescEn: '',
       },
       // 是否打包销售
       isBundle: '0',
@@ -1305,8 +1175,6 @@ export default {
       unitsLeft: [],
       cateRules: [v => !!v || '请选择商品分类'],
       nameRules: [v => !!v || '请填写商品名称'],
-      attrNameRules: [v => !!v || '请填写属性名称'],
-      attrValueRules: [v => !!v || '请填写属性值'],
       numberRules: [v => !!v || '请填写商品货号'],
       moqRules: [v => !!v || '请填写起订量'],
       stockRules: [v => !!v || '请填写库存数量'],
@@ -1334,11 +1202,7 @@ export default {
       return R.evolve(
         {
           zeroInventory: v => (v ? '1' : '0'),
-          images: R.compose(
-            R.reject(R.isEmpty),
-            R.pluck('image')
-          ),
-          attr: () => R.filter(R.has('attrValue'), this.product.attr),
+          images: R.reject(item => R.isEmpty(item.picPath)),
           units: arr => R.map(
             item => ({
               unitId: item.id,
@@ -1397,6 +1261,12 @@ export default {
       'getProductDetailEditAsync',
     ]),
     ...mapActions('system', ['getCountryListAsync']),
+    getImg(v, i) {
+      this.$set(this.product.images, i, v);
+    },
+    setDetailCountryPrice(v, country, i) {
+      this.$set(this.product.detail[i].countryPrice, country, v);
+    },
     getConcactName(item) {
       return `${item.dnames}(${item.dnamesEn})`;
     },
@@ -1405,25 +1275,6 @@ export default {
     },
     setCountryPrice(v, country) {
       this.$set(this.product.countryPrice, country, v);
-    },
-    // 删除本地添加的属性
-    deleteAttrAdded(i) {
-      this.$set(this.product, 'attr', R.remove(i, 1, this.product.attr));
-    },
-    // 本地添加属性
-    addAttrLocal() {
-      this.$set(
-        this.product,
-        'attr',
-        R.append(this.attrToAdd, this.product.attr)
-      );
-      this.attrToAdd = {
-        attrId: '0',
-        attrValue: '',
-        attrName: '',
-        genre: '1',
-      };
-      this.dialogAdd = false;
     },
     // 设置打包销售
     setUnitsLeft(params) {
@@ -1463,7 +1314,7 @@ export default {
       }, items);
     },
     editProduct() {
-      const postData = this.params;
+      let postData = this.params;
       if (this.goodHasCode) {
         postData.goodHasCode = '0';
       } else {
@@ -1474,6 +1325,7 @@ export default {
           postData.detail = this.setAllSpecBarcode(this.product.detail);
         }
       }
+      postData = R.dissoc('attr', postData);
       this.editing = true;
       this.editProductAsync(postData)
         .then(() => {
@@ -1489,23 +1341,6 @@ export default {
         .finally(() => {
           this.editing = false;
         });
-    },
-    // 批量添加图片
-    getMultipleImgs(pics) {
-      this.$set(
-        this.product,
-        'images',
-        mapIndexed((item, i) => {
-          if (pics[i]) {
-            item.image = pics[i];
-          } else {
-            item = {
-              image: '',
-            };
-          }
-          return item;
-        }, this.product.images)
-      );
     },
     setBundle(v) {
       if (v === '0' || !this.product.units) {
@@ -1536,10 +1371,10 @@ export default {
           if (response.images) {
             response.images = R.concat(
               response.images,
-              R.times(() => R.clone({ image: '' }), 6 - response.images.length)
+              R.times(() => R.clone({ picPath: '' }), 6 - response.images.length)
             );
           } else {
-            response.images = R.times(() => R.clone({ image: '' }), 6);
+            response.images = R.times(() => R.clone({ picPath: '' }), 6);
           }
           // 是否设置了统一规格条形码
           if (response.goodHasCode === '0' && response.containSpec === '1') {
@@ -1562,6 +1397,7 @@ export default {
           this.product = response;
           // 异步获取描述结束再挂载编辑器
           this.component = WangEditor;
+          this.componentEn = WangEditor;
         })
         .catch((err) => {
           this.checkErr(err, 'getProductDetailEditAsync');

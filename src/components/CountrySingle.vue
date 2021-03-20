@@ -46,6 +46,30 @@
               cols="3"
               class="text-right"
             >
+              国家英文名称：
+            </v-col>
+            <v-col cols="5">
+              <v-text-field
+                v-model="country.dnamesEn"
+                :rules="nameRules"
+                placeholder="请输入国家关键字"
+                dense
+                outlined
+                clearable
+                required
+                single-line
+                hide-details
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            align="center"
+            class="mb-3"
+          >
+            <v-col
+              cols="3"
+              class="text-right"
+            >
               汇率：
             </v-col>
             <v-col cols="5">
@@ -64,7 +88,6 @@
           </v-row>
           <v-row
             align="center"
-            class="mb-3"
           >
             <v-col
               cols="3"
@@ -84,6 +107,24 @@
                 single-line
                 hide-details
                 no-data-text="暂无数据"
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            align="center"
+            class="mb-3"
+          >
+            <v-col
+              cols="3"
+              class="text-right"
+            />
+            <v-col cols="5">
+              <v-checkbox
+                v-model="country.isDefalut"
+                color="primary"
+                class="mt-0"
+                hide-details
+                label="设为默认"
               />
             </v-col>
           </v-row>
@@ -136,6 +177,7 @@ export default {
       submitting: false,
       country: {
         languageType: '2',
+        isDefalut: false,
       },
       languageType: [
         {
@@ -156,9 +198,15 @@ export default {
     show() {
       if (this.edit) {
         this.country = R.clone(this.target);
+        if (this.country.isDefalut === '1') {
+          this.$set(this.country, 'isDefalut', true);
+        } else {
+          this.$set(this.country, 'isDefalut', false);
+        }
       } else {
         this.country = {
           languageType: '2',
+          isDefalut: false,
         };
       }
     },
@@ -168,7 +216,13 @@ export default {
     ...mapActions('system', ['addCountryAsync', 'editCountryAsync']),
     addCountry() {
       this.submitting = true;
-      this.addCountryAsync({ ...this.country, edit: this.edit })
+      const params = R.clone(this.country);
+      if (params.isDefalut) {
+        params.isDefalut = '1';
+      } else {
+        params.isDefalut = '0';
+      }
+      this.addCountryAsync({ ...params, edit: this.edit })
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',
@@ -188,7 +242,13 @@ export default {
     },
     editCountry() {
       this.submitting = true;
-      this.editCountryAsync({ ...this.country })
+      const params = R.clone(this.country);
+      if (params.isDefalut) {
+        params.isDefalut = '1';
+      } else {
+        params.isDefalut = '0';
+      }
+      this.editCountryAsync(params)
         .then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',

@@ -662,77 +662,6 @@
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-card
-          outlined
-          elevation="0"
-          class="mb-4"
-        >
-          <v-card-title class="pa-3 grey lighten-3 title d-flex">
-            商品参数
-          </v-card-title>
-          <v-card-text class="pt-4">
-            <v-row>
-              <v-col
-                v-for="(attr, i) in attrOptions"
-                :key="i"
-                cols="12"
-                lg="6"
-                xl="4"
-              >
-                <div class="input-group">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text">{{ attr.attrName }}({{ attr.attrNameEn }})</span>
-                  </div>
-                  <div class="input-group-control">
-                    <v-text-field
-                      v-if="attr.genre === '1'"
-                      v-model="attr.attrValue"
-                      :placeholder="`请输入${attr.attrName}(${attr.attrNameEn})`"
-                      dense
-                      outlined
-                      clearable
-                      required
-                      single-line
-                      hide-details
-                      :append-icon="attr.attrId === '0' ? 'mdi-delete' : ''"
-                      @click:append="deleteAttrAdded(i)"
-                    />
-                    <v-select
-                      v-else
-                      v-model="attr.attrValue"
-                      :items="attr.attrItem"
-                      :item-text="getAttrConcactName"
-                      item-value="attrItemId"
-                      :placeholder="`请选择${attr.attrName}(${attr.attrNameEn})`"
-                      dense
-                      single-line
-                      hide-details
-                      outlined
-                      clearable
-                      return-object
-                      no-data-text="暂无数据"
-                      :chips="attr.genre === '3'"
-                      :small-chips="attr.genre === '3'"
-                      :multiple="attr.genre === '3'"
-                      :deletable-chips="attr.genre === '3'"
-                    />
-                  </div>
-                </div>
-              </v-col>
-              <v-col cols="12">
-                <v-btn
-                  color="secondary"
-                  outlined
-                  @click="dialogAddAttr = true"
-                >
-                  <v-icon>mdi-plus</v-icon>添加参数
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-slide-y-transition>
-      <v-slide-y-transition>
-        <v-card
           v-if="product.containSpec === '1'"
           outlined
           elevation="0"
@@ -752,14 +681,14 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text">{{ specOption.specName }}</span>
+                    <span class="input-group-text">{{ specOption.specName }}({{ specOption.specNameEn }})</span>
                   </div>
                   <div class="input-group-control">
                     <v-select
                       v-model="specOption.selected"
                       :items="specOption.specItem"
-                      item-text="itemName"
-                      :placeholder="`请选择${specOption.specName}`"
+                      :item-text="getSpecConcactName"
+                      :placeholder="`请选择${specOption.specName}${specOption.specNameEn}`"
                       dense
                       single-line
                       hide-details
@@ -775,15 +704,6 @@
                     />
                   </div>
                 </div>
-              </v-col>
-              <v-col cols="12">
-                <v-btn
-                  color="secondary"
-                  outlined
-                  @click="dialogAddSpec = true"
-                >
-                  <v-icon>mdi-plus</v-icon>添加规格
-                </v-btn>
               </v-col>
             </v-row>
             <v-slide-y-transition>
@@ -810,7 +730,7 @@
                       :value="detail.detailName"
                       filter
                     >
-                      {{ detail.detailName }}
+                      {{ detail.detailName }}({{ detail.detailNameEn }})
                     </v-chip>
                   </v-chip-group>
                 </v-card-text>
@@ -894,8 +814,8 @@
                       <td class="py-3">
                         <img-upload
                           :image="item.image"
-                          @update:src="item.image = $event;$forceUpdate()"
-                          @update:delete="item.image = '';$forceUpdate()"
+                          @update:src="item.image = $event"
+                          @update:delete="item.image = ''"
                         />
                       </td>
                       <td class="py-3">
@@ -1036,21 +956,16 @@
           <v-card outlined>
             <v-card-text>
               <div class="mb-2">
-                <img-upload-multiple
-                  :counter="6"
-                  @update:pics="getMultipleImgs"
-                />
                 <v-btn
                   color="secondary"
                   outlined
-                  class="ml-3"
                   @click="product.images = [
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
-                    { image: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
+                    { picPath: '' },
                   ]"
                 >
                   <v-icon left>
@@ -1067,11 +982,11 @@
                   lg="2"
                   xl="1"
                 >
-                  <img-upload
-                    :image="img.src"
+                  <img-upload-search
+                    :image="img.picPath"
                     icon-size="36px"
-                    @update:src="img.src = $event"
-                    @update:delete="img.src = ''"
+                    @update:src="getEmitImg($event, i)"
+                    @update:delete="img = {picPath: ''}"
                   />
                   <div class="d-flex justify-center pt-2">
                     <v-btn
@@ -1097,16 +1012,38 @@
           </v-card>
         </v-card-text>
       </v-card>
-      <v-card
-        outlined
-        elevation="0"
-        class="mb-4"
-      >
-        <v-card-title class="pa-3 grey lighten-3 title">
-          商品描述
-        </v-card-title>
-        <wang-editor @update:html="product.detailDesc = $event" />
-      </v-card>
+      <v-row>
+        <v-col
+          cols="12"
+          lg="6"
+        >
+          <v-card
+            outlined
+            elevation="0"
+            class="mb-4"
+          >
+            <v-card-title class="pa-3 grey lighten-3 title">
+              商品描述
+            </v-card-title>
+            <wang-editor @update:html="product.detailDesc = $event" />
+          </v-card>
+        </v-col>
+        <v-col
+          cols="12"
+          lg="6"
+        >
+          <v-card
+            outlined
+            elevation="0"
+            class="mb-4"
+          >
+            <v-card-title class="pa-3 grey lighten-3 title">
+              商品英文描述
+            </v-card-title>
+            <wang-editor @update:html="product.detailDescEn = $event" />
+          </v-card>
+        </v-col>
+      </v-row>
       <v-btn
         :loading="adding"
         :disabled="adding"
@@ -1122,192 +1059,6 @@
       :show="dialogBrand"
       @close-dialog="dialogBrand = false"
     />
-    <v-dialog
-      v-model="dialogAddAttr"
-      width="500"
-    >
-      <v-card>
-        <v-form
-          ref="form"
-          v-model="validAddAttr"
-        >
-          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
-            添加商品属性
-          </v-card-title>
-          <div class="pa-4">
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>属性名称：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="attrToAdd.attrName"
-                  :rules="attrNameRules"
-                  placeholder="请输入属性名称"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>属性英文名称：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="attrToAdd.attrNameEn"
-                  :rules="attrNameRules"
-                  placeholder="请输入属性英文名称"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>属性值：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="attrToAdd.attrValue"
-                  :rules="attrValueRules"
-                  placeholder="请输入属性值"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-          </div>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="primary"
-              :disabled="!validAddAttr"
-              @click="addAttrLocal"
-            >
-              确定
-            </v-btn>
-            <v-btn
-              color="secondary"
-              @click="dialogAddAttr = false"
-            >
-              取消
-            </v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="dialogAddSpec"
-      width="500"
-    >
-      <v-card>
-        <v-form
-          ref="form"
-          v-model="validAddSpec"
-        >
-          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
-            添加商品规格
-          </v-card-title>
-          <div class="pa-4">
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>规格名称：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="specToAdd.specName"
-                  :rules="specNameRules"
-                  placeholder="请输入属性名称"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-            <v-row
-              align="center"
-              class="mb-3"
-            >
-              <v-col
-                cols="3"
-                class="text-right"
-              >
-                <span class="red--text">*</span>属性值：
-              </v-col>
-              <v-col cols="7">
-                <v-text-field
-                  v-model="specToAdd.specValue"
-                  :rules="specValueRules"
-                  placeholder="多个属性值用/分隔"
-                  outlined
-                  clearable
-                  required
-                  dense
-                  single-line
-                  hide-details
-                />
-              </v-col>
-            </v-row>
-          </div>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="primary"
-              :disabled="!validAddSpec"
-              @click="addSpecLocal"
-            >
-              确定
-            </v-btn>
-            <v-btn
-              color="secondary"
-              @click="dialogAddSpec = false"
-            >
-              取消
-            </v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card>
-    </v-dialog>
     <v-dialog
       v-model="dialogUnifyCostPrice"
       width="300"
@@ -1341,7 +1092,7 @@
           <v-btn
             color="primary"
             :disabled="!unifyCostPrice"
-            @click="dialogUnifyCostPrice = false"
+            @click="setUnifyCostPrice"
           >
             确定
           </v-btn>
@@ -1381,7 +1132,7 @@
           <v-btn
             color="primary"
             :disabled="!unifyPrice"
-            @click="dialogUnifyPrice = false"
+            @click="setUnifyPrice"
           >
             确定
           </v-btn>
@@ -1421,7 +1172,7 @@
           <v-btn
             color="primary"
             :disabled="!unifyWeight"
-            @click="dialogUnifyWeight = false"
+            @click="setUnifyWeight"
           >
             确定
           </v-btn>
@@ -1436,17 +1187,15 @@ import * as R from 'ramda';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import BrandSingle from '@/components/BrandSingle.vue';
 import ImgUpload from '@/components/ImgUpload.vue';
-import ImgUploadMultiple from '@/components/ImgUploadMultiple.vue';
+import ImgUploadSearch from '@/components/ImgUploadSearch.vue';
 import WangEditor from '@/components/WangEditor.vue';
-
-const mapIndexed = R.addIndex(R.map);
 
 export default {
   name: 'ProductAdd',
   components: {
     BrandSingle,
     ImgUpload,
-    ImgUploadMultiple,
+    ImgUploadSearch,
     WangEditor,
   },
   data() {
@@ -1502,31 +1251,18 @@ export default {
         goodHasCode: false,
         isLive: '0',
         units: [],
-        attr: [],
         unitId: '',
         price: 1,
         images: [
-          { src: '' },
-          { src: '' },
-          { src: '' },
-          { src: '' },
-          { src: '' },
-          { src: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
+          { picPath: '' },
         ],
         detailDesc: '',
-      },
-      attrToAdd: {
-        attrId: '0',
-        attrValue: '',
-        attrName: '',
-        attrNameEn: '',
-        genre: '1',
-      },
-      specToAdd: {
-        id: '0',
-        index: 0,
-        specValue: '',
-        specName: '',
+        detailDescEn: '',
       },
       // 是否打包销售
       isBundle: '0',
@@ -1557,7 +1293,6 @@ export default {
           text: '否',
         },
       ],
-      attrOptions: [],
       specOptions: [],
       dataItemsDetailNames: [],
       unitsLeft: [],
@@ -1567,8 +1302,6 @@ export default {
       moqRules: [v => !!v || '请填写起订量'],
       stockRules: [v => !!v || '请填写库存数量'],
       unitRules: [v => !!v || '请选择商品单位'],
-      attrNameRules: [v => !!v || '请填写属性名称'],
-      attrValueRules: [v => !!v || '请填写属性值'],
       specNameRules: [v => !!v || '请填写规格名称'],
       specValueRules: [v => !!v || '请填写规格值'],
       costRules: [v => (v && v >= 0) || '成本价不能小于0'],
@@ -1591,22 +1324,12 @@ export default {
     unitString() {
       return R.join(',', R.pluck('dnames', this.unitsLeft));
     },
-    attrTransed() {
-      return R.map((item) => {
-        if (item.genre === '3') {
-          return R.compose(
-            R.mergeRight({ id: '0' }),
-            R.dissoc('attrItem')
-          )(item);
-        }
-        return R.dissoc('attrItem', item);
-      }, this.attrOptions);
-    },
     spec() {
       return R.map(
         item => ({
           id: '0',
           specName: item.specName,
+          specNameEn: item.specNameEn,
           index: item.index,
           specItem: item.selected,
         }),
@@ -1620,11 +1343,7 @@ export default {
       return R.evolve(
         {
           zeroInventory: v => (v ? '1' : '0'),
-          images: R.compose(
-            R.reject(R.isEmpty),
-            R.pluck('src')
-          ),
-          attr: () => R.filter(R.has('attrValue'), this.attrTransed),
+          images: R.reject(item => R.isEmpty(item.picPath)),
           units: arr => R.map(
             item => ({
               unitId: item.id,
@@ -1678,24 +1397,19 @@ export default {
     },
     // 国家价格
     countryPrice() {
-      return R.fromPairs(R.map(item => [item.dnames, item.price], this.countryLocal));
+      return R.fromPairs(
+        R.map(item => [item.dnames, item.price], this.countryLocal)
+      );
     },
-    // 已选规格组合
-    // dataItems() {
-    //   return R.filter(
-    //     item => R.includes(item.detailName, this.dataItemsDetailNames),
-    //     this.selectedDetails
-    //   );
-    // },
     selectedDetails() {
       return R.map(
         R.compose(
           R.mergeRight({
             id: '0',
             image: '',
-            costPrice: this.unifyCostPrice ? this.unifyCostPrice : '',
+            costPrice: '',
             price: 1,
-            weight: this.unifyWeight ? this.unifyWeight : '',
+            weight: '',
             barCode: '',
             isShow: '1',
           }),
@@ -1704,13 +1418,16 @@ export default {
               item => ({
                 specId: item.specIndex,
                 specName: item.specName,
+                specNameEn: item.specNameEn,
                 specItemId: item.index,
                 specItemName: item.itemName,
+                specItemNameEn: item.itemNameEn,
                 isNew: '1',
               }),
               arr
             ),
             detailName: R.join('/', R.pluck('itemName', arr)),
+            detailNameEn: R.join('/', R.pluck('itemNameEn', arr)),
           })
         ),
         this.currentSpecOptions
@@ -1788,14 +1505,38 @@ export default {
       'addProductAsync',
     ]),
     ...mapActions('system', ['getCountryListAsync']),
-    setDataItems() {
-      const array = R.map(
-        (item) => {
-          item.countryPrice = R.clone(this.countryLocal);
-          return item;
-        },
-        R.clone(this.selectedDetails)
+    getEmitImg(e, i) {
+      this.$set(this.product.images, i, e);
+    },
+    setUnifyPrice() {
+      this.dataItems = R.map((item) => {
+        item.countryPrice = R.map(
+          R.assoc('price', this.unifyPrice),
+          item.countryPrice
+        );
+        return item;
+      }, this.dataItems);
+      this.dialogUnifyPrice = false;
+    },
+    setUnifyWeight() {
+      this.dataItems = R.map(
+        R.assoc('weight', this.unifyWeight),
+        this.dataItems
       );
+      this.dialogUnifyWeight = false;
+    },
+    setUnifyCostPrice() {
+      this.dataItems = R.map(
+        R.assoc('costPrice', this.unifyCostPrice),
+        this.dataItems
+      );
+      this.dialogUnifyCostPrice = false;
+    },
+    setDataItems() {
+      const array = R.map((item) => {
+        item.countryPrice = R.clone(this.countryLocal);
+        return item;
+      }, R.clone(this.selectedDetails));
       this.dataItems = R.filter(
         item => R.includes(item.detailName, this.dataItemsDetailNames),
         array
@@ -1809,56 +1550,11 @@ export default {
     getConcactName(item) {
       return `${item.dnames}(${item.dnamesEn})`;
     },
-    getAttrConcactName(item) {
-      return `${item.attrItemName}(${item.attrItemNameEn})`;
+    getSpecConcactName(item) {
+      return `${item.itemName}(${item.itemNameEn})`;
     },
     getUnitConcactName(item) {
       return `${item.dnames}(${item.enDnames})`;
-    },
-    // 删除本地添加的属性
-    deleteAttrAdded(i) {
-      this.attrOptions = R.remove(i, 1, this.attrOptions);
-    },
-    // 本地添加属性
-    addAttrLocal() {
-      this.attrOptions = R.append(this.attrToAdd, this.attrOptions);
-      this.attrToAdd = {
-        attrId: '0',
-        attrValue: '',
-        attrName: '',
-        attrNameEn: '',
-        genre: '1',
-      };
-      this.dialogAddAttr = false;
-    },
-    // 删除本地添加的规格
-    deleteSpecAdded(i) {
-      this.specOptions = R.remove(i, 1, this.specOptions);
-    },
-    // 本地添加规格
-    addSpecLocal() {
-      const index = this.specOptions.length;
-      const spec = R.dissoc('specValue', R.clone(this.specToAdd));
-      spec.index = index;
-      const specItemArr = R.split('/', this.specToAdd.specValue);
-      spec.specItem = mapIndexed(
-        (item, i) => ({
-          id: '0',
-          index: i,
-          itemName: item,
-          specIndex: index,
-          specName: spec.specName,
-        }),
-        specItemArr
-      );
-      this.specOptions = R.append(spec, this.specOptions);
-      this.specToAdd = {
-        id: '0',
-        index: 0,
-        specValue: '',
-        specName: '',
-      };
-      this.dialogAddSpec = false;
     },
     // xprod
     xprod(arr1, arr2) {
@@ -1874,8 +1570,6 @@ export default {
       this.dialogCategory = false;
       this.getCateAttrSpecAsync({ categoryId: this.product.categoryId })
         .then((res) => {
-          this.attrOptions = res.attr;
-          // this.specOptions = R.map(R.assoc('selected', []), res.spec);
           this.specOptions = res.spec;
         })
         .catch((err) => {
@@ -1931,7 +1625,12 @@ export default {
         if (this.product.containSpec === '1') {
           postData.spec = this.spec;
           const dataItems = R.map((item) => {
-            item.countryPrice = R.fromPairs(R.map(subitem => [subitem.dnames, subitem.price], item.countryPrice));
+            item.countryPrice = R.fromPairs(
+              R.map(
+                subitem => [subitem.dnames, subitem.price],
+                item.countryPrice
+              )
+            );
             return item;
           }, this.dataItems);
           if (this.goodHasCode) {
@@ -1940,7 +1639,7 @@ export default {
             postData.detail = dataItems;
           }
         } else {
-        // 无规格商品价格
+          // 无规格商品价格
           postData.countryPrice = this.countryPrice;
         }
         this.adding = true;
@@ -1960,23 +1659,6 @@ export default {
           });
       }
     },
-    // 批量添加图片
-    getMultipleImgs(pics) {
-      this.$set(
-        this.product,
-        'images',
-        mapIndexed((item, i) => {
-          if (pics[i]) {
-            item.src = pics[i];
-          } else {
-            item = {
-              src: '',
-            };
-          }
-          return item;
-        }, this.product.images)
-      );
-    },
     setBundle(v) {
       if (v === '0') {
         this.product.units = [];
@@ -1984,47 +1666,11 @@ export default {
     },
     // 修改图片顺序
     changeImgIndex(i, direction) {
-      this.$set(this.product, 'images', R.move(i, direction === 'right' ? i + 1 : i - 1, this.product.images));
-    },
-    setPriceAreaPrice(v, i) {
-      const item = this.priceAreaLocal[i];
-      item.price = v;
-      this.$set(this.priceAreaLocal, i, item);
-      if (i === 0) {
-        this.$set(this.product, 'price', v);
-      }
-    },
-    setUsePriceStatus(v) {
-      this.usePriceStatus = v;
-      if (v) {
-        const item = this.priceAreaLocal[0];
-        item.price = this.product.price;
-        this.$set(this.priceAreaLocal, 0, item);
-      }
-    },
-    addToPriceAreaLocal() {
-      const item = this.priceAreaLocal[this.priceAreaLocal.length - 1];
-      if (!item.minNum || !item.maxNum || !item.price) {
-        this.$store.commit('TOGGLE_SNACKBAR', {
-          type: 'error',
-          text: '请先填写区间信息',
-        });
-        return;
-      }
-      this.priceAreaLocal = R.append({
-        minNum: +this.priceAreaLocal[this.priceAreaLocal.length - 1].maxNum + 1,
-        maxNum: '',
-        price: '',
-      }, this.priceAreaLocal);
-    },
-    removeFromPriceAreaLocal(i) {
-      this.priceAreaLocal = R.remove(i, 1, this.priceAreaLocal);
-    },
-    minNumRules(v, i) {
-      return (v > 0 && v > +this.priceAreaLocal[i - 1].maxNum) || ' ';
-    },
-    maxNumRules(v, i) {
-      return (v > 0 && v > +this.priceAreaLocal[i].minNum) || ' ';
+      this.$set(
+        this.product,
+        'images',
+        R.move(i, direction === 'right' ? i + 1 : i - 1, this.product.images)
+      );
     },
   },
 };

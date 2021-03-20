@@ -41,15 +41,6 @@ export default new Router({
           },
         },
         {
-          path: 'system/qrcode',
-          name: 'qrcode',
-          component: () => import(/* webpackChunkName: "group-system" */ './views/SystemQrcode.vue'),
-          meta: {
-            required: true,
-            id: '77',
-          },
-        },
-        {
           path: 'system/basic-info',
           name: 'basic_info',
           component: () => import(/* webpackChunkName: "group-system" */ './views/SystemBasicInfo.vue'),
@@ -65,15 +56,6 @@ export default new Router({
           meta: {
             required: true,
             id: '76',
-          },
-        },
-        {
-          path: 'system/order-sequence',
-          name: 'order_sequence',
-          component: () => import(/* webpackChunkName: "group-system" */ './views/SystemOrderSequenceList.vue'),
-          meta: {
-            required: true,
-            id: '70',
           },
         },
         {
@@ -331,6 +313,26 @@ export default new Router({
             required: true,
             id: '1053',
           },
+        },
+        // 新闻
+        {
+          path: 'news/list',
+          name: 'news_list',
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/NewsList.vue'),
+          meta: {},
+        },
+        {
+          path: 'news/add',
+          name: 'news_add',
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/NewsSingle.vue'),
+          meta: {},
+        },
+        {
+          path: 'news/edit/:id',
+          name: 'news_edit',
+          props: true,
+          component: () => import(/* webpackChunkName: "group-warehouse" */ './views/NewsSingle.vue'),
+          meta: {},
         },
         // 信息
         {

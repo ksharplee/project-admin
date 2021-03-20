@@ -20,13 +20,31 @@
               cols="auto"
               class="text-right"
             >
-              文章标题：
+              新闻大图：
+            </v-col>
+            <v-col cols="5">
+              <img-upload-input
+                :image="news.image"
+                @update:src="$set(news, 'image', $event)"
+                @update:delete="$set(news, 'image', '')"
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            align="center"
+            class="mb-3"
+          >
+            <v-col
+              cols="auto"
+              class="text-right"
+            >
+              新闻标题：
             </v-col>
             <v-col cols="5">
               <v-text-field
-                v-model="info.dnames"
+                v-model="news.dnames"
                 :rules="nameRules"
-                placeholder="请输入信息标题"
+                placeholder="请输入新闻标题"
                 dense
                 outlined
                 clearable
@@ -48,9 +66,9 @@
             </v-col>
             <v-col cols="5">
               <v-text-field
-                v-model="info.dnamesEn"
+                v-model="news.dnamesEn"
                 :rules="nameRules"
-                placeholder="请输入信息英文标题"
+                placeholder="请输入新闻英文标题"
                 dense
                 outlined
                 clearable
@@ -68,21 +86,41 @@
               cols="auto"
               class="text-right"
             >
-              信息类别：
+              新闻简述：
             </v-col>
             <v-col cols="5">
-              <v-select
-                v-model="info.categoryId"
-                :items="infoCategories.data"
-                :loading="loadingCategories"
-                item-value="id"
-                item-text="dnames"
-                placeholder="请选择信息类别"
-                single-line
-                hide-details
+              <v-text-field
+                v-model="news.summary"
+                placeholder="请输入新闻简述"
                 dense
                 outlined
-                no-data-text="暂无数据"
+                clearable
+                required
+                single-line
+                hide-details
+              />
+            </v-col>
+          </v-row>
+          <v-row
+            align="center"
+            class="mb-3"
+          >
+            <v-col
+              cols="auto"
+              class="text-right"
+            >
+              英文简述：
+            </v-col>
+            <v-col cols="5">
+              <v-text-field
+                v-model="news.summaryEn"
+                placeholder="请输入新闻英文简述"
+                dense
+                outlined
+                clearable
+                required
+                single-line
+                hide-details
               />
             </v-col>
           </v-row>
@@ -104,8 +142,8 @@
           </v-card-title>
           <component
             :is="component"
-            :content="info.content"
-            @update:html="info.content = $event"
+            :content="news.content"
+            @update:html="news.content = $event"
           />
         </v-card>
       </v-col>
@@ -123,13 +161,12 @@
           </v-card-title>
           <component
             :is="componentEn"
-            :content="info.contentEn"
-            @update:html="info.contentEn = $event"
+            :content="news.contentEn"
+            @update:html="news.contentEn = $event"
           />
         </v-card>
       </v-col>
     </v-row>
-
     <v-btn
       :loading="submitting"
       :disabled="submitting"
@@ -144,19 +181,19 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions } from 'vuex';
 import WangEditor from '@/components/WangEditor.vue';
+import ImgUploadInput from '@/components/ImgUploadInput.vue';
 
 export default {
-  name: 'InformationSingle',
+  name: 'NewsSingle',
+  components: {
+    ImgUploadInput,
+  },
   props: {
     id: {
       type: String,
       default: '',
-    },
-    item: {
-      type: Object,
-      default: () => {},
     },
   },
   data() {
@@ -164,7 +201,7 @@ export default {
       component: null,
       componentEn: null,
       loadingCategories: false,
-      info: {
+      news: {
         dnames: '',
         dnamesEn: '',
         content: '',
@@ -175,44 +212,26 @@ export default {
       nameRules: [v => !!v || '请填写信息标题'],
     };
   },
-  computed: {
-    ...mapState('information', ['infoCategories', 'infoList']),
-  },
   created() {
-    this.component = WangEditor;
-    this.componentEn = WangEditor;
-    if (!this.infoCategories.status) {
-      this.getInfoCategories();
-    }
-    if (!this.infoList.status) {
-      this.getInfoListAsync().then(() => {
-        if (this.id) {
-          this.info = this.infoList.data.find(item => item.id === this.id);
-        }
-      }).catch((err) => {
-        this.checkErr(err, 'getInfoListAsync');
-      });
-    }
     if (this.id) {
-      this.info = this.item;
+      this.getNewsDetail();
     }
   },
   methods: {
-    ...mapActions('information', ['getInfoListAsync', 'addInfoAsync', 'editInfoAsync', 'getInfoCategoriesAsync']),
-    getInfoCategories() {
-      if (!this.infoCategories.status) {
-        this.loadingCategories = true;
-        this.getInfoCategoriesAsync().catch((err) => {
-          this.checkErr(err, 'getInfoCategories');
-        }).finally(() => {
-          this.loadingCategories = false;
-        });
-      }
+    ...mapActions('information', ['getNewsListAsync', 'getNewsDetailAsync', 'addNewsAsync', 'editNewsAsync']),
+    getNewsDetail() {
+      this.getNewsDetailAsync({ id: this.id }).then((res) => {
+        this.news = res;
+        this.component = WangEditor;
+        this.componentEn = WangEditor;
+      }).catch((err) => {
+        this.checkErr(err);
+      });
     },
     addOrEditInfo() {
       this.submitting = true;
       if (this.id) {
-        this.editInfoAsync(this.info).then(() => {
+        this.editNewsAsync(this.news).then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',
             text: '恭喜，编辑成功!',
@@ -224,7 +243,7 @@ export default {
           this.submitting = false;
         });
       } else {
-        this.addInfoAsync(this.info).then(() => {
+        this.addNewsAsync(this.news).then(() => {
           this.$store.commit('TOGGLE_SNACKBAR', {
             type: 'success',
             text: '恭喜，添加成功!',

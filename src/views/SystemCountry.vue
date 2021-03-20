@@ -32,7 +32,21 @@
               :key="item.id"
             >
               <td class="pa-3">
-                {{ item.dnames }}
+                <div class="text-left">
+                  {{ item.dnames }}<v-chip
+                    v-if="item.isDefalut === '1'"
+                    color="primary"
+                    small
+                    class="ml-2"
+                  >
+                    默认
+                  </v-chip>
+                </div>
+              </td>
+              <td class="pa-3">
+                <div class="text-left">
+                  {{ item.dnamesEn }}
+                </div>
               </td>
               <td class="pa-3">
                 {{ item.rate }}
@@ -149,6 +163,12 @@ export default {
           sortable: false,
         },
         {
+          text: '国家英文名',
+          value: 'dnamesEn',
+          align: 'center',
+          sortable: false,
+        },
+        {
           text: '汇率',
           value: 'rate',
           align: 'center',
@@ -181,7 +201,7 @@ export default {
         exact: true,
       },
       {
-        text: '热搜设置',
+        text: '国家语言设置',
         disabled: true,
         exact: true,
       },

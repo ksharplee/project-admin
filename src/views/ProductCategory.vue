@@ -19,6 +19,9 @@
           分类名称
         </div>
         <div style="width:150px">
+          图片
+        </div>
+        <div style="width:150px">
           排序
         </div>
         <div style="width:150px">
@@ -49,6 +52,36 @@
         <template v-slot:append="{ item,leaf }">
           <div class="d-flex text-center align-center">
             <div style="width:150px">
+              <div
+                v-if="item.dLevel === '1'"
+                style="width:50px"
+                class="py-3 mx-auto"
+              >
+                <v-img
+                  :src="
+                    item.image
+                      ? `${item.image}?x-oss-process=image/resize,m_fill,w_100,h_100`
+                      : require('@/assets/imgWaiting.png')
+                  "
+                  aspect-ratio="1"
+                  class="grey lighten-1"
+                >
+                  <template v-slot:placeholder>
+                    <v-row
+                      class="fill-height ma-0"
+                      align="center"
+                      justify="center"
+                    >
+                      <v-progress-circular
+                        indeterminate
+                        color="grey lighten-5"
+                      />
+                    </v-row>
+                  </template>
+                </v-img>
+              </div>
+            </div>
+            <div style="width:150px">
               {{ item.sort }}
             </div>
             <div style="width:150px">
@@ -75,24 +108,6 @@
                   </v-btn>
                 </template>
                 <span>增加子类</span>
-              </v-tooltip>
-              <v-tooltip
-                v-if="item.isEnd === '1'"
-                bottom
-              >
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    :to="{ name: 'product_attr', params: { id: item.id, cate: item.dnames }}"
-                    icon
-                    class="mx-1"
-                    v-on="on"
-                  >
-                    <v-icon color="warning">
-                      mdi-spa
-                    </v-icon>
-                  </v-btn>
-                </template>
-                <span>属性管理</span>
               </v-tooltip>
               <v-tooltip
                 v-if="item.isEnd === '1'"
@@ -157,6 +172,358 @@
       </div>
     </v-card>
     <v-dialog
+      v-model="dialogAddRoot"
+      width="800"
+    >
+      <v-card>
+        <v-form
+          ref="form"
+          v-model="valid"
+        >
+          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
+            添加分类
+            <span class="error--text body-1">只有最后一级分类可以设置商品的属性和规格</span>
+          </v-card-title>
+          <div
+            v-for="(cate, i) in cateToAdd"
+            :key="i"
+            class="pa-4"
+          >
+            <v-row>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text">分类图片</span>
+                  </div>
+                  <div class="input-group-control">
+                    <img-upload-input
+                      :image="cate.image ? cate.image : require('@/assets/imgWaiting.png')"
+                      pop-width="80"
+                      pop-height="80"
+                      @update:src="$set(cate, 'image', $event)"
+                      @update:delete="$set(cate, 'image', '')"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">分类名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="cate.dnames"
+                      :rules="nameRules"
+                      placeholder="请输入分类名"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">分类英文名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="cate.dnamesEn"
+                      :rules="nameRules"
+                      placeholder="请输入分类名"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">是否最后一级</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-select
+                      v-model="cate.isEnd"
+                      :items="switchOptions"
+                      item-text="name"
+                      item-value="id"
+                      single-line
+                      outlined
+                      clearable
+                      hide-details
+                      dense
+                      no-data-text="暂无数据"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">是否前台显示</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-select
+                      v-model="cate.isPublish"
+                      :items="switchOptions"
+                      item-text="name"
+                      item-value="id"
+                      single-line
+                      outlined
+                      clearable
+                      hide-details
+                      dense
+                      no-data-text="暂无数据"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">排序</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="cate.sort"
+                      :rules="sortRules"
+                      placeholder="请输入分类序号"
+                      type="number"
+                      outlined
+                      clearable
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </div>
+        </v-form>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            :loading="addingCate"
+            :disabled="!valid || addingCate"
+            @click="addCateConfirm"
+          >
+            确定
+          </v-btn>
+          <v-btn
+            color="secondary"
+            @click="dialogAddRoot = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="dialogEditRoot"
+      width="800"
+    >
+      <v-card>
+        <v-form
+          ref="form"
+          v-model="valid"
+        >
+          <v-card-title class="title grey lighten-3 pa-4 d-flex justify-space-between">
+            添加分类
+            <span class="error--text body-1">只有最后一级分类可以设置商品的属性和规格</span>
+          </v-card-title>
+          <div
+            class="pa-4"
+          >
+            <v-row>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text">分类图片</span>
+                  </div>
+                  <div class="input-group-control">
+                    <img-upload-input
+                      :image="cateToEdit.image ? cateToEdit.image : require('@/assets/imgWaiting.png')"
+                      pop-width="80"
+                      pop-height="80"
+                      @update:src="$set(cateToEdit, 'image', $event)"
+                      @update:delete="$set(cateToEdit, 'image', '')"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">分类名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="cateToEdit.dnames"
+                      :rules="nameRules"
+                      placeholder="请输入分类名"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">分类英文名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="cateToEdit.dnamesEn"
+                      :rules="nameRules"
+                      placeholder="请输入分类名"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">是否最后一级</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-select
+                      v-model="cateToEdit.isEnd"
+                      :items="switchOptions"
+                      item-text="name"
+                      item-value="id"
+                      single-line
+                      outlined
+                      clearable
+                      hide-details
+                      dense
+                      no-data-text="暂无数据"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">是否前台显示</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-select
+                      v-model="cateToEdit.isPublish"
+                      :items="switchOptions"
+                      item-text="name"
+                      item-value="id"
+                      single-line
+                      outlined
+                      clearable
+                      hide-details
+                      dense
+                      no-data-text="暂无数据"
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="10"
+                class="text-right mb-3"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">排序</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="cateToEdit.sort"
+                      :rules="sortRules"
+                      placeholder="请输入分类序号"
+                      type="number"
+                      outlined
+                      clearable
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </div>
+        </v-form>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            color="primary"
+            :loading="editingCate"
+            :disabled="!valid || editingCate"
+            @click="editCateConfirm"
+          >
+            确定
+          </v-btn>
+          <v-btn
+            color="secondary"
+            @click="dialogEditRoot = false"
+          >
+            取消
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
       v-model="dialogAdd"
       width="800"
     >
@@ -181,7 +548,7 @@
                 是否是最后一级
               </v-col>
               <v-col>
-                是否显示前台
+                是否前台显示
               </v-col>
               <v-col>
                 排序
@@ -209,7 +576,7 @@
                 <v-text-field
                   v-model="cate.dnamesEn"
                   :rules="nameRules"
-                  placeholder="请输入分类名"
+                  placeholder="请输入分类英文名"
                   outlined
                   clearable
                   required
@@ -301,7 +668,7 @@
           v-model="valid"
         >
           <v-card-title class="title grey lighten-3 pa-4">
-            添加分类
+            编辑分类
           </v-card-title>
           <div class="pa-4">
             <v-row>
@@ -315,7 +682,7 @@
                 是否是最后一级
               </v-col>
               <v-col>
-                是否显示前台
+                是否前台显示
               </v-col>
               <v-col>
                 排序
@@ -443,9 +810,13 @@
 <script>
 import * as R from 'ramda';
 import { mapState, mapMutations, mapActions } from 'vuex';
+import ImgUploadInput from '@/components/ImgUploadInput.vue';
 
 export default {
   name: 'ProductCategory',
+  components: {
+    ImgUploadInput,
+  },
   props: {
     id: {
       type: String,
@@ -455,13 +826,15 @@ export default {
   data() {
     return {
       dialogAdd: false,
+      dialogAddRoot: false,
       dialogEdit: false,
+      dialogEditRoot: false,
       dialogDelete: false,
       addingCate: false,
       editingCate: false,
       deletingCate: false,
       valid: true,
-      cateToAdd: {},
+      cateToAdd: [],
       cateToEdit: {},
       cateToDelete: '',
       parentId: '0',
@@ -512,20 +885,28 @@ export default {
       'deleteCateAsync',
     ]),
     openDialogAdd(param) {
-      this.dialogAdd = true;
+      if (param.parentId === '0') {
+        this.dialogAddRoot = true;
+      } else {
+        this.dialogAdd = true;
+      }
       this.parentId = param.parentId;
       this.cateToAdd = [
         {
           parentId: param.parentId,
           dnames: '',
           sort: 99,
-          isEnd: '0',
+          isEnd: '1',
           isPublish: '1',
         },
       ];
     },
     openDialogEdit(item) {
-      this.dialogEdit = true;
+      if (item.parentId === '0') {
+        this.dialogEditRoot = true;
+      } else {
+        this.dialogEdit = true;
+      }
       this.cateToEdit = R.clone(item);
     },
     openDialogDelete(id) {
@@ -538,8 +919,8 @@ export default {
           parentId: this.parentId,
           dnames: '',
           sort: 99,
-          isEnd: '',
-          isPublish: '',
+          isEnd: '1',
+          isPublish: '1',
         },
         this.cateToAdd
       );
@@ -559,6 +940,7 @@ export default {
         .finally(() => {
           this.addingCate = false;
           this.dialogAdd = false;
+          this.dialogAddRoot = false;
         });
     },
     editCateConfirm() {
@@ -576,6 +958,7 @@ export default {
         .finally(() => {
           this.editingCate = false;
           this.dialogEdit = false;
+          this.dialogEditRoot = false;
         });
     },
     getCateList() {

@@ -111,6 +111,12 @@ export default {
           sortable: false,
         },
         {
+          text: '英文标题',
+          value: 'dnamesEn',
+          align: 'left',
+          sortable: false,
+        },
+        {
           text: '类别',
           value: 'categoryName',
           align: 'center',

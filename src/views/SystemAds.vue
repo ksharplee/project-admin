@@ -287,11 +287,11 @@
               style="max-width: 100%;max-height:100%"
               alt=""
             >
-            <div class="mt-4">
+            <div class="mt-8">
               <v-btn
                 icon
                 dark
-                color="primary"
+                color="white"
                 @click="dialog = false"
               >
                 <v-icon dark>

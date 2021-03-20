@@ -183,18 +183,7 @@ export default {
         model: false,
         children: [
           { text: '信息列表', url: { name: 'information_list' } },
-        ],
-      },
-      {
-        icon: 'mdi-settings',
-        text: '系统',
-        model: false,
-        children: [
-          { text: '基本信息设置', url: { name: 'basic_info' } },
-          { text: '订单处理流程', url: { name: 'order_sequence' } },
-          { text: '小程序二维码', url: { name: 'qrcode' } },
-          { text: '广告图设置', url: { name: 'ads' } },
-          { text: '国家语言设置', url: { name: 'system_country' } },
+          { text: '新闻列表', url: { name: 'news_list' } },
         ],
       },
       {
@@ -208,6 +197,16 @@ export default {
           { text: '收款账户', url: { name: 'finance_payment' } },
           { text: '发票类型管理', url: { name: 'finance_invoice' } },
           { text: '银行管理', url: { name: 'finance_bank' } },
+        ],
+      },
+      {
+        icon: 'mdi-settings',
+        text: '系统',
+        model: false,
+        children: [
+          { text: '企业信息设置', url: { name: 'basic_info' } },
+          { text: '广告图设置', url: { name: 'ads' } },
+          { text: '国家语言设置', url: { name: 'system_country' } },
         ],
       },
       // {

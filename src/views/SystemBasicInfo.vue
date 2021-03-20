@@ -4,34 +4,38 @@
       ref="form"
       v-model="valid"
     >
-      <v-container
-        fluid
-        class="pa-0 mb-4"
+      <v-card
+        outlined
+        class="mb-4"
       >
-        <v-row>
-          <v-col
-            cols="12"
-            md="4"
-            lg="3"
-            xl="2"
-            class="text-right"
-          >
-            <img-upload
-              :image="info.logo ? info.logo : require('@/assets/imgWaiting.png')"
-              placeholder="请上传LOGO图片"
-              icon-size="48px"
-              :show-input="true"
-              @update:src="info.logo = $event"
-              @update:delete="info.logo = ''"
-            />
-          </v-col>
-          <v-col
-            rows="12"
-            md="8"
-            lg="9"
-            xl="10"
+        <v-card-title class="title grey lighten-3 pa-4">
+          基本信息
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <v-container
+            fluid
+            class="pa-0 mb-4"
           >
             <v-row class="mb-3">
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">LOGO</span>
+                  </div>
+                  <div class="input-group-control">
+                    <img-upload-input
+                      :image="info.logo ? info.logo : require('@/assets/imgWaiting.png')"
+                      @update:src="$set(info, 'logo', $event)"
+                      @update:delete="$set(info, 'logo', '')"
+                    />
+                  </div>
+                </div>
+              </v-col>
               <v-col
                 cols="12"
                 lg="6"
@@ -47,6 +51,31 @@
                       v-model="info.company"
                       :rules="companyRules"
                       placeholder="请输入公司名称"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">公司英文名称</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="info.companyEn"
+                      :rules="companyRules"
+                      placeholder="请输入公司英文名称"
                       outlined
                       clearable
                       required
@@ -89,14 +118,12 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend large">
-                    <span class="input-group-text">联系电话</span>
+                    <span class="input-group-text">联系人英文名</span>
                   </div>
                   <div class="input-group-control">
-                    <!-- :rules="phoneRules" -->
                     <v-text-field
-                      v-model="info.mobile"
-                      type="number"
-                      placeholder="请输入联系电话"
+                      v-model="info.contactsEn"
+                      placeholder="请输入联系人英文名"
                       outlined
                       clearable
                       required
@@ -115,67 +142,68 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend large">
-                    <span class="input-group-text required">地区</span>
+                    <span class="input-group-text">固定电话</span>
                   </div>
                   <div class="input-group-control">
-                    <v-row no-gutters>
-                      <v-col cols="4">
-                        <v-select
-                          v-model="info.addressFirstId"
-                          :items="areaInfo.data"
-                          :loading="loadingArea"
-                          :disabled="loadingArea"
-                          class="rounded-right-0"
-                          item-text="areaName"
-                          item-value="id"
-                          single-line
-                          dense
-                          outlined
-                          placeholder="省"
-                          no-data-text="暂无数据"
-                          hide-details
-                          @change="getCitiesByChange"
-                        />
-                      </v-col>
-                      <v-col
-                        cols="4"
-                        style="margin-right:-1px;margin-left:-1px"
-                      >
-                        <v-select
-                          v-model="info.addressSecondId"
-                          :items="cities"
-                          :loading="loadingCities"
-                          :disabled="!info.addressFirstId || loadingCities"
-                          class="rounded-0"
-                          item-text="areaName"
-                          item-value="id"
-                          single-line
-                          dense
-                          outlined
-                          placeholder="市"
-                          no-data-text="暂无数据"
-                          hide-details
-                          @change="getRegionsByChange"
-                        />
-                      </v-col>
-                      <v-col cols="4">
-                        <v-select
-                          v-model="info.addressId"
-                          :items="regions"
-                          :loading="loadingRegions"
-                          :disabled="!info.addressSecondId || loadingRegions"
-                          class="rounded-left-0"
-                          item-text="areaName"
-                          item-value="id"
-                          single-line
-                          dense
-                          outlined
-                          placeholder="区"
-                          no-data-text="暂无数据"
-                          hide-details
-                        />
-                      </v-col>
-                    </v-row>
+                    <v-text-field
+                      v-model="info.tel"
+                      placeholder="请输入固定电话"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text">手机号码</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="info.mobile"
+                      type="number"
+                      placeholder="请输入手机号码"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text">Email</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="info.email"
+                      placeholder="请输入Email地址"
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      hide-details
+                      dense
+                    />
                   </div>
                 </div>
               </v-col>
@@ -204,15 +232,195 @@
                   </div>
                 </div>
               </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group">
+                  <div class="input-group-prepend large">
+                    <span class="input-group-text required">英文详细地址</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-text-field
+                      v-model="info.addressPartEn"
+                      :rules="addressRules"
+                      placeholder="请输入英文详细地址"
+                      hide-details
+                      outlined
+                      clearable
+                      required
+                      single-line
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
             </v-row>
-          </v-col>
-        </v-row>
-      </v-container>
+          </v-container>
+        </v-card-text>
+      </v-card>
+      <v-card
+        outlined
+        class="mb-4"
+      >
+        <v-card-title class="title grey lighten-3 pa-4">
+          关于我们
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <v-container
+            fluid
+            class="pa-0"
+          >
+            <v-row
+              class="mb-3"
+            >
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group align-start">
+                  <div class="input-group-prepend large pt-3">
+                    <span class="input-group-text">简述</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-textarea
+                      v-model="info.aboutSummary"
+                      placeholder="请输入关于我们简述"
+                      outlined
+                      required
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+                xl="4"
+                class="text-right"
+              >
+                <div class="input-group align-start">
+                  <div class="input-group-prepend large pt-3">
+                    <span class="input-group-text">英文简述</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-textarea
+                      v-model="info.aboutSummaryEn"
+                      placeholder="请输入关于我们英文简述"
+                      outlined
+                      required
+                      hide-details
+                      dense
+                    />
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+                lg="6"
+              >
+                <v-card
+                  outlined
+                  elevation="0"
+                >
+                  <v-card-title class="pa-3 grey lighten-3 title">
+                    关于我们详情
+                  </v-card-title>
+                  <component
+                    :is="componentAboutUs"
+                    :content="info.aboutUs"
+                    @update:html="info.aboutUs = $event"
+                  />
+                </v-card>
+              </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+              >
+                <v-card
+                  outlined
+                  elevation="0"
+                >
+                  <v-card-title class="pa-3 grey lighten-3 title">
+                    关于我们英文详情
+                  </v-card-title>
+                  <component
+                    :is="componentAboutUsEn"
+                    :content="info.aboutUsEn"
+                    @update:html="info.aboutUsEn = $event"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+      <v-card
+        outlined
+        class="mb-4"
+      >
+        <v-card-title class="title grey lighten-3 pa-4">
+          联系我们
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <v-container
+            fluid
+            class="pa-0"
+          >
+            <v-row>
+              <v-col
+                cols="12"
+                lg="6"
+              >
+                <v-card
+                  outlined
+                  elevation="0"
+                >
+                  <v-card-title class="pa-3 grey lighten-3 title">
+                    详情
+                  </v-card-title>
+                  <component
+                    :is="componentContactUs"
+                    :content="info.contactUs"
+                    @update:html="info.contactUs = $event"
+                  />
+                </v-card>
+              </v-col>
+              <v-col
+                cols="12"
+                lg="6"
+              >
+                <v-card
+                  outlined
+                  elevation="0"
+                >
+                  <v-card-title class="pa-3 grey lighten-3 title">
+                    英文详情
+                  </v-card-title>
+                  <component
+                    :is="componentContactUsEn"
+                    :content="info.contactUsEn"
+                    @update:html="info.contactUsEn = $event"
+                  />
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
       <v-btn
         :loading="submitting"
         :disabled="submitting"
         color="primary"
-        class="px-12 body-1 mr-2"
+        large
+        class="px-12 body-1 mr-2 mb-4"
         @click="addOrEditBasicInfo"
       >
         提交
@@ -224,13 +432,18 @@
 <script>
 import * as R from 'ramda';
 import { mapActions, mapState } from 'vuex';
-import ImgUpload from '@/components/ImgUpload.vue';
+import WangEditor from '@/components/WangEditor.vue';
+import ImgUploadInput from '@/components/ImgUploadInput.vue';
 
 export default {
   name: 'SystemBasicInfo',
-  components: { ImgUpload },
+  components: { ImgUploadInput },
   data() {
     return {
+      componentAboutUs: null,
+      componentAboutUsEn: null,
+      componentContactUs: null,
+      componentContactUsEn: null,
       valid: true,
       submitting: false,
       loadingCities: false,
@@ -238,14 +451,11 @@ export default {
       info: {
         logo: '',
         image: '',
-        addressSecondId: '',
-        addressId: '',
-        addressFirstId: '',
         isLoginStatus: '0',
       },
       loadingArea: false,
       companyRules: [v => !!v || '请填写公司名称'],
-      addressRules: [v => !!v || '请选择地区'],
+      addressRules: [v => !!v || '请填写公司地址'],
       phoneRules: [
         v => (v && /^1[3456789]\d{9}$/.test(v)) || '手机号码格式有误',
       ],
@@ -293,6 +503,10 @@ export default {
         },
         R.head(this.basicInfo.data)
       );
+      this.componentAboutUs = WangEditor;
+      this.componentAboutUsEn = WangEditor;
+      this.componentContactUs = WangEditor;
+      this.componentContactUsEn = WangEditor;
       if (this.info.addressSecondId && this.info.addressSecondId !== '0') {
         this.getCities(this.info.addressFirstId);
       }
@@ -326,18 +540,13 @@ export default {
             {
               logo: '',
               image: '',
-              addressSecondId: '',
-              addressId: '',
-              addressFirstId: '',
             },
             R.head(this.basicInfo.data)
           );
-          if (this.info.addressSecondId && this.info.addressSecondId !== '0') {
-            this.getCities(this.info.addressFirstId);
-          }
-          if (this.info.addressId && this.info.addressId !== '0') {
-            this.getRegions(this.info.addressSecondId);
-          }
+          this.componentAboutUs = WangEditor;
+          this.componentAboutUsEn = WangEditor;
+          this.componentContactUs = WangEditor;
+          this.componentContactUsEn = WangEditor;
         })
         .catch((err) => {
           this.checkErr(err);
