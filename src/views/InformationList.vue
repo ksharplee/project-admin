@@ -123,6 +123,12 @@ export default {
           sortable: false,
         },
         {
+          text: '类别英文名',
+          value: 'categoryNameEn',
+          align: 'center',
+          sortable: false,
+        },
+        {
           text: '操作',
           value: 'action',
           align: 'center',

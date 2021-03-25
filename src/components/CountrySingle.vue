@@ -88,25 +88,25 @@
           </v-row>
           <v-row
             align="center"
+            class="mb-3"
           >
             <v-col
               cols="3"
               class="text-right"
             >
-              语言：
+              币种：
             </v-col>
             <v-col cols="5">
-              <v-select
-                v-model="country.languageType"
-                :items="languageType"
-                :rules="typeRules"
-                placeholder="请选择语言"
-                clearable
-                outlined
+              <v-text-field
+                v-model="country.currency"
+                :rules="currencyRules"
+                placeholder="请输入币种"
                 dense
+                outlined
+                clearable
+                required
                 single-line
                 hide-details
-                no-data-text="暂无数据"
               />
             </v-col>
           </v-row>
@@ -191,7 +191,7 @@ export default {
       ],
       nameRules: [v => !!v || '请填写国家名称'],
       rateRules: [v => !!v || '请填写汇率'],
-      typeRules: [v => !!v || '请选择语言'],
+      currencyRules: [v => !!v || '请填写币种'],
     };
   },
   watch: {

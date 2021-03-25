@@ -348,7 +348,7 @@
             >
               <template v-slot:item.goodName="{ item }">
                 <div class="text-left">
-                  {{ item.goodName }}
+                  {{ item.goodName }}({{ item.goodNameEn }})
                 </div>
               </template>
               <template v-slot:item.buUnitName="{ item }">
@@ -361,11 +361,11 @@
                 </div>
               </template>
               <template v-slot:item.goodDetailName="{ item }">
-                {{ item.goodDetailName ? item.goodDetailName : '无' }}
+                {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
               </template>
               <template v-slot:item.memo="{ item }">
                 <div :class="item.memo ? '' : 'grey--text'">
-                  {{ item.memo ? item.memo : '无' }}
+                  {{ item.memo }}
                 </div>
               </template>
               <template v-slot:item.image="{ item }">

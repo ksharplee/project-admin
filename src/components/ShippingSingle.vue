@@ -94,16 +94,20 @@
               cols="3"
               class="text-right"
             >
-              <span class="error--text">*</span>地区：
+              国家：
             </v-col>
-            <v-col cols="8">
-              <area-select
-                :address-first-id="shipping.addressFirstId"
-                :address-second-id="shipping.addressSecondId"
-                :address-id="shipping.addressId"
-                @update:first="$set(shipping, 'addressFirstId', $event)"
-                @update:second="$set(shipping, 'addressSecondId', $event)"
-                @update:third="$set(shipping, 'addressId', $event)"
+            <v-col cols="6">
+              <v-select
+                v-model="shipping.countryId"
+                :items="country.data"
+                :item-text="getCountryName"
+                item-value="id"
+                dense
+                single-line
+                outlined
+                clearable
+                no-data-text="暂无数据"
+                hide-details
               />
             </v-col>
           </v-row>
@@ -153,12 +157,10 @@
 
 <script>
 import * as R from 'ramda';
-import { mapActions } from 'vuex';
-import AreaSelect from '@/components/Area.vue';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'ShippingSingle',
-  components: { AreaSelect },
   props: {
     show: {
       type: Boolean,
@@ -209,6 +211,9 @@ export default {
       ],
     };
   },
+  computed: {
+    ...mapState('system', ['country']),
+  },
   watch: {
     show() {
       if (this.edit) {
@@ -220,14 +225,27 @@ export default {
       }
     },
   },
+  created() {
+    if (!this.country.status) {
+      this.getCountryListAsync().catch((err) => {
+        this.checkErr(err, 'getCountryList');
+      });
+    }
+  },
   methods: {
     ...mapActions('customer', ['addOrEditCustomerShippingAsync']),
+    ...mapActions('system', ['getCountryListAsync']),
+    getCountryName(item) {
+      return `${item.dnames}(${item.dnamesEn})`;
+    },
     addOrEditCustomerShipping() {
       this.submitting = true;
+      const params = this.shipping;
+      params.addressId = this.shipping.countryId;
       this.addOrEditCustomerShippingAsync({
         buyerId: this.buyerId,
         buyerUid: this.buyerUid,
-        ...this.shipping,
+        ...params,
         edit: this.edit,
       })
         .then(() => {

@@ -11,11 +11,11 @@
   >
     <template v-slot:item.goodName="{ item }">
       <div class="text-left">
-        {{ item.goodName }}
+        {{ item.goodName }}({{ item.goodNameEn }})
       </div>
     </template>
     <template v-slot:item.goodDetailName="{ item }">
-      {{ item.goodDetailName ? item.goodDetailName : '无' }}
+      {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
     </template>
     <template v-slot:item.unit="{ item }">
       <span v-if="edit">{{ item.buUnitName }}</span>
@@ -24,7 +24,7 @@
         v-model="item.buUnitId"
         :items="item.units"
         item-value="unitId"
-        item-text="unitName"
+        :item-text="getUnitName"
         outlined
         dense
         single-line
@@ -48,7 +48,7 @@
       </div>
     </template>
     <template v-slot:item.needToSend="{ item }">
-      {{ +item.goodNumber - +item.sendNumber }}{{ item.unitName }}
+      {{ +item.goodNumber - +item.sendNumber }}{{ item.unitName }}({{ item.unitNameEn }})
     </template>
     <template v-slot:item.image="{ item }">
       <div class="py-3">
@@ -283,15 +283,18 @@ export default {
       'getShippingOrderListAsync',
       'addShippingOrderAsync',
     ]),
+    getUnitName(item) {
+      return `${item.unitName}(${item.unitNameEn})`;
+    },
     getItemUnitName(item) {
       if (!item.units.length) {
         return item.unitName;
       }
       const unit = R.find(R.propEq('unitId', item.buUnitId), item.units);
       if (item.unitId !== item.buUnitId) {
-        return `1${unit.unitName} = ${unit.packeNum}${item.unitName}`;
+        return `1${unit.unitName}(${unit.unitNameEn}) = ${unit.packeNum}${item.unitName}(${unit.unitNameEn})`;
       }
-      return unit.unitName;
+      return `${unit.unitName}(${unit.unitNameEn})`;
     },
     // rulesNumber(item) {
     //   return [

@@ -279,7 +279,6 @@
               <v-col
                 cols="12"
                 lg="6"
-                xl="4"
                 class="text-right"
               >
                 <div class="input-group align-start">
@@ -298,10 +297,51 @@
                   </div>
                 </div>
               </v-col>
+            </v-row>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+                <div class="input-group align-start">
+                  <div class="input-group-prepend large pt-3">
+                    <span class="input-group-text">详情</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-card
+                      outlined
+                      elevation="0"
+                    >
+                      <component
+                        :is="componentAboutUs"
+                        :content="info.aboutUs"
+                        @update:html="info.aboutUs = $event"
+                      />
+                    </v-card>
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+      <v-card
+        outlined
+        class="mb-4"
+      >
+        <v-card-title class="title grey lighten-3 pa-4">
+          关于我们英文
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <v-container
+            fluid
+            class="pa-0"
+          >
+            <v-row
+              class="mb-3"
+            >
               <v-col
                 cols="12"
                 lg="6"
-                xl="4"
                 class="text-right"
               >
                 <div class="input-group align-start">
@@ -324,45 +364,30 @@
             <v-row>
               <v-col
                 cols="12"
-                lg="6"
               >
-                <v-card
-                  outlined
-                  elevation="0"
-                >
-                  <v-card-title class="pa-3 grey lighten-3 title">
-                    关于我们详情
-                  </v-card-title>
-                  <component
-                    :is="componentAboutUs"
-                    :content="info.aboutUs"
-                    @update:html="info.aboutUs = $event"
-                  />
-                </v-card>
-              </v-col>
-              <v-col
-                cols="12"
-                lg="6"
-              >
-                <v-card
-                  outlined
-                  elevation="0"
-                >
-                  <v-card-title class="pa-3 grey lighten-3 title">
-                    关于我们英文详情
-                  </v-card-title>
-                  <component
-                    :is="componentAboutUsEn"
-                    :content="info.aboutUsEn"
-                    @update:html="info.aboutUsEn = $event"
-                  />
-                </v-card>
+                <div class="input-group align-start">
+                  <div class="input-group-prepend large pt-3">
+                    <span class="input-group-text">英文详情</span>
+                  </div>
+                  <div class="input-group-control">
+                    <v-card
+                      outlined
+                      elevation="0"
+                    >
+                      <component
+                        :is="componentAboutUsEn"
+                        :content="info.aboutUsEn"
+                        @update:html="info.aboutUsEn = $event"
+                      />
+                    </v-card>
+                  </div>
+                </div>
               </v-col>
             </v-row>
           </v-container>
         </v-card-text>
       </v-card>
-      <v-card
+      <!-- <v-card
         outlined
         class="mb-4"
       >
@@ -414,7 +439,7 @@
             </v-row>
           </v-container>
         </v-card-text>
-      </v-card>
+      </v-card> -->
       <v-btn
         :loading="submitting"
         :disabled="submitting"

@@ -161,7 +161,12 @@
           </template>
           <template v-slot:item.goodName="{ item }">
             <div class="text-left">
-              {{ item.goodName }}
+              {{ item.goodName }}({{ item.goodNameEn }})
+            </div>
+          </template>
+          <template v-slot:item.goodDetailName="{ item }">
+            <div v-if="item.goodDetailName">
+              {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
             </div>
           </template>
           <template v-slot:item.buNumber="{ item }">
@@ -291,12 +296,6 @@ export default {
           sortable: false,
         },
         {
-          text: '销售价',
-          value: 'buyPrice',
-          align: 'center',
-          sortable: false,
-        },
-        {
           text: '库存数量',
           value: 'stockNumber',
           align: 'center',
@@ -305,13 +304,6 @@ export default {
         {
           text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}数量'`,
           value: 'buNumber',
-          align: 'center',
-          sortable: false,
-          width: '120px',
-        },
-        {
-          text: `${this.$route.name.includes('outstock') ? '出库' : '入库'}价格'`,
-          value: 'price',
           align: 'center',
           sortable: false,
           width: '120px',

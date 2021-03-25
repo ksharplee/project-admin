@@ -93,9 +93,15 @@
                   </v-col>
                   <v-col
                     class="py-0"
-                    cols="6"
+                    cols="2"
                   >
-                    {{ item | addressStr }}
+                    {{ item.countryName }}({{ item.countryNameEn }})
+                  </v-col>
+                  <v-col
+                    class="py-0"
+                    cols="4"
+                  >
+                    {{ item.addressPart }}
                   </v-col>
                   <v-col
                     class="py-0"

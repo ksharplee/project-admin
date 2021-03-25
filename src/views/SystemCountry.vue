@@ -52,8 +52,11 @@
                 {{ item.rate }}
               </td>
               <td class="pa-3">
-                {{ item.languageType === '1' ? '阿拉伯语' : '英语' }}
+                {{ item.currency }}
               </td>
+              <!-- <td class="pa-3">
+                {{ item.languageType === '1' ? '阿拉伯语' : '英语' }}
+              </td> -->
               <td>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on }">
@@ -175,11 +178,17 @@ export default {
           sortable: false,
         },
         {
-          text: '语言',
-          value: 'languageType',
+          text: '币种',
+          value: 'currency',
           align: 'center',
           sortable: false,
         },
+        // {
+        //   text: '语言',
+        //   value: 'languageType',
+        //   align: 'center',
+        //   sortable: false,
+        // },
         {
           text: '操作',
           value: 'action',

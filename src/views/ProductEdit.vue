@@ -577,7 +577,7 @@
               >
                 <div class="input-group">
                   <div class="input-group-prepend">
-                    <span class="input-group-text required">{{ country }}</span>
+                    <span class="input-group-text required">{{ getCountryName(country) }}</span>
                   </div>
                   <div class="input-group-control">
                     <v-text-field
@@ -624,7 +624,7 @@
                     >
                       主图
                     </th>
-                    <th>
+                    <th class="text-center">
                       规格
                     </th>
                     <th
@@ -693,7 +693,7 @@
                       />
                     </td>
                     <td class="py-3">
-                      {{ item.detailName }}
+                      {{ item.detailName }}({{ item.detailNameEn }})
                     </td>
                     <td
                       v-if="!usePriceStatus"
@@ -722,7 +722,7 @@
                         :value="price"
                         :rules="priceRules"
                         suffix="$"
-                        :prefix="country"
+                        :prefix="getCountryName(country)"
                         type="number"
                         placeholder=""
                         class="mb-2"
@@ -1415,6 +1415,10 @@ export default {
     },
     setProductPrice(v) {
       this.$set(this.product, 'price', v);
+    },
+    getCountryName(countryId) {
+      const country = R.find(R.propEq('id', countryId), this.country.data);
+      return `${country.dnames}(${country.dnamesEn})`;
     },
   },
 };

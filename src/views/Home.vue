@@ -206,7 +206,7 @@ export default {
         children: [
           { text: '企业信息设置', url: { name: 'basic_info' } },
           { text: '广告图设置', url: { name: 'ads' } },
-          { text: '国家语言设置', url: { name: 'system_country' } },
+          { text: '国家汇率设置', url: { name: 'system_country' } },
         ],
       },
       // {

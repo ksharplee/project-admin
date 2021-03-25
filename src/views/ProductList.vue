@@ -142,6 +142,7 @@
                 <v-menu
                   v-model="showCategory"
                   offset-y
+                  open-on-hover
                   :close-on-content-click="false"
                 >
                   <template v-slot:activator="{ on, value }">
@@ -192,7 +193,10 @@
                     </v-card-text>
                   </v-card>
                 </v-menu>
-                <v-menu offset-y>
+                <v-menu
+                  offset-y
+                  open-on-hover
+                >
                   <template v-slot:activator="{ on, value }">
                     <v-btn
                       text

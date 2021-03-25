@@ -1398,7 +1398,7 @@ export default {
     // 国家价格
     countryPrice() {
       return R.fromPairs(
-        R.map(item => [item.dnames, item.price], this.countryLocal)
+        R.map(item => [item.id, item.price], this.countryLocal)
       );
     },
     selectedDetails() {
@@ -1627,7 +1627,7 @@ export default {
           const dataItems = R.map((item) => {
             item.countryPrice = R.fromPairs(
               R.map(
-                subitem => [subitem.dnames, subitem.price],
+                subitem => [subitem.id, subitem.price],
                 item.countryPrice
               )
             );

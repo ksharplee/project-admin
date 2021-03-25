@@ -21,6 +21,7 @@
                 <v-expansion-panel-header>
                   <div>
                     单号：<span class="primary--text">{{ shippingOrder.sendNo }}</span>
+                    <span class="ml-4">运单号：</span><span class="primary--text">{{ shippingOrder.wayBillNo }}</span>
                     <span class="ml-4">状态：</span><span :class="shippingOrder.dStatus | orderShippingStatusClass">{{ shippingOrder.dStatus | orderShippingStatusText }}</span>
                   </div>
                 </v-expansion-panel-header>
@@ -287,6 +288,29 @@
                 cols="3"
                 class="text-right"
               >
+                运单号：
+              </v-col>
+              <v-col cols="5">
+                <v-text-field
+                  v-model="shipping.wayBillNo"
+                  placeholder="请输入运单号"
+                  dense
+                  outlined
+                  clearable
+                  required
+                  single-line
+                  hide-details
+                />
+              </v-col>
+            </v-row>
+            <v-row
+              align="center"
+              class="mb-3"
+            >
+              <v-col
+                cols="3"
+                class="text-right"
+              >
                 备注：
               </v-col>
               <v-col cols="8">
@@ -520,6 +544,29 @@
                         single-line
                         hide-details
                         no-data-text="暂无数据"
+                      />
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    align="center"
+                    class="mb-3"
+                  >
+                    <v-col
+                      cols="3"
+                      class="text-right"
+                    >
+                      运单号：
+                    </v-col>
+                    <v-col cols="5">
+                      <v-text-field
+                        v-model="shipping.wayBillNo"
+                        placeholder="请输入运单号"
+                        dense
+                        outlined
+                        clearable
+                        required
+                        single-line
+                        hide-details
                       />
                     </v-col>
                   </v-row>

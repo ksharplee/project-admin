@@ -4,6 +4,7 @@
       <v-menu
         offset-y
         left
+        open-on-hover
       >
         <template v-slot:activator="{ on }">
           <v-btn
@@ -44,6 +45,9 @@
         {{ item.orderNo }}<v-chip small>
           {{ item.orderType | orderType }}
         </v-chip>
+      </template>
+      <template v-slot:item.countryName="{ item }">
+        {{ item.countryName }}({{ item.countryNameEn }})
       </template>
       <template v-slot:item.shipping="{ item }">
         {{ item.dStatus | shippingStatus }}
@@ -437,6 +441,12 @@ export default {
         {
           text: '客户名称',
           value: 'buyerName',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '国家',
+          value: 'countryName',
           align: 'center',
           sortable: false,
         },

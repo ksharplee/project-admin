@@ -16,6 +16,7 @@
         >
           <v-menu
             offset-y
+            open-on-hover
           >
             <template v-slot:activator="{ on, value }">
               <v-btn
@@ -44,6 +45,7 @@
           </v-menu>
           <v-menu
             offset-y
+            open-on-hover
           >
             <template v-slot:activator="{ on, value }">
               <v-btn
@@ -72,6 +74,7 @@
           </v-menu>
           <v-menu
             offset-y
+            open-on-hover
           >
             <template v-slot:activator="{ on, value }">
               <v-btn
@@ -442,12 +445,6 @@ export default {
         {
           text: '入库仓库',
           value: 'warehouseName',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '商品金额(元)',
-          value: 'amount',
           align: 'center',
           sortable: false,
         },

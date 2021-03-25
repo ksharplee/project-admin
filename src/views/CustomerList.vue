@@ -16,6 +16,7 @@
         >
           <v-menu
             offset-y
+            open-on-hover
           >
             <template v-slot:activator="{ on, value }">
               <v-btn
@@ -93,9 +94,7 @@
             v-for="item in items"
             :key="item.id"
           >
-            <td>{{ item.defaulte === '1' ? '默认客户' : item.account }}</td>
-            <td>{{ item.defaulte === '1' ? '默认客户' : item.dnames }}</td>
-            <td>{{ item.defaulte === '1' ? '默认客户' : item.mobile }}</td>
+            <td>{{ item.defaulte === '1' ? '默认客户' : item.buyerUserName }}</td>
             <td :class="item.gradeName ? '' : 'grey--text'">
               {{ item.gradeName ? item.gradeName : '无' }}
             </td>
@@ -327,19 +326,7 @@ export default {
       headers: [
         {
           text: '客户账号',
-          value: 'account',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '姓名',
-          value: 'dnames',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '手机号码',
-          value: 'mobile',
+          value: 'buyerUserName',
           align: 'center',
           sortable: false,
         },

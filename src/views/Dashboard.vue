@@ -41,9 +41,9 @@
         v-for="(data, index) in statistics"
         :key="index"
         cols="12"
-        md="6"
         align="stretch"
         class="mb-3"
+        :class="index ? 'd-none' : ''"
       >
         <v-card
           height="100%"
@@ -61,6 +61,23 @@
               <v-select
                 v-model="data.option"
                 :items="index === 2 ? minOptionWeek : minOptionDay"
+                outlined
+                rounded
+                no-data-text="暂无数据"
+                dense
+                hide-details
+                @change="getChartDataSingle(index)"
+              />
+            </div>
+            <div
+              class="ml-2"
+              style="max-width:190px"
+            >
+              <v-select
+                v-model="data.countryId"
+                :items="country.data"
+                item-value="id"
+                :item-text="getCountryName"
                 outlined
                 rounded
                 no-data-text="暂无数据"
@@ -183,6 +200,22 @@
               </v-tabs-items>
             </div>
           </div>
+        </v-card>
+      </v-col>
+      <v-col cols="12">
+        <v-card outlined>
+          <v-data-table
+            :headers="headers"
+            :items="statistics[0].data"
+            class="text-center"
+            no-data-text="暂无数据"
+            hide-default-footer
+            fixed-header
+          >
+            <template v-slot:item.allAmount="{item}">
+              {{ currentCountry.currency }}{{ item.allAmount }}
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -405,6 +438,32 @@ export default {
       colorSet: ['red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue'],
       startDate: today,
       endDate: today,
+      headers: [
+        {
+          text: '商品',
+          value: 'goodName',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '货号',
+          value: 'goodNo',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '售出',
+          value: 'allNumber',
+          align: 'center',
+          sortable: false,
+        },
+        {
+          text: '销售额',
+          value: 'allAmount',
+          align: 'center',
+          sortable: false,
+        },
+      ],
       statistics: [
         {
           startDateValue: today,
@@ -413,6 +472,7 @@ export default {
           range: '今日',
           rangeIndex: 0,
           data: [],
+          countryId: '0',
           startDate: today,
           endDate: today,
           operate: '4',
@@ -545,6 +605,10 @@ export default {
   },
   computed: {
     ...mapState(['breadCrumbs']),
+    ...mapState('system', ['country']),
+    currentCountry() {
+      return this.country.data.find(item => item.id === this.statistics[0].countryId);
+    },
   },
   created() {
     this.$store.commit('SET_BREADCRUMBS', [
@@ -560,12 +624,22 @@ export default {
         exact: true,
       },
     ]);
+    if (!this.country.status) {
+      this.getCountryListAsync().then(() => {
+        this.$set(this.statistics[0], 'countryId', this.country.data[0].id);
+      }).catch((err) => {
+        this.checkErr(err, 'getCountryList');
+      });
+    } else {
+      this.$set(this.statistics[0], 'countryId', this.country.data[0].id);
+    }
   },
   mounted() {
     this.initCharts();
     this.getConsoleData();
   },
   methods: {
+    ...mapActions('system', ['getCountryListAsync']),
     ...mapActions(['getConsoleDataAsync', 'getChartDataSingleAsync']),
     getConsoleData() {
       this.$store.commit('START_LOADING');
@@ -672,8 +746,8 @@ export default {
       goodsAmountChart.axis('goodName', {
         label: {
           formatter: (v) => {
-            if (v.length > 6) {
-              return `${v.substr(0, 7)}...`;
+            if (v.length > 12) {
+              return `${v.substr(0, 11)}...`;
             }
             return v;
           },
@@ -681,8 +755,8 @@ export default {
       });
       goodsAmountChart.legend('goodName', {
         itemFormatter: (v) => {
-          if (v.length > 6) {
-            return `${v.substr(0, 7)}...`;
+          if (v.length > 12) {
+            return `${v.substr(0, 11)}...`;
           }
           return v;
         },
@@ -701,8 +775,8 @@ export default {
         })
         .label('goodName', {
           formatter: (v) => {
-            if (v.length > 6) {
-              return `${v.substr(0, 7)}...`;
+            if (v.length > 12) {
+              return `${v.substr(0, 11)}...`;
             }
             return v;
           },
@@ -931,6 +1005,7 @@ export default {
       arr = mapIndexed((item, index) => {
         item.index = index;
         item.allAmount = +item.allAmount;
+        item.goodName = `${item.goodName}(${item.goodNameEn})`;
         return item;
       }, arr);
       goodsAmountChart.changeData(arr);
@@ -1078,6 +1153,7 @@ export default {
           startDate: this.statistics[i].startDate,
           endDate: this.statistics[i].endDate,
           operate: this.statistics[i].operate,
+          countryId: this.statistics[i].countryId,
         },
       })
         .then((res) => {
@@ -1194,6 +1270,9 @@ export default {
           break;
       }
       this.$set(this.statistics[i], 'operate', option.operate);
+    },
+    getCountryName(item) {
+      return item.id === '0' ? '全部国家' : `${item.dnames}(${item.dnamesEn})`;
     },
   },
 };

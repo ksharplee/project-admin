@@ -173,7 +173,10 @@
                     </v-card-text>
                   </v-card>
                 </v-menu>
-                <v-menu offset-y>
+                <v-menu
+                  offset-y
+                  open-on-hover
+                >
                   <template v-slot:activator="{ on, value }">
                     <v-btn
                       text

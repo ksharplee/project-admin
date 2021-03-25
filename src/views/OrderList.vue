@@ -86,6 +86,7 @@
               <template v-else>
                 <v-menu
                   offset-y
+                  open-on-hover
                 >
                   <template v-slot:activator="{ on, value }">
                     <v-btn
@@ -108,6 +109,35 @@
                     >
                       <v-list-item-title class="body-2">
                         {{ item.text }}
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+                <v-menu
+                  offset-y
+                  open-on-hover
+                >
+                  <template v-slot:activator="{ on, value }">
+                    <v-btn
+                      text
+                      class="px-1 ml-2"
+                      v-on="on"
+                    >
+                      {{ currentCountry }} <v-icon
+                        :class="value ? 'rotate-180' : ''"
+                      >
+                        mdi-chevron-down mdi-18px
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item
+                      v-for="(item, index) in countryLocal"
+                      :key="index"
+                      @click="searchOrderByCountry(item)"
+                    >
+                      <v-list-item-title class="body-2">
+                        {{ item.id ? `${ item.dnames }(${ item.dnamesEn })` : '全部国家' }}
                       </v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -170,6 +200,9 @@
             >
               代下单
             </v-chip>
+          </template>
+          <template v-slot:item.countryName="{ item }">
+            {{ item.countryName }}({{ item.countryNameEn }})
           </template>
           <template v-slot:item.shipping="{ item }">
             {{ item.dStatus | shippingStatus }}
@@ -784,6 +817,7 @@ export default {
         orderType: '0',
         amontStatus: '1',
         orderNo: '',
+        countryId: '',
       },
       loadingDataItems: false,
       sortTypes: [
@@ -816,6 +850,7 @@ export default {
       completing: false,
       toCompleteOrder: '',
       currentStatus: '全部订单',
+      currentCountry: '全部国家',
       selectedOrders: [],
       searchStatus: false,
       searchStr: '',
@@ -874,6 +909,12 @@ export default {
           sortable: false,
         },
         {
+          text: '国家',
+          value: 'countryName',
+          align: 'center',
+          sortable: false,
+        },
+        {
           text: '订单金额',
           value: 'actualAmount',
           align: 'center',
@@ -915,6 +956,7 @@ export default {
   },
   computed: {
     ...mapState('order', ['orderList']),
+    ...mapState('system', ['country']),
     page: {
       set(value) {
         this.orderList.data.p = value;
@@ -934,6 +976,9 @@ export default {
         this.orderList.data.totalItem / process.env.VUE_APP_ITEMPERPAGE
       );
     },
+    countryLocal() {
+      return R.prepend({ dnames: '全部国家', id: '' }, this.country.data);
+    },
   },
   created() {
     this.$store.commit('SET_BREADCRUMBS', [
@@ -950,6 +995,9 @@ export default {
       },
     ]);
     this.getOrderList();
+    if (!this.country.status) {
+      this.getCountryListAsync();
+    }
   },
   methods: {
     ...mapActions('order', [
@@ -960,6 +1008,7 @@ export default {
       'nullifyOrderAsync',
       'completeOrderAsync',
     ]),
+    ...mapActions('system', ['getCountryListAsync']),
     resetSearchConditions() {
       this.search = {
         operate: '1',
@@ -990,6 +1039,11 @@ export default {
     searchOrderByStatus(item) {
       this.currentStatus = item.text;
       this.$set(this.search, 'operate', item.value);
+      this.getOrderList(this.search);
+    },
+    searchOrderByCountry(item) {
+      this.currentCountry = item.id ? `${item.dnames}(${item.dnamesEn})` : '全部国家';
+      this.$set(this.search, 'countryId', item.id);
       this.getOrderList(this.search);
     },
     getOrderList(params) {

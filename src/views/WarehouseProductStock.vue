@@ -26,6 +26,7 @@
               </div>
               <v-menu
                 v-model="showCategory"
+                open-on-hover
                 offset-y
                 :close-on-content-click="false"
               >
@@ -70,6 +71,7 @@
               </v-menu>
               <v-menu
                 offset-y
+                open-on-hover
               >
                 <template v-slot:activator="{ on, value }">
                   <v-btn
@@ -154,7 +156,14 @@
           </template>
           <template v-slot:item.goodName="{ item }">
             <div class="text-left">
-              {{ item.goodName }}
+              {{ item.goodName }}({{ item.goodNameEn }})
+            </div>
+          </template>
+          <template v-slot:item.goodDetailName="{ item }">
+            <div
+              v-if="item.goodDetailName"
+            >
+              {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
             </div>
           </template>
           <template v-slot:item.action="{ item }">
@@ -237,10 +246,9 @@
               </v-img>
             </v-col>
             <v-col class="pl-5">
-              <p><span class="grey--text">商品名称：</span>{{ detail.item.goodName }}</p>
+              <p><span class="grey--text">商品名称：</span>{{ detail.item.goodName }}({{ detail.item.goodNameEn }})</p>
               <p><span class="grey--text">商品货号：</span>{{ detail.item.goodNo }}</p>
-              <p><span class="grey--text">商品规格：</span>{{ detail.item.goodDetailName }}</p>
-              <p><span class="grey--text">销售价：</span>{{ detail.item.price }}</p>
+              <p><span class="grey--text">商品规格：</span>{{ detail.item.goodDetailName }}({{ detail.item.goodDetailNameEn }})</p>
               <p><span class="grey--text">库存数量：</span>{{ detail.item.stockNumber }}</p>
             </v-col>
           </v-row>
@@ -331,12 +339,6 @@ export default {
         {
           text: '商品规格',
           value: 'goodDetailName',
-          align: 'center',
-          sortable: false,
-        },
-        {
-          text: '销售价',
-          value: 'price',
           align: 'center',
           sortable: false,
         },
