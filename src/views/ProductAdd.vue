@@ -819,7 +819,7 @@
                         />
                       </td>
                       <td class="py-3">
-                        {{ item.detailName }}
+                        {{ item.detailName }}({{ item.detailNameEn }})
                       </td>
                       <td
                         v-if="!usePriceStatus"
@@ -847,7 +847,7 @@
                           :key="subitem.id"
                           v-model="subitem.price"
                           :rules="priceRules"
-                          :prefix="subitem.dnames"
+                          :prefix="getCountryName(subitem)"
                           type="number"
                           placeholder=""
                           class="mb-2"
@@ -986,7 +986,7 @@
                     :image="img.picPath"
                     icon-size="36px"
                     @update:src="getEmitImg($event, i)"
-                    @update:delete="img = {picPath: ''}"
+                    @update:delete="img.picPath = ''"
                   />
                   <div class="d-flex justify-center pt-2">
                     <v-btn
@@ -1505,6 +1505,9 @@ export default {
       'addProductAsync',
     ]),
     ...mapActions('system', ['getCountryListAsync']),
+    getCountryName(item) {
+      return `${item.dnames}(${item.dnamesEn})`;
+    },
     getEmitImg(e, i) {
       this.$set(this.product.images, i, e);
     },

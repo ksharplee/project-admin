@@ -80,9 +80,9 @@
                                 </template>
                               </v-img>
                             </td>
-                            <td>{{ item.goodName }}</td>
-                            <td>{{ item.goodDetailName ? item.goodDetailName : '无' }}</td>
-                            <td>{{ item.buNumber }}{{ item.buUnitName }}</td>
+                            <td>{{ item.goodName }}({{ item.goodNameEn }})</td>
+                            <td><span v-if="item.goodDetailName">{{ item.goodDetailName }}({{ item.goodDetailNameEn }})</span></td>
+                            <td>{{ item.buNumber }}{{ item.buUnitName }}({{ item.buUnitNameEn }})</td>
                             <td>{{ item.memo ? item.memo : '无' }}</td>
                           </tr>
                         </tbody>

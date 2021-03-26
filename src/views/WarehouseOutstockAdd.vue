@@ -212,7 +212,14 @@
           </template>
           <template v-slot:item.goodName="{ item }">
             <div class="text-left">
-              {{ item.goodName }}
+              {{ item.goodName }}({{ item.goodNameEn }})
+            </div>
+          </template>
+          <template v-slot:item.goodDetailName="{ item }">
+            <div
+              v-if="item.goodDetailName"
+            >
+              {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
             </div>
           </template>
           <template v-slot:item.buNumber="{ item }">
@@ -257,9 +264,6 @@
             <div class="d-flex align-center">
               <div class="title">
                 出库商品总数：{{ selectedProductsTotal }}
-                <span class="ml-4">
-                  总金额： <span class="error--text">￥<span class="display-1">{{ selectedProductsAmountTotal }}</span></span>
-                </span>
               </div>
               <v-spacer />
               <div
@@ -385,13 +389,6 @@ export default {
         {
           text: '出库数量',
           value: 'buNumber',
-          align: 'center',
-          sortable: false,
-          width: '150px',
-        },
-        {
-          text: '出库价格',
-          value: 'price',
           align: 'center',
           sortable: false,
           width: '150px',

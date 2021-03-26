@@ -55,7 +55,14 @@
           </template>
           <template v-slot:item.goodName="{ item }">
             <div class="text-left">
-              {{ item.goodName }}
+              {{ item.goodName }}({{ item.goodNameEn }})
+            </div>
+          </template>
+          <template v-slot:item.goodDetailName="{ item }">
+            <div
+              v-if="item.goodDetailName"
+            >
+              {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
             </div>
           </template>
           <template
@@ -65,9 +72,6 @@
             <div class="d-flex align-center">
               <div class="title">
                 入库商品总数：{{ instockOrder.goodNumber }}
-                <span class="ml-4">
-                  总金额： <span class="error--text">￥<span class="display-1">{{ instockOrder.amount }}</span></span>
-                </span>
               </div>
               <v-spacer />
               <div
@@ -264,13 +268,6 @@ export default {
         {
           text: '入库数量',
           value: 'buNumber',
-          align: 'center',
-          sortable: false,
-          width: '150px',
-        },
-        {
-          text: '入库价格',
-          value: 'price',
           align: 'center',
           sortable: false,
           width: '150px',

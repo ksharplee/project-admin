@@ -117,11 +117,11 @@
                         class="text-left align-self-stretch d-flex flex-column justify-lg-space-between"
                       >
                         <div class="font-weight-medium primary--text">
-                          {{ item.goodName }}
+                          {{ item.goodName }}({{ item.goodNameEn }})
                         </div>
                         <div class="body-2">
-                          <div>
-                            {{ item.goodDetailName }}
+                          <div v-if="item.goodDetailName">
+                            {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
                           </div>
                           <span class="grey--text">零售价：</span><span class="error--text mr-3">{{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}</span> <span class="grey--text">单位：</span>{{ item.unitName }}
                         </div>
@@ -236,11 +236,11 @@
                         class="text-left align-self-stretch d-flex flex-column justify-lg-space-between"
                       >
                         <div class="font-weight-medium primary--text">
-                          {{ item.goodName }}
+                          {{ item.goodName }}({{ item.goodNameEn }})
                         </div>
                         <div class="body-2">
-                          <div>
-                            {{ item.goodDetailName }}
+                          <div v-if="item.goodDetailName">
+                            {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
                           </div>
                           <span class="grey--text">零售价：</span><span class="error--text mr-3">{{ item.containSpec === '1' ? `${item.minPrice}~${item.maxPrice}` : item.price }}</span> <span class="grey--text">单位：</span>{{ item.unitName }}
                         </div>

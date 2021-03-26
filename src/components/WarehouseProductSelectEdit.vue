@@ -192,9 +192,6 @@
             <div class="d-flex align-center">
               <div class="title">
                 {{ $route.name.includes('outstock') ? '出库' : '入库' }}商品总数：{{ selectedProductsTotal }}
-                <span class="ml-4">
-                  总金额： <span class="error--text">￥<span class="display-1">{{ selectedProductsAmountTotal }}</span></span>
-                </span>
               </div>
               <v-spacer />
               <div

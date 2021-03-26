@@ -447,7 +447,7 @@
                       </v-icon>查看详情
                     </v-list-item-title>
                   </v-list-item>
-                  <v-list-item :to="{ name: 'authority_employee_right', params: { id: item.id, name: item.userName, mobile: item.mobile }}">
+                  <!-- <v-list-item :to="{ name: 'authority_employee_right', params: { id: item.id, name: item.userName, mobile: item.mobile }}">
                     <v-list-item-title>
                       <v-icon
                         class="mr-1"
@@ -456,7 +456,7 @@
                         mdi-shield-key
                       </v-icon>设置权限
                     </v-list-item-title>
-                  </v-list-item>
+                  </v-list-item> -->
                   <v-list-item :to="{ name: 'employee_edit', params: { id: item.id }}">
                     <v-list-item-title>
                       <v-icon

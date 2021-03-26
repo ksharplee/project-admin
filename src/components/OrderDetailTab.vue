@@ -79,7 +79,7 @@
                   md="8"
                   lg="10"
                 >
-                  <span class="grey--text">收货人：</span>{{ order.contacter }} <span class="ml-4 grey--text">联系电话：</span>{{ order.mobile }} <span class="ml-4 grey--text">收货地址：</span>{{ order.addr }}
+                  <span class="grey--text">收货人：</span>{{ order.contacter }} <span class="ml-4 grey--text">联系电话：</span>{{ order.mobile }} <span class="ml-4 grey--text">收货地址：</span>{{ order.countryName }}({{ order.countryNameEn }}){{ order.addr }}
                 </v-col>
               </v-row>
             </v-col>
@@ -139,23 +139,6 @@
                     target="_blank"
                     download
                   >下载</a><span v-else>无</span>
-                </v-col>
-              </v-row>
-            </v-col>
-            <v-col cols="12">
-              <v-row align="center">
-                <v-col
-                  md="2"
-                  lg="1"
-                  class="grey--text"
-                >
-                  订单处理流程
-                </v-col>
-                <v-col
-                  md="8"
-                  lg="10"
-                >
-                  {{ order.processFlag | orderSequenceText }}
                 </v-col>
               </v-row>
             </v-col>
@@ -352,16 +335,16 @@
                 </div>
               </template>
               <template v-slot:item.buUnitName="{ item }">
-                {{ item.buUnitId === item.unitId ? item.unitName : item.buUnitName }}
+                {{ item.buUnitId === item.unitId ? `${item.unitName}(${item.unitNameEn})` : `${item.buUnitName}(${item.buUnitNameEn})` }}
                 <div
                   v-if="item.buUnitId !== item.unitId"
                   class="grey--text"
                 >
-                  (1{{ item.buUnitName }} = {{ item.packeNum }}{{ item.unitName }})
+                  (1{{ `${item.buUnitName}(${item.buUnitNameEn})` }} = {{ item.packeNum }}{{ `${item.unitName}(${item.unitNameEn})` }})
                 </div>
               </template>
               <template v-slot:item.goodDetailName="{ item }">
-                {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
+                <span v-if="item.goodDetailName">{{ item.goodDetailName }}({{ item.goodDetailNameEn }})</span>
               </template>
               <template v-slot:item.memo="{ item }">
                 <div :class="item.memo ? '' : 'grey--text'">
@@ -413,7 +396,7 @@
                       class="display-1 error--text pl-0 font-weight-bold"
                       align-self="start"
                     >
-                      ￥{{ order.actualAmount }}
+                      {{ order.currency }}{{ order.actualAmount }}
                     </v-col>
                   </v-row>
                 </v-container>

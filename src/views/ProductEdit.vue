@@ -863,9 +863,7 @@
                     :image="img.picPath"
                     icon-size="36px"
                     @update:src="getImg($event, i)"
-                    @update:delete="img = {
-                      picPath: ''
-                    }"
+                    @update:delete="img.picPath = ''"
                   />
                   <div class="d-flex justify-center pt-2">
                     <v-btn

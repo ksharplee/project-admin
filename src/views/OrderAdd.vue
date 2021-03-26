@@ -146,11 +146,13 @@
               class="text-left"
               style="min-width:200px"
             >
-              {{ item.goodName }}
+              {{ item.goodName }}({{ item.goodNameEn }})
             </div>
           </template>
           <template v-slot:item.goodDetailName="{ item }">
-            {{ item.goodDetailName ? item.goodDetailName : '无' }}
+            <span v-if="item.goodDetailName">
+              {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
+            </span>
           </template>
           <template v-slot:item.amount="{ item }">
             {{ getProductPrice(item) | toFixed }}

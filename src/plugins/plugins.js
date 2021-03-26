@@ -68,8 +68,8 @@ export default {
       if (v === '8') {
         return '已发货';
       }
-      if (v === '9') {
-        return '已确认收获';
+      if (v === '9' || v === '10') {
+        return '已确认收货';
       }
       return '备货中/待发货';
     });

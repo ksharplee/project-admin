@@ -607,7 +607,7 @@ export default {
     ...mapState(['breadCrumbs']),
     ...mapState('system', ['country']),
     currentCountry() {
-      return this.country.data.find(item => item.id === this.statistics[0].countryId);
+      return this.country.data.find(item => item.id === this.statistics[0].countryId) || {};
     },
   },
   created() {

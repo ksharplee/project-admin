@@ -15,7 +15,7 @@
       </div>
     </template>
     <template v-slot:item.goodDetailName="{ item }">
-      {{ item.goodDetailName }}({{ item.goodDetailNameEn }})
+      <span v-if="item.goodDetailName">{{ item.goodDetailName }}({{ item.goodDetailNameEn }})</span>
     </template>
     <template v-slot:item.unit="{ item }">
       <span v-if="edit">{{ item.buUnitName }}</span>
